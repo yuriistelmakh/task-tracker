@@ -17,9 +17,12 @@ public class GetBoardByIdHandler : IRequestHandler<GetBoardByIdQuery, BoardDto?>
     {
         var board = await _repository.GetAsync(request.Id);
 
-        if (board == null) return null;
+        if (board is null)
+        {
+            return null;
+        }
 
-        return new BoardDto()
+        return new BoardDto
         {
             Id = board.Id,
             Title = board.Title,

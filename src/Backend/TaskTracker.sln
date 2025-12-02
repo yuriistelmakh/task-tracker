@@ -13,15 +13,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.Persistence", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.DbMigrator", "TaskTracker.DbMigrator\TaskTracker.DbMigrator.csproj", "{F98F45FD-742F-416C-834A-3E703B999ED0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.Presentation", "TaskTracker.Presentation\TaskTracker.Presentation.csproj", "{792A58C0-FBAD-4F19-A7D7-70D4C137675D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.Api", "TaskTracker.Presentation\TaskTracker.Api.csproj", "{792A58C0-FBAD-4F19-A7D7-70D4C137675D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{5D2CD50A-BB49-45BC-90AD-04D4F8C48366}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -48,5 +45,8 @@ Global
 		{792A58C0-FBAD-4F19-A7D7-70D4C137675D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{792A58C0-FBAD-4F19-A7D7-70D4C137675D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{792A58C0-FBAD-4F19-A7D7-70D4C137675D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

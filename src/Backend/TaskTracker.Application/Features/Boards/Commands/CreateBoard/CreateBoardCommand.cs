@@ -4,7 +4,7 @@ namespace TaskTracker.Application.Features.Boards.Commands.CreateBoard;
 
 public class CreateBoardCommand : IRequest<int>
 {
-    public string Title { get; set; } = string.Empty;
+    public required string Title { get; set; } 
 
     public string Description { get; set; } = string.Empty;
 }

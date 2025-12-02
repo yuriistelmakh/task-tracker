@@ -15,7 +15,7 @@ public class CreateBoardCommandHandler : IRequestHandler<CreateBoardCommand, int
 
     public async Task<int> Handle(CreateBoardCommand request, CancellationToken cancellationToken)
     {
-        var board = new Board()
+        var board = new Board
         {
             Title = request.Title,
             Description = request.Description,
