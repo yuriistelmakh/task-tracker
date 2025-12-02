@@ -8,37 +8,37 @@ namespace TaskTracker.Persistence.Repositories;
 
 public class Repository<T, TId> : IRepository<T, TId> where T: class
 {
-    protected readonly IDbTransaction _transaction;
+    protected readonly IDbTransaction Transaction;
 
-    protected IDbConnection _connection => _transaction.Connection!;
+    protected IDbConnection Connection => Transaction.Connection!;
 
     public Repository(IDbTransaction transaction)
     {
-        _transaction = transaction;
+        Transaction = transaction;
     }
 
     public async Task<TId> AddAsync(T entity)
     {
-        return await _connection.InsertAsync<TId, T>(entity, transaction: _transaction);
+        return await Connection.InsertAsync<TId, T>(entity, transaction: Transaction);
     }
 
     public async Task DeleteAsync(TId id)
     {
-        await _connection.DeleteAsync(id, transaction: _transaction);
+        await Connection.DeleteAsync(id, transaction: Transaction);
     }
 
     public async Task<IEnumerable<T>> GetAllAsync()
     {
-        return await _connection.GetListAsync<T>(new { }, transaction: _transaction);
+        return await Connection.GetListAsync<T>(new { }, transaction: Transaction);
     }
 
     public async Task<T?> GetAsync(TId id)
     {
-        return await _connection.GetAsync<T>(id, transaction: _transaction);
+        return await Connection.GetAsync<T>(id, transaction: Transaction);
     }
 
     public async Task UpdateAsync(T entity)
     {
-        await _connection.UpdateAsync<T>(entity, transaction: _transaction);
+        await Connection.UpdateAsync<T>(entity, transaction: Transaction);
     }
 }

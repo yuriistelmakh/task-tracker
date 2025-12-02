@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TaskTracker.Application.Features.Boards.Commands.CreateBoard;
 using TaskTracker.Application.Features.Boards.Queries.GetBoardById;
+using TaskTracker.Domain.DTOs;
 
 namespace TaskTracker.Presentation.Controllers;
 
@@ -18,11 +19,17 @@ public class BoardController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateBoardCommand command)
+    public async Task<IActionResult> Create([FromBody] CreateBoardRequest request)
     {
-        var boardId = await _mediator.Send(command);
+        var command = new CreateBoardCommand
+        {
+            Title = request.Title,
+            Description = request.Description
+        };
 
-        return Ok(boardId);
+        var result = await _mediator.Send(command);
+
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
@@ -31,7 +38,7 @@ public class BoardController : ControllerBase
         var query = new GetBoardByIdQuery(id);
         var result = await _mediator.Send(query);
 
-        if (result == null)
+        if (result is null)
         {
             return NotFound();
         }

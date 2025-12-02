@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TaskTracker.Application.Interfaces;
-using TaskTracker.Application.Interfaces.Repositories;
-using TaskTracker.Persistence.Repositories;
 using TaskTracker.Persistence.UoW;
 
 namespace TaskTracker.Persistence;
