@@ -14,7 +14,7 @@ public class UnitOfWork : IUnitOfWork
 
     private IBoardRepository? _boardRepository;
 
-    public IBoardRepository Boards =>
+    public IBoardRepository BoardRepository =>
         _boardRepository ??= new BoardRepository(_transaction);
 
     public UnitOfWork(IConfiguration configuration)

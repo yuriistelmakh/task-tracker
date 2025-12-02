@@ -18,22 +18,20 @@ public class GetBoardByIdHandler : IRequestHandler<GetBoardByIdQuery, BoardDto?>
 
     public async Task<BoardDto?> Handle(GetBoardByIdQuery request, CancellationToken cancellationToken)
     {
-        using (var uow = _unitOfWorkFactory.Create())
+        using var uow = _unitOfWorkFactory.Create();
+        var board = await uow.BoardRepository.GetAsync(request.Id);
+
+        if (board is null)
         {
-            var board = await uow.Boards.GetAsync(request.Id);
-
-            if (board is null)
-            {
-                return null;
-            }
-
-            return new BoardDto
-            {
-                Id = board.Id,
-                Title = board.Title,
-                Description = board.Description,
-                CreatedAt = board.CreatedAt
-            };
+            return null;
         }
+
+        return new BoardDto
+        {
+            Id = board.Id,
+            Title = board.Title,
+            Description = board.Description,
+            CreatedAt = board.CreatedAt
+        };
     }
 }

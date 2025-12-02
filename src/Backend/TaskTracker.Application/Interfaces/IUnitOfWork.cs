@@ -5,7 +5,7 @@ namespace TaskTracker.Application.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {
-    IBoardRepository Boards { get; }
+    IBoardRepository BoardRepository { get; }
 
     void Commit();
 }
