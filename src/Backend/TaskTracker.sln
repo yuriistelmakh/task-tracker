@@ -11,9 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.Infrastructure"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.Persistence", "TaskTracker.Persistence\TaskTracker.Persistence.csproj", "{3E312AE2-65DC-4612-9780-90BD8AAA5064}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.DbMigrator", "TaskTracker.DbMigrator\TaskTracker.DbMigrator.csproj", "{F98F45FD-742F-416C-834A-3E703B999ED0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.Api", "TaskTracker.Presentation\TaskTracker.Api.csproj", "{792A58C0-FBAD-4F19-A7D7-70D4C137675D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.Api", "TaskTracker.Api\TaskTracker.Api.csproj", "{792A58C0-FBAD-4F19-A7D7-70D4C137675D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,10 +35,6 @@ Global
 		{3E312AE2-65DC-4612-9780-90BD8AAA5064}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E312AE2-65DC-4612-9780-90BD8AAA5064}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E312AE2-65DC-4612-9780-90BD8AAA5064}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F98F45FD-742F-416C-834A-3E703B999ED0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F98F45FD-742F-416C-834A-3E703B999ED0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F98F45FD-742F-416C-834A-3E703B999ED0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F98F45FD-742F-416C-834A-3E703B999ED0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{792A58C0-FBAD-4F19-A7D7-70D4C137675D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{792A58C0-FBAD-4F19-A7D7-70D4C137675D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{792A58C0-FBAD-4F19-A7D7-70D4C137675D}.Release|Any CPU.ActiveCfg = Release|Any CPU
