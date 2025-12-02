@@ -8,15 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Migration Scripts\001_CreateBoardsTable.sql" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="dbup-sqlserver" Version="6.0.16" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DbMigrator\DbMigrator.csproj" />
     <ProjectReference Include="..\TaskTracker.Application\TaskTracker.Application.csproj" />
     <ProjectReference Include="..\TaskTracker.Infrastructure\TaskTracker.Infrastructure.csproj" />
     <ProjectReference Include="..\TaskTracker.Persistence\TaskTracker.Persistence.csproj" />

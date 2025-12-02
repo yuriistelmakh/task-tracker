@@ -1,10 +1,9 @@
-﻿using DbUp;
+﻿using DbMigrator;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Reflection;
 
 namespace TaskTracker.Api.Extensions;
 
@@ -22,25 +21,8 @@ public static class MigrationExtension
             {
                 logger.LogInformation("Starting database migration...");
 
-                var connectionString = configuration.GetConnectionString("TestConnection");
-
-                EnsureDatabase.For.SqlDatabase(connectionString);
-
-                var upgrader = DeployChanges.To
-                    .SqlDatabase(connectionString)
-                    .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
-                    .LogToConsole()
-                    .Build();
-
-                var result = upgrader.PerformUpgrade();
-
-                if (!result.Successful)
-                {
-                    logger.LogError(result.Error, "An error occurred while migrating.");
-                    throw result.Error;
-                }
-
-                logger.LogInformation("Database migrated successfully!");
+                var connectionString = configuration.GetConnectionString("TestConnection")!;
+                DatabaseInitializer.Initialize(connectionString, logger);
             }
             catch (Exception ex)
             {
