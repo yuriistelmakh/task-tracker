@@ -1,12 +1,12 @@
 ﻿using TaskTracker.Application.Interfaces.Repositories;
-using Microsoft.Extensions.Configuration;
 using TaskTracker.Domain.Entities;
+using System.Data;
 
 namespace TaskTracker.Persistence.Repositories;
 
 public class BoardRepository : Repository<Board, int>, IBoardRepository
 {
-    public BoardRepository(IConfiguration configuration) : base(configuration)
+    public BoardRepository(IDbTransaction transaction) : base(transaction)
     {
     }
 }

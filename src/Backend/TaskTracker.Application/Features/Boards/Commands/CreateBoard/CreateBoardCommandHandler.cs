@@ -1,29 +1,37 @@
 ﻿using MediatR;
-using TaskTracker.Application.Interfaces.Repositories;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using TaskTracker.Application.Interfaces;
 using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Application.Features.Boards.Commands.CreateBoard;
 
 public class CreateBoardCommandHandler : IRequestHandler<CreateBoardCommand, int>
 {
-    private readonly IBoardRepository _boardRepository;
+    private readonly IUnitOfWorkFactory _uowFactory;
 
-    public CreateBoardCommandHandler(IBoardRepository boardRepository)
+    public CreateBoardCommandHandler(IUnitOfWorkFactory unitOfWorkFactory)
     {
-        _boardRepository = boardRepository;
+        _uowFactory = unitOfWorkFactory;
     }
 
     public async Task<int> Handle(CreateBoardCommand request, CancellationToken cancellationToken)
     {
-        var board = new Board
+        using (var uow = _uowFactory.Create())
         {
-            Title = request.Title,
-            Description = request.Description,
-            CreatedAt = DateTime.UtcNow
-        };
+            var board = new Board
+            {
+                Title = request.Title,
+                Description = request.Description,
+                CreatedAt = DateTime.UtcNow
+            };
 
-        var newId = await _boardRepository.AddAsync(board);
+            var newId = await uow.Boards.AddAsync(board);
 
-        return newId;
+            uow.Commit();
+
+            return newId;
+        }
     }
 }

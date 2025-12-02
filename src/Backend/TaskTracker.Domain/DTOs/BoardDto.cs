@@ -1,4 +1,6 @@
-﻿namespace TaskTracker.Application.DTOs;
+﻿using System;
+
+namespace TaskTracker.Application.DTOs;
 
 public class BoardDto
 {

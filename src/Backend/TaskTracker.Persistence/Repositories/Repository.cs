@@ -1,53 +1,44 @@
 ﻿using Dapper;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using TaskTracker.Application.Interfaces.Repositories;
 
 namespace TaskTracker.Persistence.Repositories;
 
 public class Repository<T, TId> : IRepository<T, TId> where T: class
 {
-    private readonly string _connectionString;
+    protected readonly IDbTransaction _transaction;
 
-    public Repository(IConfiguration configuration)
+    protected IDbConnection _connection => _transaction.Connection!;
+
+    public Repository(IDbTransaction transaction)
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection");
+        _transaction = transaction;
     }
 
     public async Task<TId> AddAsync(T entity)
     {
-        using var connection = CreateConnection();
-
-        return await connection.InsertAsync<TId, T>(entity);
+        return await _connection.InsertAsync<TId, T>(entity, transaction: _transaction);
     }
 
     public async Task DeleteAsync(TId id)
     {
-        using var connection = CreateConnection();
-        await connection.DeleteAsync(id);
+        await _connection.DeleteAsync(id, transaction: _transaction);
     }
 
     public async Task<IEnumerable<T>> GetAllAsync()
     {
-        using var connection = CreateConnection();
-        return await connection.GetListAsync<T>();
+        return await _connection.GetListAsync<T>(new { }, transaction: _transaction);
     }
 
     public async Task<T?> GetAsync(TId id)
     {
-        using var connection = CreateConnection();
-        return await connection.GetAsync<T>(id);
+        return await _connection.GetAsync<T>(id, transaction: _transaction);
     }
 
     public async Task UpdateAsync(T entity)
     {
-        using var connection = CreateConnection();
-        await connection.UpdateAsync<T>(entity);
-    }
-
-    protected IDbConnection CreateConnection()
-    {
-        return new SqlConnection(_connectionString);
+        await _connection.UpdateAsync<T>(entity, transaction: _transaction);
     }
 }

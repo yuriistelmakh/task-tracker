@@ -1,4 +1,9 @@
 ﻿using DbUp;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Reflection;
 
 namespace TaskTracker.Api.Extensions;
@@ -17,7 +22,7 @@ public static class MigrationExtension
             {
                 logger.LogInformation("Starting database migration...");
 
-                var connectionString = configuration.GetConnectionString("DefaultConnection");
+                var connectionString = configuration.GetConnectionString("TestConnection");
 
                 EnsureDatabase.For.SqlDatabase(connectionString);
 
