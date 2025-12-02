@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DbMigrator\DbMigrator.csproj" />
+    <ProjectReference Include="..\DbMigrator\TaskTracker.Database.csproj" />
     <ProjectReference Include="..\TaskTracker.Application\TaskTracker.Application.csproj" />
     <ProjectReference Include="..\TaskTracker.Infrastructure\TaskTracker.Infrastructure.csproj" />
     <ProjectReference Include="..\TaskTracker.Persistence\TaskTracker.Persistence.csproj" />

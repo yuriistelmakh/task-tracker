@@ -11,24 +11,23 @@ public static class MigrationExtension
 {
     public static IHost MigrateDatabase(this IHost host)
     {
-        using (var scope = host.Services.CreateScope())
+        using var scope = host.Services.CreateScope();
+
+        var services = scope.ServiceProvider;
+        var configuration = services.GetRequiredService<IConfiguration>();
+        var logger = services.GetRequiredService<ILogger<Program>>();
+
+        try
         {
-            var services = scope.ServiceProvider;
-            var configuration = services.GetRequiredService<IConfiguration>();
-            var logger = services.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation("Starting database migration...");
 
-            try
-            {
-                logger.LogInformation("Starting database migration...");
-
-                var connectionString = configuration.GetConnectionString("TestConnection")!;
-                DatabaseInitializer.Initialize(connectionString, logger);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "An error occurred while migrating.");
-                throw;
-            }
+            var connectionString = configuration.GetConnectionString("TestConnection")!;
+            DatabaseInitializer.Initialize(connectionString, logger);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while migrating.");
+            throw;
         }
 
         return host;

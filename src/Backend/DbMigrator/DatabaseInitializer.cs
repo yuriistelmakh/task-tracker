@@ -18,14 +18,21 @@ public class DatabaseInitializer
             .LogToConsole()
             .Build();
 
-        var result = upgrader.PerformUpgrade();
-
-        if (!result.Successful)
+        if (upgrader.IsUpgradeRequired())
         {
-            logger.LogError(result.Error, "An error occurred while migrating.");
-            throw result.Error;
-        }
+            var result = upgrader.PerformUpgrade();
 
-        logger.LogInformation("Database migrated successfully!");
+            if (!result.Successful)
+            {
+                logger.LogError(result.Error, "An error occurred while migrating.");
+                throw result.Error;
+            }
+
+            logger.LogInformation("Database migrated successfully!");
+        }
+        else
+        {
+            logger.LogInformation("Database is up to date");
+        }
     }
 }
