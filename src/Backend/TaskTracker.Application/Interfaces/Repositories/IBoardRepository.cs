@@ -1,9 +1,8 @@
 ﻿using TaskTracker.Domain.Entities;
 
-namespace TaskTracker.Application.Interfaces.Repositories
-{
-    public interface IBoardRepository : IRepository<Board, int>
-    {
+namespace TaskTracker.Application.Interfaces.Repositories;
 
-    }
+public interface IBoardRepository : IRepository<Board, int>
+{
+
 }

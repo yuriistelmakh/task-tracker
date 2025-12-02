@@ -2,30 +2,29 @@
 using TaskTracker.Application.DTOs;
 using TaskTracker.Application.Interfaces.Repositories;
 
-namespace TaskTracker.Application.Features.Boards.Queries.GetBoardById
+namespace TaskTracker.Application.Features.Boards.Queries.GetBoardById;
+
+public class GetBoardByIdHandler : IRequestHandler<GetBoardByIdQuery, BoardDto?>
 {
-    public class GetBoardByIdHandler : IRequestHandler<GetBoardByIdQuery, BoardDto?>
+    private readonly IBoardRepository _repository;
+
+    public GetBoardByIdHandler(IBoardRepository repository)
     {
-        private readonly IBoardRepository _repository;
+        _repository = repository;
+    }
 
-        public GetBoardByIdHandler(IBoardRepository repository)
+    public async Task<BoardDto?> Handle(GetBoardByIdQuery request, CancellationToken cancellationToken)
+    {
+        var board = await _repository.GetAsync(request.Id);
+
+        if (board == null) return null;
+
+        return new BoardDto()
         {
-            _repository = repository;
-        }
-
-        public async Task<BoardDto?> Handle(GetBoardByIdQuery request, CancellationToken cancellationToken)
-        {
-            var board = await _repository.GetAsync(request.Id);
-
-            if (board == null) return null;
-
-            return new BoardDto()
-            {
-                Id = board.Id,
-                Title = board.Title,
-                Description = board.Description,
-                CreatedAt = board.CreatedAt
-            };
-        }
+            Id = board.Id,
+            Title = board.Title,
+            Description = board.Description,
+            CreatedAt = board.CreatedAt
+        };
     }
 }

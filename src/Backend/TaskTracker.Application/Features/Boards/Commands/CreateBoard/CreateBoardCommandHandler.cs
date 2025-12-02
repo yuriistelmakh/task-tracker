@@ -2,29 +2,28 @@
 using TaskTracker.Application.Interfaces.Repositories;
 using TaskTracker.Domain.Entities;
 
-namespace TaskTracker.Application.Features.Boards.Commands.CreateBoard
+namespace TaskTracker.Application.Features.Boards.Commands.CreateBoard;
+
+public class CreateBoardCommandHandler : IRequestHandler<CreateBoardCommand, int>
 {
-    public class CreateBoardCommandHandler : IRequestHandler<CreateBoardCommand, int>
+    private readonly IBoardRepository _boardRepository;
+
+    public CreateBoardCommandHandler(IBoardRepository boardRepository)
     {
-        private readonly IBoardRepository _boardRepository;
+        _boardRepository = boardRepository;
+    }
 
-        public CreateBoardCommandHandler(IBoardRepository boardRepository)
+    public async Task<int> Handle(CreateBoardCommand request, CancellationToken cancellationToken)
+    {
+        var board = new Board()
         {
-            _boardRepository = boardRepository;
-        }
+            Title = request.Title,
+            Description = request.Description,
+            CreatedAt = DateTime.UtcNow
+        };
 
-        public async Task<int> Handle(CreateBoardCommand request, CancellationToken cancellationToken)
-        {
-            var board = new Board()
-            {
-                Title = request.Title,
-                Description = request.Description,
-                CreatedAt = DateTime.UtcNow
-            };
+        var newId = await _boardRepository.AddAsync(board);
 
-            var newId = await _boardRepository.AddAsync(board);
-
-            return newId;
-        }
+        return newId;
     }
 }
