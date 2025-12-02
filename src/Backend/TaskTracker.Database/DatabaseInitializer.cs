@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 
-namespace DbMigrator;
+namespace TaskTracker.Database;
 
 public class DatabaseInitializer
 {

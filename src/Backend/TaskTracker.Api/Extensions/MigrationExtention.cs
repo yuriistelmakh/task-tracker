@@ -1,9 +1,9 @@
-﻿using DbMigrator;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using TaskTracker.Database;
 
 namespace TaskTracker.Api.Extensions;
 

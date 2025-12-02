@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.Persistence", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.Api", "TaskTracker.Api\TaskTracker.Api.csproj", "{792A58C0-FBAD-4F19-A7D7-70D4C137675D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.Database", "DbMigrator\TaskTracker.Database.csproj", "{C34CBA27-8EFA-44CD-8335-5B26C3C04E06}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.Database", "TaskTracker.Database\TaskTracker.Database.csproj", "{C34CBA27-8EFA-44CD-8335-5B26C3C04E06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
