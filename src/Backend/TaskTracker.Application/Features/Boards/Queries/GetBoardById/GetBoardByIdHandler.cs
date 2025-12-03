@@ -1,13 +1,12 @@
 ﻿using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskTracker.Application.DTOs;
 using TaskTracker.Application.Interfaces;
-using TaskTracker.Application.Interfaces.Repositories;
+using TaskTracker.Domain.DTOs;
 
 namespace TaskTracker.Application.Features.Boards.Queries.GetBoardById;
 
-public class GetBoardByIdHandler : IRequestHandler<GetBoardByIdQuery, BoardDto?>
+public class GetBoardByIdHandler : IRequestHandler<GetBoardByIdQuery, BoardDetailsDto?>
 {
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
 
@@ -16,7 +15,7 @@ public class GetBoardByIdHandler : IRequestHandler<GetBoardByIdQuery, BoardDto?>
         _unitOfWorkFactory = unitOfWorkFactory;
     }
 
-    public async Task<BoardDto?> Handle(GetBoardByIdQuery request, CancellationToken cancellationToken)
+    public async Task<BoardDetailsDto?> Handle(GetBoardByIdQuery request, CancellationToken cancellationToken)
     {
         using var uow = _unitOfWorkFactory.Create();
         var board = await uow.BoardRepository.GetAsync(request.Id);
@@ -26,12 +25,13 @@ public class GetBoardByIdHandler : IRequestHandler<GetBoardByIdQuery, BoardDto?>
             return null;
         }
 
-        return new BoardDto
+        return new BoardDetailsDto
         {
             Id = board.Id,
             Title = board.Title,
             Description = board.Description,
-            CreatedAt = board.CreatedAt
+            CreatedAt = board.CreatedAt,
+            Owner = null //TODO
         };
     }
 }
