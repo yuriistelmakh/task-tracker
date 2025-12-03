@@ -7,7 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\001_CreateBoardsTable.sql" />
+    <None Remove="Scripts\001_CreateUsersTable.sql" />
+    <None Remove="Scripts\002_CreateBoardsTable.sql" />
+    <None Remove="Scripts\003_CreateColumnTable.sql" />
+    <None Remove="Scripts\004_CreateTasksTable.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\001_CreateUsersTable.sql" />
+    <EmbeddedResource Include="Scripts\002_CreateBoardsTable.sql" />
+    <EmbeddedResource Include="Scripts\003_CreateColumnTable.sql" />
+    <EmbeddedResource Include="Scripts\004_CreateTasksTable.sql" />
   </ItemGroup>
 
   <ItemGroup>
