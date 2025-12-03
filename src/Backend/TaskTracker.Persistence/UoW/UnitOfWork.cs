@@ -13,9 +13,21 @@ public class UnitOfWork : IUnitOfWork
     private readonly IDbTransaction _transaction;
 
     private IBoardRepository? _boardRepository;
+    private IBoardColumnRepository? _boardColumnRepository;
+    private IBoardTaskRepository? _boardTaskRepository;
+    private IUserRepository? _userRepository;
 
     public IBoardRepository BoardRepository =>
         _boardRepository ??= new BoardRepository(_transaction);
+
+    public IBoardColumnRepository BoardColumnRepository =>
+        _boardColumnRepository ??= new BoardColumnRepository(_transaction);
+
+    public IBoardTaskRepository BoardTaskRepository =>
+        _boardTaskRepository ??= new BoardTaskRepository(_transaction);
+
+    public IUserRepository UserRepository =>
+        _userRepository ??= new UserRepository(_transaction);
 
     public UnitOfWork(IConfiguration configuration)
     {
