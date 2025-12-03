@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace TaskTracker.Domain.DTOs;
+namespace TaskTracker.Domain.DTOs.Tasks;
 
-public class BoardTaskSummaryDto
+public class TaskSummaryDto
 {
     public int Id { get; set; }
 
@@ -10,9 +10,9 @@ public class BoardTaskSummaryDto
 
     public required string Title { get; set; }
 
-    public int Prioruty { get; set; } = 1;
+    public int Priority { get; set; } = 1;
 
-    public int Position { get; set; }
+    public int Order { get; set; } = 0;
 
     public int? AssigneeId { get; set; }
 

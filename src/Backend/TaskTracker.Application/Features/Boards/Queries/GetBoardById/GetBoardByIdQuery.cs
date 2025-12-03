@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using TaskTracker.Domain.DTOs;
+using TaskTracker.Domain.DTOs.Boards;
 
 namespace TaskTracker.Application.Features.Boards.Queries.GetBoardById;
 

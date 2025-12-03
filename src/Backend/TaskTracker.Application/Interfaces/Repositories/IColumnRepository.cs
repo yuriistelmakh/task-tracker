@@ -2,6 +2,6 @@
 
 namespace TaskTracker.Application.Interfaces.Repositories;
 
-public interface IBoardColumnRepository : IRepository<BoardColumn, int>
+public interface IColumnRepository : IRepository<BoardColumn, int>
 {
 }

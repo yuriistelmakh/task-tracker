@@ -20,9 +20,11 @@ public class BoardTask
 
     public DateTime? DueDate { get; set; }
 
-    public int Position { get; set; } = 0;
+    public int Order { get; set; } = 0;
 
     public int? AssigneeId { get; set; }
+
+    public bool IsComplete { get; set; } = false;
 
     public DateTime CreatedAt { get; set; }
     public int CreatedBy { get; set; }

@@ -21,7 +21,7 @@ public static class MigrationExtension
         {
             logger.LogInformation("Starting database migration...");
 
-            var connectionString = configuration.GetConnectionString("TestConnection")!;
+            var connectionString = configuration.GetConnectionString("DefaultConnection")!;
             DatabaseInitializer.Initialize(connectionString, logger);
         }
         catch (Exception ex)

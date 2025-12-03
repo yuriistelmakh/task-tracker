@@ -1,12 +1,12 @@
-﻿namespace TaskTracker.Domain.DTOs;
+﻿namespace TaskTracker.Domain.DTOs.Columns;
 
-public class BoardColumnDto
+public class CreateColumnRequest
 {
-    public int Id { get; set; }
-
     public int BoardId { get; set; }
 
     public required string Title { get; set; }
 
     public int Order { get; set; }
+
+    public int CreatedBy { get; set; }
 }

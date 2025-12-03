@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using TaskTracker.Domain.DTOs.Columns;
+using TaskTracker.Domain.DTOs.Users;
+using TaskTracker.Domain.Entities;
 
-namespace TaskTracker.Domain.DTOs;
+namespace TaskTracker.Domain.DTOs.Boards;
 
 public class BoardDetailsDto
 {
@@ -17,7 +20,7 @@ public class BoardDetailsDto
 
     public DateTime CreatedAt { get; set; }
 
-    public List<BoardColumnDto> Columns { get; set; } = [];
+    public List<ColumnSummaryDto> Columns { get; set; } = [];
 
     public List<UserSummaryDto> Members { get; set; } = [];
 }

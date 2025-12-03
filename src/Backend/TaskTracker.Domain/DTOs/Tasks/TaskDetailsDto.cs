@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace TaskTracker.Domain.DTOs;
+namespace TaskTracker.Domain.DTOs.Tasks;
 
-public class BoardTaskDetailsDto
+public class TaskDetailsDto
 {
     public int Id { get; set; }
 

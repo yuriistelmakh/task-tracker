@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -19,7 +20,16 @@ public class Board
     public DateTime CreatedAt { get; set; }
     public int CreatedBy { get; set; }
 
-    public DateTime? UpdatedAt { get; set; } 
+    public DateTime? UpdatedAt { get; set; }
     public int? UpdatedBy { get; set; }
+
+    [Editable(false)]
+    public User? Creator { get; set; } 
+
+    [Editable(false)]
+    public User? Modifier { get; set; }
+
+    [Editable(false)]
+    public List<BoardColumn> Columns { get; set; } = []; 
 }
 

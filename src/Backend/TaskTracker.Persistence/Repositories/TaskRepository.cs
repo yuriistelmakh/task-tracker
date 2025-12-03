@@ -4,9 +4,9 @@ using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Persistence.Repositories;
 
-public class BoardTaskRepository : Repository<BoardTask, int>, IBoardTaskRepository
+public class TaskRepository : Repository<BoardTask, int>, IBoardTaskRepository
 {
-    public BoardTaskRepository(IDbTransaction transaction) : base(transaction)
+    public TaskRepository(IDbTransaction transaction) : base(transaction)
     {
     }
 }

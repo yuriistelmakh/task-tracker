@@ -6,11 +6,12 @@
     CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
 	CreatedBy INT NOT NULL,
 
-	UpdatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
-	UpdatedBy INT NOT NULL,
+	UpdatedAt DATETIME2 NULL DEFAULT GETDATE(),
+	UpdatedBy INT NULL,
 
 	IsArchived BIT NOT NULL DEFAULT 0,
 
 	CONSTRAINT FK_Boards_CreatedBy FOREIGN KEY (CreatedBy) REFERENCES Users(Id),
-	CONSTRAINT FK_Boards_UpdatedBy FOREIGN KEY (UpdatedBy) REFERENCES Users(Id)
+	CONSTRAINT FK_Boards_UpdatedBy FOREIGN KEY (UpdatedBy) REFERENCES Users(Id),
+	CONSTRAINT UQ_Boards_CreatedBy Unique(UpdatedBy)
 );
