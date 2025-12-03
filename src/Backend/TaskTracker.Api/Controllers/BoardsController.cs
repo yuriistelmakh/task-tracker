@@ -19,8 +19,9 @@ public class BoardsController : ControllerBase
         _mediator = mediator;
     }
 
+    // TODO: Refactor to get userId from UserClaims (from Auth)
     [HttpGet]
-    public async Task<IActionResult> GetAllBoards(int userId)
+    public async Task<IActionResult> GetAll(int userId)
     {
         var command = new GetAllBoardsCommand()
         {
