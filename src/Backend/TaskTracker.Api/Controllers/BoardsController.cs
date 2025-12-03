@@ -23,7 +23,7 @@ public class BoardsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll(int userId)
     {
-        var command = new GetAllBoardsCommand()
+        var command = new GetAllBoardsCommand
         {
             UserId = userId
         };

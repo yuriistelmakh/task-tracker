@@ -20,7 +20,7 @@ public class CreateColumnCommandHandler : IRequestHandler<CreateColumnCommand, i
     {
         using var uow = _unitOfWorkFactory.Create();
 
-        var column = new BoardColumn()
+        var column = new BoardColumn
         {
             Title = command.Title,
             BoardId = command.BoardId,

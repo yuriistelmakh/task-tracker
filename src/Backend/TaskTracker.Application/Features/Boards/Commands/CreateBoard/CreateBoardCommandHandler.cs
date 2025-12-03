@@ -19,6 +19,7 @@ public class CreateBoardCommandHandler : IRequestHandler<CreateBoardCommand, int
     public async Task<int> Handle(CreateBoardCommand command, CancellationToken cancellationToken)
     {
         using var uow = _uowFactory.Create();
+
         var board = new Board
         {
             Title = command.Title,

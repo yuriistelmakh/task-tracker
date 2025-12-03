@@ -21,7 +21,9 @@ public class GetAllBoardsCommandHandler : IRequestHandler<GetAllBoardsCommand, I
     public async Task<IEnumerable<BoardSummaryDto>> Handle(GetAllBoardsCommand command, CancellationToken cancellationToken)
     {
         using var uow = _unitOfWorkFactory.Create();
+
         var boards = await uow.BoardRepository.GetAllWithOwnersAsync();
+
         var boardsDto = boards.Select(b => new BoardSummaryDto
         {
             Id = b.Id,

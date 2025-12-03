@@ -51,7 +51,7 @@ public class GetBoardByIdQueryHandler : IRequestHandler<GetBoardByIdQuery, Board
                 Id = c.Id,
                 Title = c.Title,
                 Order = c.Order,
-                Tasks = c.Tasks?.Select(t => new TaskSummaryDto()
+                Tasks = c.Tasks?.Select(t => new TaskSummaryDto
                 {
                    Id = t.Id,
                    Title = t.Title,
