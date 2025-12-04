@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TaskTracker.Domain.Enums;
 
 namespace TaskTracker.Domain.Entities;
 
@@ -14,7 +15,7 @@ public class BoardMember
 
     public int UserId { get; set; }
 
-    public string Role { get; set; } = "Editor";
+    public BoardRoles Role { get; set; }
 
     public DateTime JoinedAt { get; set; }
 

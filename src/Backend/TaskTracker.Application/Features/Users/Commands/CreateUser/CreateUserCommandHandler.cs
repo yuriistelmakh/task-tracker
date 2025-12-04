@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Interfaces.Repositories;
 using TaskTracker.Domain.Entities;
+using TaskTracker.Domain.Enums;
 
 namespace TaskTracker.Application.Features.Users.Commands.CreateUser;
 
@@ -26,7 +27,8 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
             PasswordHash = request.PasswordHash,
             Tag = request.Tag,
             DisplayName = request.DisplayName,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            Role = Roles.User,
         };
 
         var result = await uow.UserRepository.AddAsync(user); 

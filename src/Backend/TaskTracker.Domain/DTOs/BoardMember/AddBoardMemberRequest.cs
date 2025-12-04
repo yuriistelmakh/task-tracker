@@ -1,8 +1,10 @@
-﻿namespace TaskTracker.Domain.DTOs.BoardMember;
+﻿using TaskTracker.Domain.Enums;
+
+namespace TaskTracker.Domain.DTOs.BoardMember;
 
 public class AddBoardMemberRequest
 {
     public int UserId { get; set; }
 
-    public string Role { get; set; } = "Editor";
+    public BoardRoles Role { get; set; } = BoardRoles.Editor;
 }

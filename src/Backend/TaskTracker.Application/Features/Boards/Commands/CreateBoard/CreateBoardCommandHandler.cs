@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Domain.Entities;
+using TaskTracker.Domain.Enums;
 
 namespace TaskTracker.Application.Features.Boards.Commands.CreateBoard;
 
@@ -36,7 +37,7 @@ public class CreateBoardCommandHandler : IRequestHandler<CreateBoardCommand, int
             BoardId = newId,
             UserId = board.CreatedBy,
             JoinedAt = DateTime.UtcNow,
-            Role = "Owner",
+            Role = BoardRoles.Owner,
         };
 
         await uow.BoardRepository.AddMemberAsync(boardMember);

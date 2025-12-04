@@ -1,4 +1,5 @@
 ﻿using System;
+using TaskTracker.Domain.Enums;
 
 namespace TaskTracker.Domain.DTOs.Tasks;
 
@@ -10,7 +11,7 @@ public class TaskDetailsDto
 
     public string? Description { get; set; }
 
-    public int Priority { get; set; } = 1;
+    public Priorities Priority { get; set; } = Priorities.Medium;
 
     public DateTime? DueDate { get; set; }
 
