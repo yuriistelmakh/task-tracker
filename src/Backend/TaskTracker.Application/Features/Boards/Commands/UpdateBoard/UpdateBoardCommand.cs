@@ -11,4 +11,6 @@ public class UpdateBoardCommand : IRequest<bool>
     public string Description { get; set; } = string.Empty;
 
     public int UpdatedBy { get; set; }
+
+    public bool IsArchived { get; set; }
 }

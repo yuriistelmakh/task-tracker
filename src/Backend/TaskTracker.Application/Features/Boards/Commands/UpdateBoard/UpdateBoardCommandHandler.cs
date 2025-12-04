@@ -22,7 +22,7 @@ public class UpdateBoardCommandHandler : IRequestHandler<UpdateBoardCommand, boo
     {
         using var uow = _unitOfWorkFactory.Create();
 
-        var board = await uow.BoardRepository.GetByIdDetailsAsync(request.Id);
+        var board = await uow.BoardRepository.GetDetailsAsync(request.Id);
 
         if (board is null)
         {
@@ -33,11 +33,12 @@ public class UpdateBoardCommandHandler : IRequestHandler<UpdateBoardCommand, boo
         board.Description = request.Description;
         board.UpdatedBy = request.UpdatedBy;
         board.UpdatedAt = DateTime.UtcNow;
+        board.IsArchived = request.IsArchived;
 
-        var rowsAffected = await uow.BoardRepository.UpdateAsync(board);
+        await uow.BoardRepository.UpdateAsync(board);
 
         uow.Commit();
 
-        return rowsAffected > 0;
+        return true;
     }
 }

@@ -10,7 +10,6 @@ using TaskTracker.Application.Features.Boards.Queries.GetAllMembers;
 using TaskTracker.Application.Features.Boards.Queries.GetBoardById;
 using TaskTracker.Domain.DTOs.BoardMember;
 using TaskTracker.Domain.DTOs.Boards;
-using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Api.Controllers;
 
@@ -94,12 +93,13 @@ public class BoardsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateBoardRequest request)
     {
-        var command = new UpdateBoardCommand()
+        var command = new UpdateBoardCommand
         {
             Id = id,
             Title = request.Title,
             Description = request.Description,
-            UpdatedBy = request.UpdatedBy
+            UpdatedBy = request.UpdatedBy,
+            IsArchived = request.IsArchived
         };
 
         var isSuccess = await _mediator.Send(command);

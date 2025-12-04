@@ -1,7 +1,9 @@
-﻿using TaskTracker.Domain.Entities;
+﻿using System.Threading.Tasks;
+using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Application.Interfaces.Repositories;
 
 public interface IUserRepository : IRepository<User, int>
 {
+    Task<int> DeleteUser(int id);
 }

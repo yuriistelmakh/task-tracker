@@ -20,6 +20,7 @@
     <EmbeddedResource Include="Scripts\003_CreateColumnTable.sql" />
     <EmbeddedResource Include="Scripts\004_CreateTasksTable.sql" />
     <EmbeddedResource Include="Scripts\005_CreateBoardMembersTable.sql" />
+    <EmbeddedResource Include="Scripts\006_AddCascadeDelete.sql" />
   </ItemGroup>
 
   <ItemGroup>

@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TaskTracker.Application.Features.Users.Commands.CreateUser;
+using TaskTracker.Application.Features.Users.Commands.DeleteUser;
+using TaskTracker.Application.Features.Users.Commands.UpdateUser;
 using TaskTracker.Domain.DTOs.Users;
 
 namespace TaskTracker.Api.Controllers;
@@ -31,5 +33,39 @@ public class UsersController : Controller
         var result = await _mediator.Send(command);
 
         return Ok(result);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateUserRequest request)
+    {
+        var command = new UpdateUserCommand
+        {
+            Id = id,
+            Tag = request.Tag,
+            AvatarUrl = request.AvatarUrl,
+            DisplayName = request.DisplayName,
+            PasswordHash = request.PasswordHash
+        };
+
+        var isSuccess = await _mediator.Send(command);
+
+        return isSuccess
+            ? NoContent()
+            : Ok();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var command = new DeleteUserCommand
+        {
+            Id = id
+        };
+
+        var isSuccess = await _mediator.Send(command);
+
+        return isSuccess
+            ? NoContent()
+            : NotFound();
     }
 }

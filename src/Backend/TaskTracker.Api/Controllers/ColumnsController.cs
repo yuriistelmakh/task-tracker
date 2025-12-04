@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TaskTracker.Application.Features.Columns.Commands.CreateBoardColumns;
+using TaskTracker.Application.Features.Columns.Commands.DeleteColumn;
+using TaskTracker.Application.Features.Columns.Commands.UpdateColumn;
 using TaskTracker.Domain.DTOs.Columns;
 
 namespace TaskTracker.Api.Controllers;
@@ -31,5 +33,38 @@ public class ColumnsController : ControllerBase
         var result = await _mediator.Send(command);
 
         return Ok(result);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateColumnRequest request)
+    {
+        var command = new UpdateColumnCommand
+        {
+            Id = id,
+            Title = request.Title,
+            Order = request.Order,
+            UpdatedBy = request.UpdatedBy
+        };
+
+        var isSucess = await _mediator.Send(command);
+
+        return isSucess
+            ? NoContent()
+            : NotFound();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var command = new DeleteColumnCommand
+        {
+            Id = id
+        };
+
+        var result = await _mediator.Send(command);
+
+        return result
+            ? NoContent()
+            : NotFound();
     }
 }

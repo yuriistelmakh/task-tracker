@@ -14,7 +14,7 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
     {
     }
 
-    public async Task<Board?> GetByIdDetailsAsync(int id)
+    public async Task<Board?> GetDetailsAsync(int id)
     {
         var sql = @"
             SELECT b.*, u.*
