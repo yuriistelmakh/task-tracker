@@ -12,6 +12,5 @@
 	IsArchived BIT NOT NULL DEFAULT 0,
 
 	CONSTRAINT FK_Boards_CreatedBy FOREIGN KEY (CreatedBy) REFERENCES Users(Id),
-	CONSTRAINT FK_Boards_UpdatedBy FOREIGN KEY (UpdatedBy) REFERENCES Users(Id),
-	CONSTRAINT UQ_Boards_CreatedBy Unique(UpdatedBy)
+	CONSTRAINT FK_Boards_UpdatedBy FOREIGN KEY (UpdatedBy) REFERENCES Users(Id)
 );

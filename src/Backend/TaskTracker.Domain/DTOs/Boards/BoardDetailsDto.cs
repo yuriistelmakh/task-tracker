@@ -21,6 +21,4 @@ public class BoardDetailsDto
     public DateTime CreatedAt { get; set; }
 
     public List<ColumnSummaryDto> Columns { get; set; } = [];
-
-    public List<UserSummaryDto> Members { get; set; } = [];
 }

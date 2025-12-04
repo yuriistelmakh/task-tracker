@@ -26,10 +26,20 @@ public class CreateBoardCommandHandler : IRequestHandler<CreateBoardCommand, int
             Description = request.Description,
             IsArchived = false,
             CreatedAt = DateTime.UtcNow,
-            CreatedBy = request.CreatedBy
+            CreatedBy = request.CreatedBy,
         };
 
         var newId = await uow.BoardRepository.AddAsync(board);
+
+        var boardMember = new BoardMember
+        {
+            BoardId = newId,
+            UserId = board.CreatedBy,
+            JoinedAt = DateTime.UtcNow,
+            Role = "Owner",
+        };
+
+        await uow.BoardRepository.AddMemberAsync(boardMember);
 
         uow.Commit();
 
