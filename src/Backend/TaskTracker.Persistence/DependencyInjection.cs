@@ -10,9 +10,6 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddPersistence(this IServiceCollection services)
     {
-        SqlMapper.AddTypeHandler(new StringEnumHandler<Roles>());
-        SqlMapper.AddTypeHandler(new StringEnumHandler<BoardRoles>());
-
         services.AddSingleton<IUnitOfWorkFactory, UnitOfWorkFactory>();
         return services;
     }
