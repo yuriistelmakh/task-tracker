@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Domain.DTOs.Boards;
 using TaskTracker.Domain.DTOs.Users;
+using TaskTracker.Domain.Mapping;
 
 namespace TaskTracker.Application.Features.Boards.Queries.GetAllBoards;
 
@@ -24,19 +25,7 @@ public class GetAllBoardsQueryHandler : IRequestHandler<GetAllBoardsQuery, IEnum
 
         var boards = await uow.BoardRepository.GetAllWithOwnersAsync();
 
-        var boardsDto = boards.Select(b => new BoardSummaryDto
-        {
-            Id = b.Id,
-            Title = b.Title,
-            IsArchived = b.IsArchived,
-            Owner = new UserSummaryDto
-            {
-                Id = b.Creator.Id,
-                Tag = b.Creator.Tag,
-                DisplayName = b.Creator.DisplayName,
-                AvatarUrl = b.Creator.AvatarUrl
-            }
-        });
+        var boardsDto = boards.Select(b => b.ToBoardSummaryDto());
 
         uow.Commit();
 

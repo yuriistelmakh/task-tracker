@@ -23,7 +23,7 @@ public class Board
     public DateTime? UpdatedAt { get; set; }
     public int? UpdatedBy { get; set; }
 
-    public User? Creator { get; set; } 
+    public User Creator { get; set; } 
 
     public User? Modifier { get; set; }
 

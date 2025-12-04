@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Domain.DTOs.Users;
+using TaskTracker.Domain.Mapping;
 
 namespace TaskTracker.Application.Features.Boards.Queries.GetAllMembers;
 
@@ -26,13 +27,7 @@ public class GetBoardMembersQueryHandler : IRequestHandler<GetBoardMembersQuery,
 
         uow.Commit();
 
-        var dtos = members.Select(m => new UserSummaryDto
-        {
-            Id = m.User.Id,
-            DisplayName = m.User.DisplayName,
-            AvatarUrl = m.User.AvatarUrl,
-            Tag = m.User.Tag
-        });
+        var dtos = members.Select(m => m.User.ToUserSummaryDto());
 
         return dtos;
     }
