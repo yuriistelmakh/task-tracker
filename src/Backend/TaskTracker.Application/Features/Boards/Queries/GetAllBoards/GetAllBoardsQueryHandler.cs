@@ -9,16 +9,16 @@ using TaskTracker.Domain.DTOs.Users;
 
 namespace TaskTracker.Application.Features.Boards.Queries.GetAllBoards;
 
-public class GetAllBoardsCommandHandler : IRequestHandler<GetAllBoardsCommand, IEnumerable<BoardSummaryDto>>
+public class GetAllBoardsQueryHandler : IRequestHandler<GetAllBoardsQuery, IEnumerable<BoardSummaryDto>>
 {
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
 
-    public GetAllBoardsCommandHandler(IUnitOfWorkFactory unitOfWorkFactory)
+    public GetAllBoardsQueryHandler(IUnitOfWorkFactory unitOfWorkFactory)
     {
         _unitOfWorkFactory = unitOfWorkFactory;
     }
 
-    public async Task<IEnumerable<BoardSummaryDto>> Handle(GetAllBoardsCommand command, CancellationToken cancellationToken)
+    public async Task<IEnumerable<BoardSummaryDto>> Handle(GetAllBoardsQuery request, CancellationToken cancellationToken)
     {
         using var uow = _unitOfWorkFactory.Create();
 

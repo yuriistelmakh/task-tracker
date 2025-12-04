@@ -23,13 +23,12 @@ public class Board
     public DateTime? UpdatedAt { get; set; }
     public int? UpdatedBy { get; set; }
 
-    [Editable(false)]
     public User? Creator { get; set; } 
 
-    [Editable(false)]
     public User? Modifier { get; set; }
 
-    [Editable(false)]
-    public List<BoardColumn> Columns { get; set; } = []; 
+    public List<BoardColumn> Columns { get; set; } = [];
+
+    public List<BoardMember> Members { get; set; } = [];
 }
 

@@ -16,17 +16,17 @@ public class CreateBoardCommandHandler : IRequestHandler<CreateBoardCommand, int
         _uowFactory = unitOfWorkFactory;
     }
 
-    public async Task<int> Handle(CreateBoardCommand command, CancellationToken cancellationToken)
+    public async Task<int> Handle(CreateBoardCommand request, CancellationToken cancellationToken)
     {
         using var uow = _uowFactory.Create();
 
         var board = new Board
         {
-            Title = command.Title,
-            Description = command.Description,
+            Title = request.Title,
+            Description = request.Description,
             IsArchived = false,
             CreatedAt = DateTime.UtcNow,
-            CreatedBy = command.CreatedBy
+            CreatedBy = request.CreatedBy
         };
 
         var newId = await uow.BoardRepository.AddAsync(board);

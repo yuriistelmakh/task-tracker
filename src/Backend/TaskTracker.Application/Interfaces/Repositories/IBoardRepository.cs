@@ -9,4 +9,6 @@ public interface IBoardRepository : IRepository<Board, int>
 {
     Task<IEnumerable<Board>> GetAllWithOwnersAsync();
     Task<Board?> GetByIdDetailsAsync(int id);
+    Task<int> AddMemberAsync(BoardMember boardMember);
+    Task<IEnumerable<BoardMember>> GetMembersAsync(int boardId);
 }

@@ -23,6 +23,5 @@ public class BoardColumn
     public DateTime? UpdatedAt { get; set; }
     public int? UpdatedBy { get; set; }
 
-    [Editable(false)]
     public List<BoardTask> Tasks { get; set; } = [];
 }

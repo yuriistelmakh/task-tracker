@@ -16,17 +16,17 @@ public class CreateColumnCommandHandler : IRequestHandler<CreateColumnCommand, i
         _unitOfWorkFactory = unitOfWorkFactory;
     }
 
-    public async Task<int> Handle(CreateColumnCommand command, CancellationToken cancellationToken)
+    public async Task<int> Handle(CreateColumnCommand request, CancellationToken cancellationToken)
     {
         using var uow = _unitOfWorkFactory.Create();
 
         var column = new BoardColumn
         {
-            Title = command.Title,
-            BoardId = command.BoardId,
+            Title = request.Title,
+            BoardId = request.BoardId,
             CreatedAt = DateTime.UtcNow,
-            CreatedBy = command.CreatedBy,
-            Order = command.Order
+            CreatedBy = request.CreatedBy,
+            Order = request.Order
         };
 
         var result = await uow.ColumnRepository.AddAsync(column);

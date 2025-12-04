@@ -16,16 +16,16 @@ public class CreateTaskCommandHandler : IRequestHandler<CreateTaskCommand, int>
         _unitOfWorkFactory = unitOfWorkFactory;
     }
 
-    public async Task<int> Handle(CreateTaskCommand command, CancellationToken cancellationToken)
+    public async Task<int> Handle(CreateTaskCommand request, CancellationToken cancellationToken)
     {
         using var uow = _unitOfWorkFactory.Create();
 
         var task = new BoardTask
         {
-            ColumnId = command.ColumnId,
-            Title = command.Title,
+            ColumnId = request.ColumnId,
+            Title = request.Title,
             CreatedAt = DateTime.UtcNow,
-            CreatedBy = command.CreatedBy
+            CreatedBy = request.CreatedBy
         };
 
         var result = await uow.TaskRepository.AddAsync(task);

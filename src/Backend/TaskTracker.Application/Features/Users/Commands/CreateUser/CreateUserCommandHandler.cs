@@ -17,15 +17,15 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
         _unitOfWorkFactory = unitOfWorkFactory;
     }
 
-    public async Task<int> Handle(CreateUserCommand command, CancellationToken cancellationToken)
+    public async Task<int> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         using var uow = _unitOfWorkFactory.Create();
         var user = new User
         {
-            Email = command.Email,
-            PasswordHash = command.PasswordHash,
-            Tag = command.Tag,
-            DisplayName = command.DisplayName,
+            Email = request.Email,
+            PasswordHash = request.PasswordHash,
+            Tag = request.Tag,
+            DisplayName = request.DisplayName,
             CreatedAt = DateTime.UtcNow
         };
 

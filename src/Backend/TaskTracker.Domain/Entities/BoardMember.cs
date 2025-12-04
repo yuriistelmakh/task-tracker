@@ -17,4 +17,6 @@ public class BoardMember
     public string Role { get; set; } = "Editor";
 
     public DateTime JoinedAt { get; set; }
+
+    public User? User { get; set; }
 }

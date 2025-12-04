@@ -14,7 +14,6 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
     {
     }
 
-    // TODO: Add Members to Board
     public async Task<Board?> GetByIdDetailsAsync(int id)
     {
         var sql = @"
@@ -79,5 +78,33 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
         );
 
         return boards;
+    }
+
+    public async Task<int> AddMemberAsync(BoardMember boardMember)
+    {
+        return await Connection.InsertAsync<int, BoardMember>(boardMember, transaction: Transaction);
+    }
+
+    public async Task<IEnumerable<BoardMember>> GetMembersAsync(int boardId)
+    {
+        var sql = @"
+            SELECT m.*, u.*
+            FROM BoardMembers m
+            JOIN Users u ON m.UserId = u.Id
+            WHERE m.BoardId = @boardId";
+
+        var result = await Connection.QueryAsync<BoardMember, User, BoardMember>(
+            sql,
+            (member, user) =>
+            {
+                member.User = user;
+                return member;
+            },
+            new { boardId },
+            splitOn: "Id",
+            transaction: Transaction
+        );
+
+        return result;
     }
 }

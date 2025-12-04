@@ -1,10 +1,14 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using TaskTracker.Application.Features.Boards.Commands.AddNewMember;
 using TaskTracker.Application.Features.Boards.Commands.CreateBoard;
 using TaskTracker.Application.Features.Boards.Queries.GetAllBoards;
+using TaskTracker.Application.Features.Boards.Queries.GetAllMembers;
 using TaskTracker.Application.Features.Boards.Queries.GetBoardById;
+using TaskTracker.Domain.DTOs.BoardMember;
 using TaskTracker.Domain.DTOs.Boards;
+using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Api.Controllers;
 
@@ -23,12 +27,9 @@ public class BoardsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll(int userId)
     {
-        var command = new GetAllBoardsCommand
-        {
-            UserId = userId
-        };
+        var query = new GetAllBoardsQuery(userId);
 
-        var result = await _mediator.Send(command);
+        var result = await _mediator.Send(query);
 
         if (result is null)
         {
@@ -66,4 +67,35 @@ public class BoardsController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpGet("{boardId}/members")]
+    public async Task<IActionResult> GetMembers(int boardId)
+    {
+        var query = new GetBoardMembersQuery(boardId);
+
+        var result = await _mediator.Send(query);
+
+        if (result is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
+
+    [HttpPost("{boardId}/members")]
+    public async Task<IActionResult> AddMember(int boardId, [FromBody] AddBoardMemberRequest request)
+    {
+        var command = new AddNewMemberCommand
+        {
+            UserId = request.UserId,
+            BoardId = boardId,
+            Role = request.Role
+        };
+
+        var result = await _mediator.Send(command);
+
+        return Ok(result);
+    }
+
 }
