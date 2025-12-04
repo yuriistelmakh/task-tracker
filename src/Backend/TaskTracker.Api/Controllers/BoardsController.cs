@@ -31,12 +31,9 @@ public class BoardsController : ControllerBase
 
         var result = await _mediator.Send(query);
 
-        if (result is null)
-        {
-            return NotFound();
-        }
-
-        return Ok(result);
+        return result is null 
+            ? NotFound()
+            : Ok(result);
     }
 
     [HttpGet("{id}")]
@@ -45,12 +42,9 @@ public class BoardsController : ControllerBase
         var query = new GetBoardByIdQuery(id);
         var result = await _mediator.Send(query);
 
-        if (result is null)
-        {
-            return NotFound();
-        }
-
-        return Ok(result);
+        return result is null 
+            ? NotFound()
+            : Ok(result);
     }
 
     [HttpPost]
@@ -75,12 +69,9 @@ public class BoardsController : ControllerBase
 
         var result = await _mediator.Send(query);
 
-        if (result is null)
-        {
-            return NotFound();
-        }
-
-        return Ok(result);
+        return result is null 
+            ? NotFound()
+            : Ok(result);
     }
 
     [HttpPost("{boardId}/members")]
