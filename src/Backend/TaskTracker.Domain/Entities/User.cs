@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TaskTracker.Domain.Enums;
 
 namespace TaskTracker.Domain.Entities;
 
@@ -20,7 +21,7 @@ public class User
 
     public string? AvatarUrl { get; set; }
 
-    public string Role { get; set; } = "User";
+    public Roles Role { get; set; }
 
     public DateTime CreatedAt { get; set; }
 }

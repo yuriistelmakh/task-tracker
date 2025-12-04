@@ -1,0 +1,16 @@
+﻿using TaskTracker.Domain.DTOs.Users;
+using TaskTracker.Domain.Entities;
+
+namespace TaskTracker.Domain.Mapping;
+
+public static class UserMapping
+{
+    public static UserSummaryDto ToUserSummaryDto(this User user) =>
+        new() 
+        { 
+            Id = user.Id,
+            DisplayName = user.DisplayName,
+            Tag = user.Tag,
+            AvatarUrl = user.AvatarUrl,
+        };
+}

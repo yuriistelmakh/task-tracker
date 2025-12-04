@@ -1,9 +1,9 @@
 ﻿using MediatR;
-using TaskTracker.Application.DTOs;
+using TaskTracker.Domain.DTOs.Boards;
 
 namespace TaskTracker.Application.Features.Boards.Queries.GetBoardById;
 
-public class GetBoardByIdQuery : IRequest<BoardDto?>
+public class GetBoardByIdQuery : IRequest<BoardDetailsDto?>
 {
     public int Id { get; set; }
 

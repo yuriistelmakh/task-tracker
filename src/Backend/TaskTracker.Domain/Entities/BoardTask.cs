@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using TaskTracker.Domain.Enums;
 
 namespace TaskTracker.Domain.Entities;
 
@@ -16,13 +17,15 @@ public class BoardTask
 
     public string? Description { get; set; }
 
-    public int Priority { get; set; } = 1;
+    public Priorities Priority { get; set; } = Priorities.Medium;
 
     public DateTime? DueDate { get; set; }
 
-    public int Position { get; set; } = 0;
+    public int Order { get; set; } = 0;
 
     public int? AssigneeId { get; set; }
+
+    public bool IsComplete { get; set; } = false;
 
     public DateTime CreatedAt { get; set; }
     public int CreatedBy { get; set; }

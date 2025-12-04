@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Dapper;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -21,7 +22,7 @@ public static class MigrationExtension
         {
             logger.LogInformation("Starting database migration...");
 
-            var connectionString = configuration.GetConnectionString("TestConnection")!;
+            var connectionString = configuration.GetConnectionString("DefaultConnection")!;
             DatabaseInitializer.Initialize(connectionString, logger);
         }
         catch (Exception ex)

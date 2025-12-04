@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Domain.Entities;
+using TaskTracker.Domain.Enums;
 
 namespace TaskTracker.Application.Features.Boards.Commands.CreateBoard;
 
@@ -19,14 +20,27 @@ public class CreateBoardCommandHandler : IRequestHandler<CreateBoardCommand, int
     public async Task<int> Handle(CreateBoardCommand request, CancellationToken cancellationToken)
     {
         using var uow = _uowFactory.Create();
+
         var board = new Board
         {
             Title = request.Title,
             Description = request.Description,
-            CreatedAt = DateTime.UtcNow
+            IsArchived = false,
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = request.CreatedBy,
         };
 
         var newId = await uow.BoardRepository.AddAsync(board);
+
+        var boardMember = new BoardMember
+        {
+            BoardId = newId,
+            UserId = board.CreatedBy,
+            JoinedAt = DateTime.UtcNow,
+            Role = BoardRoles.Owner,
+        };
+
+        await uow.BoardRepository.AddMemberAsync(boardMember);
 
         uow.Commit();
 
