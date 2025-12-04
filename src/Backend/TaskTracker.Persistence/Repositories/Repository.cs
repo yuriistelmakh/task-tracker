@@ -22,9 +22,9 @@ public class Repository<T, TId> : IRepository<T, TId> where T: class
         return await Connection.InsertAsync<TId, T>(entity, transaction: Transaction);
     }
 
-    public async Task DeleteAsync(TId id)
+    public async Task<int> DeleteAsync(TId id)
     {
-        await Connection.DeleteAsync(id, transaction: Transaction);
+        return await Connection.DeleteAsync<T>(id, transaction: Transaction);
     }
 
     public async Task<IEnumerable<T>> GetAllAsync()
@@ -37,8 +37,8 @@ public class Repository<T, TId> : IRepository<T, TId> where T: class
         return await Connection.GetAsync<T>(id, transaction: Transaction);
     }
 
-    public async Task UpdateAsync(T entity)
+    public async Task<int> UpdateAsync(T entity)
     {
-        await Connection.UpdateAsync<T>(entity, transaction: Transaction);
+        return await Connection.UpdateAsync<T>(entity, transaction: Transaction);
     }
 }

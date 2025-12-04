@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TaskTracker.Application.Features.Boards.Commands.AddNewMember;
 using TaskTracker.Application.Features.Boards.Commands.CreateBoard;
+using TaskTracker.Application.Features.Boards.Commands.DeleteBoard;
+using TaskTracker.Application.Features.Boards.Commands.UpdateBoard;
 using TaskTracker.Application.Features.Boards.Queries.GetAllBoards;
 using TaskTracker.Application.Features.Boards.Queries.GetAllMembers;
 using TaskTracker.Application.Features.Boards.Queries.GetBoardById;
@@ -89,4 +91,36 @@ public class BoardsController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateBoardRequest request)
+    {
+        var command = new UpdateBoardCommand()
+        {
+            Id = id,
+            Title = request.Title,
+            Description = request.Description,
+            UpdatedBy = request.UpdatedBy
+        };
+
+        var isSuccess = await _mediator.Send(command);
+
+        return isSuccess
+            ? NoContent()
+            : NotFound();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var command = new DeleteBoardCommand
+        {
+            Id = id
+        };
+
+        var isSuccess = await _mediator.Send(command);
+
+        return isSuccess
+            ? NoContent()
+            : NotFound();
+    }
 }
