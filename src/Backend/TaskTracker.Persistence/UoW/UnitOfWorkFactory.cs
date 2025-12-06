@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using TaskTracker.Application.Interfaces;
+using TaskTracker.Application.Interfaces.UoW;
 
 namespace TaskTracker.Persistence.UoW;
 

@@ -1,4 +1,4 @@
-﻿namespace TaskTracker.Application.Interfaces;
+﻿namespace TaskTracker.Application.Interfaces.UoW;
 
 public interface IUnitOfWorkFactory
 {

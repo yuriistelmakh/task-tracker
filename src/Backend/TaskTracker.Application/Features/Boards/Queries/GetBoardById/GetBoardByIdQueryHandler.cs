@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskTracker.Application.Interfaces;
+using TaskTracker.Application.Interfaces.UoW;
 using TaskTracker.Domain.DTOs;
 using TaskTracker.Domain.DTOs.Boards;
 using TaskTracker.Domain.DTOs.Columns;
@@ -24,7 +24,7 @@ public class GetBoardByIdQueryHandler : IRequestHandler<GetBoardByIdQuery, Board
     public async Task<BoardDetailsDto?> Handle(GetBoardByIdQuery request, CancellationToken cancellationToken)
     {
         using var uow = _unitOfWorkFactory.Create();
-        var board = await uow.BoardRepository.GetByIdDetailsAsync(request.Id);
+        var board = await uow.BoardRepository.GetDetailsAsync(request.Id);
 
         if (board is null)
         {

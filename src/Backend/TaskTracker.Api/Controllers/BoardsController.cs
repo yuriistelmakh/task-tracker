@@ -1,19 +1,23 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using TaskTracker.Application.Features.Boards.Commands.AddNewMember;
 using TaskTracker.Application.Features.Boards.Commands.CreateBoard;
+using TaskTracker.Application.Features.Boards.Commands.DeleteBoard;
+using TaskTracker.Application.Features.Boards.Commands.UpdateBoard;
 using TaskTracker.Application.Features.Boards.Queries.GetAllBoards;
 using TaskTracker.Application.Features.Boards.Queries.GetAllMembers;
 using TaskTracker.Application.Features.Boards.Queries.GetBoardById;
 using TaskTracker.Domain.DTOs.BoardMember;
 using TaskTracker.Domain.DTOs.Boards;
-using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class BoardsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -23,11 +27,19 @@ public class BoardsController : ControllerBase
         _mediator = mediator;
     }
 
-    // TODO: Refactor to get userId from UserClaims (from Auth)
-    [HttpGet]
-    public async Task<IActionResult> GetAll(int userId)
+    [HttpGet("my-boards")]
+    public async Task<IActionResult> GetAllAsync()
     {
-        var query = new GetAllBoardsQuery(userId);
+        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userIdString))
+        {
+            return Unauthorized("Id was not found in the token");
+        }
+
+        int id = int.Parse(userIdString);
+
+        var query = new GetAllBoardsQuery(id);
 
         var result = await _mediator.Send(query);
 
@@ -37,7 +49,7 @@ public class BoardsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetByIdAsync(int id)
     {
         var query = new GetBoardByIdQuery(id);
         var result = await _mediator.Send(query);
@@ -48,7 +60,7 @@ public class BoardsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateBoardRequest request)
+    public async Task<IActionResult> CreateAsync([FromBody] CreateBoardRequest request)
     {
         var command = new CreateBoardCommand
         {
@@ -63,7 +75,7 @@ public class BoardsController : ControllerBase
     }
 
     [HttpGet("{boardId}/members")]
-    public async Task<IActionResult> GetMembers(int boardId)
+    public async Task<IActionResult> GetMembersAsync(int boardId)
     {
         var query = new GetBoardMembersQuery(boardId);
 
@@ -75,7 +87,7 @@ public class BoardsController : ControllerBase
     }
 
     [HttpPost("{boardId}/members")]
-    public async Task<IActionResult> AddMember(int boardId, [FromBody] AddBoardMemberRequest request)
+    public async Task<IActionResult> AddMemberAsync(int boardId, [FromBody] AddBoardMemberRequest request)
     {
         var command = new AddNewMemberCommand
         {
@@ -89,4 +101,37 @@ public class BoardsController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateBoardRequest request)
+    {
+        var command = new UpdateBoardCommand
+        {
+            Id = id,
+            Title = request.Title,
+            Description = request.Description,
+            UpdatedBy = request.UpdatedBy,
+            IsArchived = request.IsArchived
+        };
+
+        var isSuccess = await _mediator.Send(command);
+
+        return isSuccess
+            ? NoContent()
+            : NotFound();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteAsync(int id)
+    {
+        var command = new DeleteBoardCommand
+        {
+            Id = id
+        };
+
+        var isSuccess = await _mediator.Send(command);
+
+        return isSuccess
+            ? NoContent()
+            : NotFound();
+    }
 }

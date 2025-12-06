@@ -2,8 +2,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Interfaces.Repositories;
+using TaskTracker.Application.Interfaces.UoW;
 using TaskTracker.Domain.Entities;
 using TaskTracker.Domain.Enums;
 
