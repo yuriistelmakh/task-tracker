@@ -20,7 +20,7 @@ public class UsersController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateUserRequest request)
+    public async Task<IActionResult> CreateAsync([FromBody] CreateUserRequest request)
     {
         var command = new CreateUserCommand
         {
@@ -36,7 +36,7 @@ public class UsersController : Controller
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateUserRequest request)
+    public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateUserRequest request)
     {
         var command = new UpdateUserCommand
         {
@@ -55,7 +55,7 @@ public class UsersController : Controller
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> DeleteAsync(int id)
     {
         var command = new DeleteUserCommand
         {

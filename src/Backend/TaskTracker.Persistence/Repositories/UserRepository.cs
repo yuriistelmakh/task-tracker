@@ -12,7 +12,7 @@ public class UserRepository : Repository<User, int>, IUserRepository
     {
     }
 
-    public async Task<int> DeleteUser(int id)
+    public async Task<int> DeleteUserAsync(int id)
     {
         var sql = @"
             UPDATE Users

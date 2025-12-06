@@ -20,7 +20,7 @@ public class TasksController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateTaskRequest request)
+    public async Task<IActionResult> CreateAsync([FromBody] CreateTaskRequest request)
     {
         var command = new CreateTaskCommand
         {
@@ -35,7 +35,7 @@ public class TasksController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateTaskRequest request)
+    public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateTaskRequest request)
     {
         var command = new UpdateTaskCommand
         {
@@ -59,7 +59,7 @@ public class TasksController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> DeleteAsync(int id)
     {
         var command = new DeleteTaskCommand
         {

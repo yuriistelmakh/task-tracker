@@ -20,7 +20,7 @@ public class ColumnsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateColumnRequest request)
+    public async Task<IActionResult> CreateAsync([FromBody] CreateColumnRequest request)
     {
         var command = new CreateColumnCommand
         {
@@ -36,7 +36,7 @@ public class ColumnsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateColumnRequest request)
+    public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateColumnRequest request)
     {
         var command = new UpdateColumnCommand
         {
@@ -54,7 +54,7 @@ public class ColumnsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> DeleteAsync(int id)
     {
         var command = new DeleteColumnCommand
         {

@@ -26,7 +26,7 @@ public class BoardsController : ControllerBase
 
     // TODO: Refactor to get userId from UserClaims (from Auth)
     [HttpGet]
-    public async Task<IActionResult> GetAll(int userId)
+    public async Task<IActionResult> GetAllAsync(int userId)
     {
         var query = new GetAllBoardsQuery(userId);
 
@@ -38,7 +38,7 @@ public class BoardsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetByIdAsync(int id)
     {
         var query = new GetBoardByIdQuery(id);
         var result = await _mediator.Send(query);
@@ -49,7 +49,7 @@ public class BoardsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateBoardRequest request)
+    public async Task<IActionResult> CreateAsync([FromBody] CreateBoardRequest request)
     {
         var command = new CreateBoardCommand
         {
@@ -64,7 +64,7 @@ public class BoardsController : ControllerBase
     }
 
     [HttpGet("{boardId}/members")]
-    public async Task<IActionResult> GetMembers(int boardId)
+    public async Task<IActionResult> GetMembersAsync(int boardId)
     {
         var query = new GetBoardMembersQuery(boardId);
 
@@ -76,7 +76,7 @@ public class BoardsController : ControllerBase
     }
 
     [HttpPost("{boardId}/members")]
-    public async Task<IActionResult> AddMember(int boardId, [FromBody] AddBoardMemberRequest request)
+    public async Task<IActionResult> AddMemberAsync(int boardId, [FromBody] AddBoardMemberRequest request)
     {
         var command = new AddNewMemberCommand
         {
@@ -91,7 +91,7 @@ public class BoardsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateBoardRequest request)
+    public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateBoardRequest request)
     {
         var command = new UpdateBoardCommand
         {
@@ -110,7 +110,7 @@ public class BoardsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> DeleteAsync(int id)
     {
         var command = new DeleteBoardCommand
         {
