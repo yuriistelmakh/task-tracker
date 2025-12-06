@@ -20,7 +20,7 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
             SELECT b.*, u.*
             FROM Boards b
             JOIN Users u ON b.CreatedBy = u.Id
-            WHERE b.Id = @Id;
+            WHERE b.Id = @Id
 
             SELECT *
             FROM Columns
@@ -33,7 +33,7 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
             WHERE c.BoardId = @Id
             ORDER BY t.[Order];";
 
-        using var multi = await Connection.QueryMultipleAsync(sql, new { Id = id }, transaction: Transaction);
+        using var multi = await Connection.QueryMultipleAsync(sql, new { id }, transaction: Transaction);
 
         var board = multi.Read<Board, User, Board>((board, user) =>
         {
@@ -59,12 +59,14 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
         return board;
     }
 
-    public async Task<IEnumerable<Board>> GetAllWithOwnersAsync()
+    public async Task<IEnumerable<Board>> GetAllWithOwnersAsync(int userId)
     {
         var sql = @"
             SELECT b.*, u.* FROM Boards b
+            JOIN BoardMembers bm ON b.Id = bm.BoardId
             JOIN Users u ON b.CreatedBy = u.id
-            WHERE b.IsArchived = 0";
+            WHERE b.IsArchived = 0
+                AND bm.UserId = @UserId";
 
         var boards = await Connection.QueryAsync<Board, User, Board>(
             sql,
@@ -74,7 +76,8 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
                 return board;
             },
             transaction: Transaction,
-            splitOn: "Id"
+            splitOn: "Id",
+            param: new { userId }
         );
 
         return boards;

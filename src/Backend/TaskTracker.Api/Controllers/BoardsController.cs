@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using TaskTracker.Application.Features.Boards.Commands.AddNewMember;
 using TaskTracker.Application.Features.Boards.Commands.CreateBoard;
@@ -26,11 +27,19 @@ public class BoardsController : ControllerBase
         _mediator = mediator;
     }
 
-    // TODO: Refactor to get userId from UserClaims (from Auth)
-    [HttpGet]
-    public async Task<IActionResult> GetAllAsync(int userId)
+    [HttpGet("my-boards")]
+    public async Task<IActionResult> GetAllAsync()
     {
-        var query = new GetAllBoardsQuery(userId);
+        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userIdString))
+        {
+            return Unauthorized("Id was not found in the token");
+        }
+
+        int id = int.Parse(userIdString);
+
+        var query = new GetAllBoardsQuery(id);
 
         var result = await _mediator.Send(query);
 
