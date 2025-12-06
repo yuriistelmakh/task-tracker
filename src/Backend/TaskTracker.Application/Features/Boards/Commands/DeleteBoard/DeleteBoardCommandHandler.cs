@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskTracker.Application.Interfaces;
+using TaskTracker.Application.Interfaces.UoW;
 
 namespace TaskTracker.Application.Features.Boards.Commands.DeleteBoard;
 

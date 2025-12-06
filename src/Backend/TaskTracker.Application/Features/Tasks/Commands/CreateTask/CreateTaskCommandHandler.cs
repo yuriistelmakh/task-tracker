@@ -2,7 +2,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskTracker.Application.Interfaces;
+using TaskTracker.Application.Interfaces.UoW;
 using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Application.Features.Tasks.Commands.CreateTask;

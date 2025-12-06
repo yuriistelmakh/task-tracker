@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TaskTracker.Application.Features.Auth.Commands.Login;
+using TaskTracker.Application.Features.Auth.Commands.TokenRefresh;
 using TaskTracker.Application.Features.Auth.Commands.Signup;
 using TaskTracker.Domain.DTOs.Auth;
 
@@ -45,10 +46,26 @@ public class AuthController : ControllerBase
             Tag = request.Tag
         };
 
-        var token = await _mediator.Send(command);
+        var authResponse = await _mediator.Send(command);
 
-        return token is null
+        return authResponse is null
             ? Conflict()
-            : Ok(token);
+            : Ok(authResponse);
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh([FromBody] RefreshRequest request)
+    {
+        var command = new RefreshTokenCommand
+        {
+            AccessToken = request.AccessToken,
+            RefreshToken = request.RefreshToken
+        };
+
+        var result = await _mediator.Send(command);
+
+        return result is null
+            ? BadRequest()
+            : Ok(result);
     }
 }

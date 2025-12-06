@@ -1,29 +1,30 @@
 ﻿using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Interfaces.Auth;
+using TaskTracker.Application.Interfaces.UoW;
+using TaskTracker.Domain.DTOs.Auth;
 using TaskTracker.Domain.DTOs.Users;
 using TaskTracker.Domain.Mapping;
 
 namespace TaskTracker.Application.Features.Auth.Commands.Login;
 
-public class LoginCommandHandler : IRequestHandler<LoginCommand, string?>
+public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponse?>
 {
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
-    private readonly IJwtTokenGenerator _jwtTokenGenerator;
+    private readonly IJwtTokenService _jwtTokenGenerator;
     private readonly IPasswordHasher _passwordHasher;
 
     public LoginCommandHandler(IUnitOfWorkFactory unitOfWorkFactory, 
         IPasswordHasher passwordHasher, 
-        IJwtTokenGenerator jwtTokenGenerator)
+        IJwtTokenService jwtTokenGenerator)
     {
         _unitOfWorkFactory = unitOfWorkFactory;
         _passwordHasher = passwordHasher;
         _jwtTokenGenerator = jwtTokenGenerator;
     }
 
-    public async Task<string?> Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResponse?> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         using var uow = _unitOfWorkFactory.Create();
 
@@ -34,8 +35,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, string?>
             return null;
         }
 
-        uow.Commit();
-
         bool isPasswordValid = _passwordHasher.Verify(request.Password, user.PasswordHash);
 
         if (!isPasswordValid)
@@ -43,8 +42,15 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, string?>
             return null;
         }
 
-        var token = _jwtTokenGenerator.GenerateToken(user);
+        var accessToken = _jwtTokenGenerator.GenerateAccessToken(user);
+        var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
 
-        return token;
+        refreshToken.UserId = user.Id;
+
+        await uow.RefreshTokenRepository.AddAsync(refreshToken);
+
+        uow.Commit();
+
+        return new AuthResponse { AccessToken = accessToken, RefreshToken = refreshToken.Token };
     }
 }

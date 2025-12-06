@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Extensions.DependencyInjection;
-using TaskTracker.Application.Interfaces;
+using TaskTracker.Application.Interfaces.UoW;
 using TaskTracker.Domain.Enums;
 using TaskTracker.Persistence.UoW;
 
