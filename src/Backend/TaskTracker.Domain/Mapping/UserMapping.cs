@@ -12,5 +12,6 @@ public static class UserMapping
             DisplayName = user.DisplayName,
             Tag = user.Tag,
             AvatarUrl = user.AvatarUrl,
+            IsDeleted = user.IsDeleted
         };
 }

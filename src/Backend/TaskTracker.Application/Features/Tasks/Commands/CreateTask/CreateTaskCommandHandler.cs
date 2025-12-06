@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Domain.Entities;
 
-namespace TaskTracker.Application.Features.Tasks.Commands;
+namespace TaskTracker.Application.Features.Tasks.Commands.CreateTask;
 
 public class CreateTaskCommandHandler : IRequestHandler<CreateTaskCommand, int>
 {

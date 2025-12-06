@@ -24,4 +24,6 @@ public class User
     public Roles Role { get; set; }
 
     public DateTime CreatedAt { get; set; }
+
+    public bool IsDeleted { get; set; } = false;
 }
