@@ -17,7 +17,7 @@ public class Repository<T, TId> : IRepository<T, TId> where T: class
         Transaction = transaction;
     }
 
-    public async Task<TId> AddAsync(T entity)
+    public async Task<TId?> AddAsync(T entity)
     {
         return await Connection.InsertAsync<TId, T>(entity, transaction: Transaction);
     }

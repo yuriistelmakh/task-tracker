@@ -5,5 +5,6 @@ namespace TaskTracker.Application.Interfaces.Repositories;
 
 public interface IUserRepository : IRepository<User, int>
 {
-    Task<int> DeleteUser(int id);
+    Task<int> DeleteUserAsync(int id);
+    Task<User?> GetByEmailOrTagAsync(string email, string tag);
 }
