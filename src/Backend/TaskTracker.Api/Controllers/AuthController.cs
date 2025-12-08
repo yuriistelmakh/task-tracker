@@ -54,7 +54,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("refresh")]
-    public async Task<IActionResult> Refresh([FromBody] RefreshRequest request)
+    public async Task<IActionResult> RefreshAsync([FromBody] RefreshRequest request)
     {
         var command = new RefreshTokenCommand
         {
