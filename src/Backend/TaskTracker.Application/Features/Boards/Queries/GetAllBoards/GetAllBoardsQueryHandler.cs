@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskTracker.Application.Interfaces;
+using TaskTracker.Application.Interfaces.UoW;
 using TaskTracker.Domain.DTOs.Boards;
 using TaskTracker.Domain.DTOs.Users;
 using TaskTracker.Domain.Mapping;
@@ -23,7 +23,7 @@ public class GetAllBoardsQueryHandler : IRequestHandler<GetAllBoardsQuery, IEnum
     {
         using var uow = _unitOfWorkFactory.Create();
 
-        var boards = await uow.BoardRepository.GetAllWithOwnersAsync();
+        var boards = await uow.BoardRepository.GetAllWithOwnersAsync(request.UserId);
 
         var boardsDto = boards.Select(b => b.ToBoardSummaryDto());
 

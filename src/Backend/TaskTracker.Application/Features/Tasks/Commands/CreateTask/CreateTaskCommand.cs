@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace TaskTracker.Application.Features.Tasks.Commands;
+namespace TaskTracker.Application.Features.Tasks.Commands.CreateTask;
 
 public class CreateTaskCommand : IRequest<int>
 {

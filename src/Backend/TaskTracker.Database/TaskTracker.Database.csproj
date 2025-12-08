@@ -12,6 +12,7 @@
     <None Remove="Scripts\003_CreateColumnTable.sql" />
     <None Remove="Scripts\004_CreateTasksTable.sql" />
     <None Remove="Scripts\005_CreateBoardMembersTable.sql" />
+    <None Remove="Scripts\007_CreateRefreshToken.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +21,8 @@
     <EmbeddedResource Include="Scripts\003_CreateColumnTable.sql" />
     <EmbeddedResource Include="Scripts\004_CreateTasksTable.sql" />
     <EmbeddedResource Include="Scripts\005_CreateBoardMembersTable.sql" />
+    <EmbeddedResource Include="Scripts\006_AddCascadeDelete.sql" />
+    <EmbeddedResource Include="Scripts\007_CreateRefreshToken.sql" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,8 +1,8 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;
-using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Interfaces.Repositories;
+using TaskTracker.Application.Interfaces.UoW;
 using TaskTracker.Persistence.Repositories;
 
 namespace TaskTracker.Persistence.UoW;
@@ -16,6 +16,7 @@ public class UnitOfWork : IUnitOfWork
     private IColumnRepository? _columnRepository;
     private IBoardTaskRepository? _taskRepository;
     private IUserRepository? _userRepository;
+    private IRefreshTokenRepository? _refreshTokenRepository;
 
     public IBoardRepository BoardRepository =>
         _boardRepository ??= new BoardRepository(_transaction);
@@ -28,6 +29,9 @@ public class UnitOfWork : IUnitOfWork
 
     public IUserRepository UserRepository =>
         _userRepository ??= new UserRepository(_transaction);
+
+    public IRefreshTokenRepository RefreshTokenRepository =>
+        _refreshTokenRepository ??= new RefreshTokenRepository(_transaction);
 
     public UnitOfWork(IConfiguration configuration)
     {
