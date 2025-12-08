@@ -5,6 +5,7 @@ using TaskTracker.Application.Interfaces.Auth;
 using TaskTracker.Application.Interfaces.UoW;
 using TaskTracker.Domain.DTOs.Auth;
 using TaskTracker.Domain.DTOs.Users;
+using TaskTracker.Domain.Entities;
 using TaskTracker.Domain.Mapping;
 
 namespace TaskTracker.Application.Features.Auth.Commands.Login;
@@ -28,7 +29,9 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponse?>
     {
         using var uow = _unitOfWorkFactory.Create();
 
-        var user = await uow.UserRepository.GetByEmailOrTagAsync(request.Email, request.Tag);
+        var user = request.Email is not null
+            ? await uow.UserRepository.GetByEmailAsync(request.Email)
+            : await uow.UserRepository.GetByTagAsync(request.Tag);
 
         if (user is null)
         {

@@ -29,11 +29,16 @@ public class SignupCommandHandler : IRequestHandler<SignupCommand, AuthResponse?
     {
         using var uow = _unitOfWorkFactory.Create();
 
-        if (await uow.UserRepository.GetByEmailOrTagAsync(request.Email, request.Tag) is not null)
+        if (await uow.UserRepository.GetByEmailAsync(request.Email) is not null)
         {
-            return null;
+            return new AuthResponse { ErrorCode = "EmailTaken" };
         }
 
+        if (await uow.UserRepository.GetByTagAsync(request.Tag) is not null)
+        {
+            return new AuthResponse { ErrorCode = "TagTaken" };
+        }
+        
         var passwordHash = _passwordHasher.Generate(request.Password);
 
         var user = new User

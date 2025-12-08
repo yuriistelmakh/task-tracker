@@ -1,0 +1,213 @@
+﻿@page "/signup"
+@using System.Net
+@using System.ComponentModel.DataAnnotations
+@using System.Text.Json
+@inject IAuthApi AuthApi
+@inject ISnackbar Snackbar
+@rendermode InteractiveServer
+
+<MudSnackbarProvider />
+
+<MudContainer Style="height: 100vh" Class="d-flex align-center justify-center mud-width-full">
+    <MudCard Width="350px" Elevation="4" Color="Color.Primary">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h5" Align="Align.Center">Create a new account</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+
+        <MudCardContent Class="d-flex flex-column w-100">
+            <EditForm EditContext="@_editContext"
+            OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+
+                <MudTextField Label="Email"
+                @bind-Value="model.Email"
+                For="@(() => model.Email)"
+                Variant="Variant.Outlined"
+                Margin="Margin.None"
+                Class="mb-4" />
+
+                <MudTextField Label="Password"
+                @bind-Value="model.Password"
+                For="@(() => model.Password)"
+                Variant="Variant.Outlined"
+                InputType="@PasswordInputType"
+                Adornment="Adornment.End"
+                AdornmentIcon="@PasswordInputIcon"
+                OnAdornmentClick="TooglePasswordVisibility"
+                Margin="Margin.None"
+                Class="mb-4" />
+
+                <MudTextField Label="Repeat password"
+                @bind-Value="model.RepeatPassword"
+                For="@(() => model.RepeatPassword)"
+                Variant="Variant.Outlined"
+                InputType="@RepeatPasswordInputType"
+                Adornment="Adornment.End"
+                AdornmentIcon="@RepeatPasswordInputIcon"
+                OnAdornmentClick="ToogleRepeatPasswordVisibility"
+                Margin="Margin.None"
+                Class="mb-4" />
+
+                <MudTextField Label="Display name"
+                @bind-Value="model.DisplayName"
+                For="@(() => model.DisplayName)"
+                Variant="Variant.Outlined"
+                Margin="Margin.None"
+                Class="mb-4" />
+
+                <MudTextField Label="Tag"
+                @bind-Value="model.Tag"
+                For="@(() => model.Tag)"
+                Variant="Variant.Outlined"
+                Adornment="Adornment.Start"
+                AdornmentText="@("@")"
+                Margin="Margin.None"
+                Class="mb-4" />
+
+                <MudButton ButtonType="ButtonType.Submit"
+                Variant="Variant.Filled"
+                Color="Color.Primary"
+                FullWidth="true"
+                Class="mt-6"
+                Size="Size.Large">
+                    Log in
+                </MudButton>
+            </EditForm>
+
+            <div class="d-flex justify-center mt-4">
+                <MudLink Href="/login">
+                    Already have an account? Log in.
+                </MudLink>
+            </div>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+    SignupModel model = new SignupModel();
+
+    InputType PasswordInputType = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.Visibility;
+    bool isPasswordVisible = false;
+
+    InputType RepeatPasswordInputType = InputType.Password;
+    string RepeatPasswordInputIcon = Icons.Material.Filled.Visibility;
+    bool isRepeatPasswordVisible = false;
+
+    private EditContext _editContext;
+    private ValidationMessageStore _messageStore;
+
+    protected override void OnInitialized()
+    {
+        _editContext = new EditContext(model);
+        _messageStore = new ValidationMessageStore(_editContext);
+
+        _editContext.OnFieldChanged += (s, e) => 
+        { 
+            _messageStore.Clear(e.FieldIdentifier); 
+
+            if (e.FieldIdentifier.FieldName == nameof(SignupModel.Password))
+            {
+                var repeatField = _editContext.Field(nameof(SignupModel.RepeatPassword));
+                _editContext.NotifyFieldChanged(repeatField);
+            }
+        };
+    }
+
+    void TooglePasswordVisibility()
+    {
+        if (isPasswordVisible)
+        {
+            isPasswordVisible = false;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInputType = InputType.Password;
+        }
+        else
+        {
+            isPasswordVisible = true;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInputType = InputType.Text;
+        }
+    }
+
+    void ToogleRepeatPasswordVisibility()
+    {
+        if (isRepeatPasswordVisible)
+        {
+            isRepeatPasswordVisible = false;
+            RepeatPasswordInputIcon = Icons.Material.Filled.Visibility;
+            RepeatPasswordInputType = InputType.Password;
+        }
+        else
+        {
+            isRepeatPasswordVisible = true;
+            RepeatPasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            RepeatPasswordInputType = InputType.Text;
+        }
+    }
+
+    async Task OnValidSubmit()
+    {
+        _messageStore.Clear();
+        _editContext.NotifyValidationStateChanged();
+
+        try
+        {
+            var request = new SignupRequest
+                {
+                    Email = model.Email,
+                    DisplayName = model.DisplayName,
+                    Password = model.DisplayName,
+                    Tag = model.Tag
+                };
+
+            var accessToken = await AuthApi.SignupAsync(request);
+
+            Console.WriteLine(accessToken);
+        }
+        catch (ApiException e)
+        {
+            var error = JsonSerializer.Deserialize<Dictionary<string, string>>(e.Content);
+
+            if (error!["error"] == "EmailTaken")
+            {
+                _messageStore.Add(() => model.Email, "This email is already taken");
+            }
+            else if (error!["error"] == "TagTaken")
+            {
+                _messageStore.Add(() => model.Tag, "This tag is already taken");
+            }
+            else
+            {
+                Snackbar.Add($"Something went wrong: {e.Content}", Severity.Error);
+            }
+
+            _editContext.NotifyValidationStateChanged();
+        }
+    }
+
+    class SignupModel
+    {
+        [Required(ErrorMessage = "This field is required")]
+        [EmailAddress(ErrorMessage = "Enter a valid email")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "This field is required")]
+        [StringLength(30, MinimumLength = 6, ErrorMessage = "Password must contain from 6 to 30 symbols")]
+        public string Password { get; set; } = string.Empty;
+
+        [Compare(nameof(Password), ErrorMessage = "Passwords don't match")]
+        public string RepeatPassword { get; set; } = string.Empty;
+
+        [RegularExpression("^[a-zA-Z0-9]+$", ErrorMessage = "Only latin characters and numbers are allowed")]
+        [StringLength(30, MinimumLength = 6, ErrorMessage = "Tag must contain from 6 to 30 symbols")]
+        [Required(ErrorMessage = "This field is required")]
+        public string Tag { get; set; } = string.Empty;
+
+        [StringLength(30, MinimumLength = 3, ErrorMessage = "Name must contain from 3 to 30 symbols")]
+        [Required(ErrorMessage = "This field is required")]
+        public string DisplayName { get; set; } = string.Empty;
+    }
+}

@@ -1,0 +1,140 @@
+﻿@page "/login"
+@using System.Net
+@using System.ComponentModel.DataAnnotations
+@inject IAuthApi AuthApi
+@inject ISnackbar Snackbar
+@rendermode InteractiveServer
+
+<MudSnackbarProvider />
+
+<MudContainer Style="height: 100vh" Class="d-flex align-center justify-center mud-width-full">
+    <MudCard Width="350px" Elevation="4" Color="Color.Primary">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h5" Align="Align.Center">Log into your account</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+
+        <MudCardContent Class="d-flex flex-column w-100">
+            <EditForm
+                      EditContext="@_editContext"
+                      OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+
+                <MudTextField Label="Email or tag"
+                              @bind-Value="model.Login"
+                              For="@(() => model.Login)"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.None"
+                              Class="mb-4" />
+
+                <MudTextField Label="Password"
+                              @bind-Value="model.Password"
+                              For="@(() => model.Password)"
+                              Variant="Variant.Outlined"
+                              InputType="@PasswordInputType"
+                              Adornment="Adornment.End"
+                              AdornmentIcon="@PasswordInputIcon"
+                              OnAdornmentClick="TooglePasswordVisibility"
+                              Margin="Margin.None"
+                              Class="mb-4" />
+
+                <MudButton ButtonType="ButtonType.Submit"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           FullWidth="true"
+                           Class="mt-6"
+                           Size="Size.Large">
+                    Log in
+                </MudButton>
+            </EditForm>
+
+            <div class="d-flex justify-center mt-4">
+                <MudLink Href="/signup">
+                    Don't have an account? Sign up.
+                </MudLink>
+            </div>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+    LoginModel model = new LoginModel();
+
+    InputType PasswordInputType = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.Visibility;
+    bool isPasswordVisible = false;
+
+    private EditContext _editContext;
+    private ValidationMessageStore _messageStore;
+
+    protected override void OnInitialized()
+    {
+        _editContext = new EditContext(model);
+        _messageStore = new ValidationMessageStore(_editContext);
+
+        _editContext.OnFieldChanged += (s, e) => _messageStore.Clear(e.FieldIdentifier);
+    }
+
+    void TooglePasswordVisibility()
+    {
+        if (isPasswordVisible)
+        {
+            isPasswordVisible = false;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInputType = InputType.Password;
+        }
+        else
+        {
+            isPasswordVisible = true;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInputType = InputType.Text;
+        }
+    }
+
+    async Task OnValidSubmit()
+    {
+        _messageStore.Clear();
+        _editContext.NotifyValidationStateChanged();
+
+        try
+        {
+            var request = new LoginRequest { Password = model.Password };
+
+            if (model.Login.Contains("@"))
+                request.Email = model.Login;
+            else
+                request.Tag = model.Login;
+
+            var accessToken = await AuthApi.LoginAsync(request);
+
+            Console.WriteLine(accessToken);
+        }
+        catch (ApiException e)
+        {
+            if (e.StatusCode == HttpStatusCode.NotFound)
+            {
+                _messageStore.Add(() => model.Login, "User was not found");
+            }
+            else if (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                _messageStore.Add(() => model.Password, "Incorrect password");
+            }
+            else
+            {
+                Snackbar.Add($"Something went wrong: {e.Content}", Severity.Error);
+            }
+
+            _editContext.NotifyValidationStateChanged();
+        }
+    }
+
+    class LoginModel
+    {
+        [Required(ErrorMessage = "This field is required")]
+        public string Login { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "This field is required")]
+        public string Password { get; set; } = string.Empty;
+    }
+}
