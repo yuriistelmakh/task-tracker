@@ -14,7 +14,7 @@ public class UserRepository : Repository<User, int>, IUserRepository
     {
     }
 
-    public async Task<int> DeleteUserAsync(int id)
+    public override async Task<int> DeleteAsync(int id)
     {
         var sql = @"
             UPDATE Users

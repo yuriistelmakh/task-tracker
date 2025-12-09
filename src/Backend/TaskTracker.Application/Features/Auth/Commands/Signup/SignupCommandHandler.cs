@@ -31,12 +31,12 @@ public class SignupCommandHandler : IRequestHandler<SignupCommand, AuthResponse?
 
         if (await uow.UserRepository.GetByEmailAsync(request.Email) is not null)
         {
-            return new AuthResponse { ErrorCode = "EmailTaken" };
+            return new AuthResponse { ErrorType = ErrorTypes.EmailTaken };
         }
 
         if (await uow.UserRepository.GetByTagAsync(request.Tag) is not null)
         {
-            return new AuthResponse { ErrorCode = "TagTaken" };
+            return new AuthResponse { ErrorType = ErrorTypes.TagTaken };
         }
         
         var passwordHash = _passwordHasher.Generate(request.Password);

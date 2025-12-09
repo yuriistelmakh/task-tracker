@@ -18,7 +18,7 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, bool>
     {
         using var uow = _unitOfWorkFactory.Create();
 
-        var rowsAffected = await uow.UserRepository.DeleteUserAsync(request.Id);
+        var rowsAffected = await uow.UserRepository.DeleteAsync(request.Id);
 
         uow.Commit();
 
