@@ -48,9 +48,9 @@ public class AuthController : ControllerBase
 
         var authResponse = await _mediator.Send(command);
 
-        return authResponse.ErrorCode is null
+        return authResponse.ErrorType is null
             ? Ok(authResponse)
-            : Conflict(authResponse.ErrorCode);
+            : Conflict(new { error = authResponse.ErrorType });
     }
 
     [HttpPost("refresh")]

@@ -1,4 +1,6 @@
-﻿namespace TaskTracker.Domain.DTOs.Auth;
+﻿using TaskTracker.Domain.Enums;
+
+namespace TaskTracker.Domain.DTOs.Auth;
 
 public class AuthResponse
 {
@@ -6,5 +8,5 @@ public class AuthResponse
 
     public string? RefreshToken { get; set; }
     
-    public string? ErrorCode { get; set; }
+    public ErrorTypes? ErrorType { get; set; }
 }
