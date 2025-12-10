@@ -6,11 +6,12 @@ using TaskTracker.Application.Interfaces.UoW;
 using TaskTracker.Domain.DTOs.Auth;
 using TaskTracker.Domain.DTOs.Users;
 using TaskTracker.Domain.Entities;
+using TaskTracker.Domain.Enums;
 using TaskTracker.Domain.Mapping;
 
 namespace TaskTracker.Application.Features.Auth.Commands.Login;
 
-public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponse?>
+public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponse>
 {
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
     private readonly IJwtTokenService _jwtTokenGenerator;
@@ -25,7 +26,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponse?>
         _jwtTokenGenerator = jwtTokenGenerator;
     }
 
-    public async Task<AuthResponse?> Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         using var uow = _unitOfWorkFactory.Create();
 
@@ -35,14 +36,12 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponse?>
 
         if (user is null)
         {
-            return null;
+            return new AuthResponse { ErrorType = AuthErrorType.UserNotFound };
         }
 
-        bool isPasswordValid = _passwordHasher.Verify(request.Password, user.PasswordHash);
-
-        if (!isPasswordValid)
+        if (!_passwordHasher.Verify(request.Password, user.PasswordHash))
         {
-            return null;
+            return new AuthResponse { ErrorType = AuthErrorType.InvalidPassword };
         }
 
         var accessToken = _jwtTokenGenerator.GenerateAccessToken(user);
@@ -54,6 +53,11 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponse?>
 
         uow.Commit();
 
-        return new AuthResponse { AccessToken = accessToken, RefreshToken = refreshToken.Token };
+        return new AuthResponse
+        {
+            ErrorType = AuthErrorType.None,
+            AccessToken = accessToken,
+            RefreshToken = refreshToken.Token
+        };
     }
 }

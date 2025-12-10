@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
-using Refit;
 using System.ComponentModel.DataAnnotations;
-using System.Net;
 using TaskTracker.Domain.DTOs.Auth;
+using TaskTracker.Domain.Enums;
 using TaskTracker.Services.Abstraction.Interfaces;
 
 namespace TaskTracker.WebApp.Components.Pages.Auth;
@@ -12,26 +11,30 @@ namespace TaskTracker.WebApp.Components.Pages.Auth;
 public partial class Login
 {
     [Inject]
-    IAuthApi AuthApi { get; set; }
+    public ISnackbar SnackBar { private get; set; } = default!;
 
     [Inject]
-    ISnackbar SnackBar { get; set; }
+    public IAuthService AuthService { private get; set; } = default!;
 
-    LoginModel model = new LoginModel();
+    private readonly LoginModel model = new();
 
     InputType PasswordInputType = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.Visibility;
     bool isPasswordVisible = false;
 
-    private EditContext _editContext;
-    private ValidationMessageStore _messageStore;
+    private EditContext _editContext = default!;
+    private ValidationMessageStore _messageStore = default!;
 
     protected override void OnInitialized()
     {
         _editContext = new EditContext(model);
         _messageStore = new ValidationMessageStore(_editContext);
 
-        _editContext.OnFieldChanged += (s, e) => _messageStore.Clear(e.FieldIdentifier);
+        _editContext.OnFieldChanged += (s, e) =>
+        {
+            _messageStore.Clear(e.FieldIdentifier);
+            _editContext.NotifyValidationStateChanged();
+        };
     }
 
     void TogglePasswordVisibility()
@@ -55,34 +58,45 @@ public partial class Login
         _messageStore.Clear();
         _editContext.NotifyValidationStateChanged();
 
-        try
+        var request = new LoginRequest
         {
-            var request = new LoginRequest { Password = model.Password };
+            Password = model.Password
+        };
 
-            if (model.Login.Contains("@"))
-                request.Email = model.Login;
-            else
-                request.Tag = model.Login;
+        if (model.Login.Contains('@'))
+            request.Email = model.Login;
+        else
+            request.Tag = model.Login;
 
-            await AuthApi.LoginAsync(request);
-        }
-        catch (ApiException e)
+        var result = await AuthService.LoginAsync(request);
+
+        if (result.IsSuccess)
         {
-            if (e.StatusCode == HttpStatusCode.NotFound)
-            {
-                _messageStore.Add(() => model.Login, "User was not found");
-            }
-            else if (e.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                _messageStore.Add(() => model.Password, "Incorrect password");
-            }
-            else
-            {
-                SnackBar.Add($"Something went wrong: {e.Content}", Severity.Error);
-            }
-
-            _editContext.NotifyValidationStateChanged();
+            SnackBar.Add("You authorized successfully. Now wait for home page implementation lmao",
+                Severity.Success);
+            return;
         }
+
+        switch (result.ErrorType)
+        {
+            case AuthErrorType.UserNotFound:
+                _messageStore.Add(
+                    _editContext.Field(nameof(LoginModel.Login)),
+                    "User was not found");
+                break;
+
+            case AuthErrorType.InvalidPassword:
+                _messageStore.Add(
+                    _editContext.Field(nameof(LoginModel.Password)),
+                    "Incorrect password");
+                break;
+
+            default:
+                SnackBar.Add("Something went wrong. Please try again later.", Severity.Error);
+                break;
+        }
+
+        _editContext.NotifyValidationStateChanged();
     }
 
     class LoginModel

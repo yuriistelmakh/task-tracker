@@ -6,11 +6,11 @@ namespace TaskTracker.Services.Abstraction.Interfaces;
 public interface IAuthApi
 {
     [Post("/api/auth/signup")]
-    Task<AuthResponse?> SignupAsync([Body] SignupRequest request);
+    Task<IApiResponse<AuthResponse?>> SignupAsync([Body] SignupRequest request);
 
     [Post("/api/auth/login")]
-    Task<string> LoginAsync([Body] LoginRequest request);
+    Task<IApiResponse<AuthResponse?>> LoginAsync([Body] LoginRequest request);
 
     [Post("/api/auth/refresh")]
-    Task<AuthResponse?> RefreshAsync([Body] RefreshRequest request);
+    Task<IApiResponse<AuthResponse?>> RefreshAsync([Body] RefreshRequest request);
 }

@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TaskTracker.Services.Abstraction\TaskTracker.Services.Abstraction.csproj" />
+    <ProjectReference Include="..\TaskTracker.Services\TaskTracker.Services.csproj" />
   </ItemGroup>
 
 </Project>

@@ -5,6 +5,7 @@ using TaskTracker.Application.Features.Auth.Commands.Login;
 using TaskTracker.Application.Features.Auth.Commands.TokenRefresh;
 using TaskTracker.Application.Features.Auth.Commands.Signup;
 using TaskTracker.Domain.DTOs.Auth;
+using TaskTracker.Domain.Enums;
 
 namespace TaskTracker.Api.Controllers;
 [Route("api/[controller]")]
@@ -28,11 +29,9 @@ public class AuthController : ControllerBase
             Tag = request.Tag
         };
 
-        var token = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
-        return token is null
-            ? NotFound()
-            : Ok(token);
+        return Ok(result);
     }
 
     [HttpPost("signup")]
@@ -46,11 +45,9 @@ public class AuthController : ControllerBase
             Tag = request.Tag
         };
 
-        var authResponse = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
-        return authResponse.ErrorType is null
-            ? Ok(authResponse)
-            : Conflict(new { error = authResponse.ErrorType });
+        return Ok(result);
     }
 
     [HttpPost("refresh")]

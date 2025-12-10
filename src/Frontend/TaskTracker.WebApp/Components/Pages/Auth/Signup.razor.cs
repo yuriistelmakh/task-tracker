@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
-using Refit;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
 using TaskTracker.Domain.DTOs.Auth;
+using TaskTracker.Domain.Enums;
 using TaskTracker.Services.Abstraction.Interfaces;
 
 namespace TaskTracker.WebApp.Components.Pages.Auth;
@@ -12,12 +11,12 @@ namespace TaskTracker.WebApp.Components.Pages.Auth;
 public partial class Signup
 {
     [Inject]
-    IAuthApi AuthApi { get; set; }
+    public IAuthService AuthService { private get; set; } = default!;
 
     [Inject]
-    ISnackbar Snackbar { get; set; }
+    public ISnackbar Snackbar { private get; set; } = default!;
 
-    SignupModel model = new SignupModel();
+    private readonly SignupModel model = new();
 
     InputType PasswordInputType = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.Visibility;
@@ -27,8 +26,8 @@ public partial class Signup
     string RepeatPasswordInputIcon = Icons.Material.Filled.Visibility;
     bool isRepeatPasswordVisible = false;
 
-    private EditContext _editContext;
-    private ValidationMessageStore _messageStore;
+    private EditContext _editContext = default!;
+    private ValidationMessageStore _messageStore = default!;
 
     protected override void OnInitialized()
     {
@@ -44,6 +43,8 @@ public partial class Signup
                 var repeatField = _editContext.Field(nameof(SignupModel.RepeatPassword));
                 _editContext.NotifyFieldChanged(repeatField);
             }
+
+            _editContext.NotifyValidationStateChanged();
         };
     }
 
@@ -84,37 +85,42 @@ public partial class Signup
         _messageStore.Clear();
         _editContext.NotifyValidationStateChanged();
 
-        try
+        var request = new SignupRequest
         {
-            var request = new SignupRequest
-            {
-                Email = model.Email,
-                DisplayName = model.DisplayName,
-                Password = model.DisplayName,
-                Tag = model.Tag
-            };
+            Email = model.Email,
+            DisplayName = model.DisplayName,
+            Password = model.Password,
+            Tag = model.Tag
+        };
 
-            await AuthApi.SignupAsync(request);
-        }
-        catch (ApiException e)
+        var result = await AuthService.SignupAsync(request);
+
+        if (result.IsSuccess)
         {
-            var error = JsonSerializer.Deserialize<Dictionary<string, string>>(e.Content);
-
-            if (error!["error"] == "EmailTaken")
-            {
-                _messageStore.Add(() => model.Email, "This email is already taken");
-            }
-            else if (error!["error"] == "TagTaken")
-            {
-                _messageStore.Add(() => model.Tag, "This tag is already taken");
-            }
-            else
-            {
-                Snackbar.Add($"Something went wrong: {e.Content}", Severity.Error);
-            }
-
-            _editContext.NotifyValidationStateChanged();
+            Snackbar.Add("You signed up successfully.", Severity.Success);
+            return;
         }
+
+        switch (result.ErrorType)
+        {
+            case AuthErrorType.EmailTaken:
+                _messageStore.Add(
+                    _editContext.Field(nameof(SignupModel.Email)),
+                    "This email is already taken");
+                break;
+
+            case AuthErrorType.TagTaken:
+                _messageStore.Add(
+                    _editContext.Field(nameof(SignupModel.Tag)),
+                    "This tag is already taken");
+                break;
+
+            default:
+                Snackbar.Add("Something went wrong. Please try again later.", Severity.Error);
+                break;
+        }
+
+        _editContext.NotifyValidationStateChanged();
     }
 
     class SignupModel

@@ -8,5 +8,5 @@ public class AuthResponse
 
     public string? RefreshToken { get; set; }
     
-    public ErrorTypes? ErrorType { get; set; }
+    public AuthErrorType ErrorType { get; set; }
 }
