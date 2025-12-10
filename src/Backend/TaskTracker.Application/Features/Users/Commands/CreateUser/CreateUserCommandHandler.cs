@@ -28,7 +28,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
             Tag = request.Tag,
             DisplayName = request.DisplayName,
             CreatedAt = DateTime.UtcNow,
-            Role = Roles.User,
+            Role = Role.User,
         };
 
         var result = await uow.UserRepository.AddAsync(user); 

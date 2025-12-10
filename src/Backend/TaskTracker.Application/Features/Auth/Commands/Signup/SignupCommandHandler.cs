@@ -48,7 +48,7 @@ public class SignupCommandHandler : IRequestHandler<SignupCommand, AuthResponse>
             PasswordHash = passwordHash,
             CreatedAt = DateTime.UtcNow,
             IsDeleted = false,
-            Role = Roles.User,
+            Role = Role.User,
             Tag = request.Tag
         };
 

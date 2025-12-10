@@ -1,6 +1,6 @@
 ﻿namespace TaskTracker.Domain.Enums;
 
-public enum Priorities
+public enum Priority
 {
     Low,
     Medium,

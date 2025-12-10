@@ -6,5 +6,5 @@ public class AddBoardMemberRequest
 {
     public int UserId { get; set; }
 
-    public BoardRoles Role { get; set; } = BoardRoles.Editor;
+    public BoardRole Role { get; set; } = BoardRole.Editor;
 }

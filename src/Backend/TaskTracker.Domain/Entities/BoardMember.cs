@@ -15,7 +15,7 @@ public class BoardMember
 
     public int UserId { get; set; }
 
-    public BoardRoles Role { get; set; }
+    public BoardRole Role { get; set; }
 
     public DateTime JoinedAt { get; set; }
 

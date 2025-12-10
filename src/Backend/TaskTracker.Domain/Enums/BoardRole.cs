@@ -1,6 +1,6 @@
 ﻿namespace TaskTracker.Domain.Enums;
 
-public enum BoardRoles
+public enum BoardRole
 {
     Editor,
     Owner,
