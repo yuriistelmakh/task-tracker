@@ -23,7 +23,7 @@ public class GetAllBoardsQueryHandler : IRequestHandler<GetAllBoardsQuery, IEnum
     {
         using var uow = _unitOfWorkFactory.Create();
 
-        var boards = await uow.BoardRepository.GetAllWithOwnersAsync(request.UserId);
+        var boards = await uow.BoardRepository.GetAllWithDetailsAsync(request.UserId);
 
         var boardsDto = boards.Select(b => b.ToBoardSummaryDto());
 

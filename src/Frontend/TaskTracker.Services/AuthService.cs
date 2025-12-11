@@ -1,6 +1,7 @@
 ﻿using TaskTracker.Domain.DTOs.Auth;
 using TaskTracker.Domain.Enums;
-using TaskTracker.Services.Abstraction.Interfaces;
+using TaskTracker.Services.Abstraction.Interfaces.APIs;
+using TaskTracker.Services.Abstraction.Interfaces.Services;
 
 namespace TaskTracker.Services;
 

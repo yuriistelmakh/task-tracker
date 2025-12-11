@@ -1,8 +1,9 @@
 using TaskTracker.WebApp.Components;
 using Refit;
-using TaskTracker.Services.Abstraction.Interfaces;
 using MudBlazor.Services;
 using TaskTracker.Services;
+using TaskTracker.Services.Abstraction.Interfaces.APIs;
+using TaskTracker.Services.Abstraction.Interfaces.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +17,12 @@ builder.Services.AddMudServices();
 builder.Services.AddRefitClient<IAuthApi>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7275"));
 
+builder.Services.AddRefitClient<IBoardsApi>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7275"));
+
+
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IBoardsService, BoardsService>();
 
 var app = builder.Build();
 

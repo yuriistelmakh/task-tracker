@@ -1,0 +1,11 @@
+﻿.search-bar .mud-input > input.mud-input-root {
+    color: white;
+}
+
+.mud-input-outlined-border {
+    border: 1px solid white !important;
+}
+
+.search-bar .mud-icon-root.mud-svg-icon {
+    color: white !important;
+}
