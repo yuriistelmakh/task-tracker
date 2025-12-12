@@ -64,7 +64,7 @@ public class JwtTokenService : IJwtTokenService
         };
     }
 
-    public async Task<AuthResponse?> RefreshTokenAsync(string accessToken, string refreshToken)
+    public async Task<AuthResult?> RefreshTokenAsync(string accessToken, string refreshToken)
     {
         var principal = GetPrincipalFromExpiredToken(accessToken);
         if (principal is null)
@@ -102,10 +102,10 @@ public class JwtTokenService : IJwtTokenService
 
         uow.Commit();
 
-        return new AuthResponse
+        return new AuthResult
         {
             AccessToken = newAcessToken,
-            RefreshToken = newRefreshToken.Token
+            RefreshToken = newRefreshToken
         };
     }
 

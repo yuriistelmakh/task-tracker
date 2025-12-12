@@ -6,6 +6,7 @@ using TaskTracker.Application.Features.Auth.Commands.TokenRefresh;
 using TaskTracker.Application.Features.Auth.Commands.Signup;
 using TaskTracker.Domain.DTOs.Auth;
 using TaskTracker.Domain.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace TaskTracker.Api.Controllers;
 [Route("api/[controller]")]
@@ -30,6 +31,19 @@ public class AuthController : ControllerBase
         };
 
         var result = await _mediator.Send(command);
+        
+        if (result.RefreshToken is not null)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = result.RefreshToken.ExpiresAt
+            };
+
+            Response.Cookies.Append("refreshToken", result.RefreshToken.Token, cookieOptions);
+        }
 
         return Ok(result);
     }

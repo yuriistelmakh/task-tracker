@@ -7,7 +7,7 @@ using TaskTracker.Domain.DTOs.Auth;
 
 namespace TaskTracker.Application.Features.Auth.Commands.TokenRefresh;
 
-public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, AuthResponse?>
+public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, AuthResult?>
 {
     private readonly IJwtTokenService _jwtTokenService;
 
@@ -16,7 +16,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
         _jwtTokenService = jwtTokenService;
     }
 
-    public async Task<AuthResponse?> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResult?> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
         return await _jwtTokenService.RefreshTokenAsync(request.AccessToken, request.RefreshToken);
     }

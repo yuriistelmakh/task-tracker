@@ -3,7 +3,7 @@ using TaskTracker.Domain.DTOs.Auth;
 
 namespace TaskTracker.Application.Features.Auth.Commands.Signup;
 
-public class SignupCommand : IRequest<AuthResponse>
+public class SignupCommand : IRequest<AuthResult>
 {
     public required string Email { get; set; }
 

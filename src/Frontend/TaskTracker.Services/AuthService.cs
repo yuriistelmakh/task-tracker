@@ -26,11 +26,10 @@ public class AuthService : IAuthService
         if (content.ErrorType != AuthErrorType.None)
             return AuthResult.Failure(content.ErrorType);
 
-        if (string.IsNullOrWhiteSpace(content.AccessToken) ||
-            string.IsNullOrWhiteSpace(content.RefreshToken))
+        if (string.IsNullOrWhiteSpace(content.AccessToken))
             return AuthResult.Failure(AuthErrorType.Unknown);
 
-        return AuthResult.Success(content.AccessToken!, content.RefreshToken!);
+        return AuthResult.Success(content.AccessToken!);
     }
 
 
@@ -54,13 +53,12 @@ public class AuthService : IAuthService
         var content = response.Content;
 
 
-        if (string.IsNullOrWhiteSpace(content.AccessToken) ||
-            string.IsNullOrWhiteSpace(content.RefreshToken))
+        if (string.IsNullOrWhiteSpace(content.AccessToken))
         {
             return AuthResult.Failure(AuthErrorType.Unknown);
         }
 
-        return AuthResult.Success(content.AccessToken!, content.RefreshToken!);
+        return AuthResult.Success(content.AccessToken!);
     }
 }
 

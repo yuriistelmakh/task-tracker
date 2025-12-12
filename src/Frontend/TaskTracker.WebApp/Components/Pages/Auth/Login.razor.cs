@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using System.ComponentModel.DataAnnotations;
@@ -15,6 +16,9 @@ public partial class Login
 
     [Inject]
     public IAuthService AuthService { private get; set; } = default!;
+
+    [Inject]
+    public ILocalStorageService LocalStorage { private get; set; } = default!;
 
     private readonly LoginModel model = new();
 
@@ -74,6 +78,9 @@ public partial class Login
         {
             SnackBar.Add("You authorized successfully. Now wait for home page implementation lmao",
                 Severity.Success);
+
+            await LocalStorage.SetItemAsync("accessToken", result.AccessToken);
+
             return;
         }
 
@@ -101,10 +108,8 @@ public partial class Login
 
     class LoginModel
     {
-        [Required(ErrorMessage = "This field is required")]
         public string Login { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "This field is required")]
         public string Password { get; set; } = string.Empty;
     }
 }

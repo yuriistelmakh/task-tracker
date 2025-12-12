@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using TaskTracker.Application.Interfaces.UoW;
 using TaskTracker.Domain.DTOs.Boards;
-using TaskTracker.Domain.DTOs.Users;
 using TaskTracker.Domain.Mapping;
 
 namespace TaskTracker.Application.Features.Boards.Queries.GetAllBoards;

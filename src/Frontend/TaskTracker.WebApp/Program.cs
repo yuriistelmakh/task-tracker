@@ -4,6 +4,7 @@ using MudBlazor.Services;
 using TaskTracker.Services;
 using TaskTracker.Services.Abstraction.Interfaces.APIs;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
+using Blazored.LocalStorage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,7 @@ builder.Services.AddRefitClient<IAuthApi>()
 builder.Services.AddRefitClient<IBoardsApi>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7275"));
 
+builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IBoardsService, BoardsService>();

@@ -8,10 +8,13 @@ namespace TaskTracker.WebApp.Components.Pages;
 public partial class Home
 {
     [Inject]
-    IBoardsService BoardsService { get; set; }
+    public IBoardsService BoardsService { private get; set; } = default!;
 
     [Inject]
-    ISnackbar Snackbar { get; set; }
+    public ISnackbar Snackbar { private get; set; } = default!;
+
+    [Inject]
+    public NavigationManager Nav { private get; set; } = default!;
 
     string _search = "";
 
@@ -19,6 +22,8 @@ public partial class Home
 
     protected override async Task OnInitializedAsync()
     {
+        Nav.NavigateTo("/login", true);
+
         var boardDtos = await BoardsService.GetAllAsync(1);
 
         if (boardDtos is null)
@@ -53,5 +58,4 @@ public partial class Home
 
         public string? OwnerIconUrl { get; set; }
     }
-
 }
