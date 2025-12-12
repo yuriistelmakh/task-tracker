@@ -19,15 +19,22 @@ public class AuthService : IAuthService
         var response = await _authApi.LoginAsync(request);
 
         if (!response.IsSuccessStatusCode || response.Content is null)
+        {
             return AuthResult.Failure(AuthErrorType.Unknown);
+        }
 
         var content = response.Content;
 
         if (content.ErrorType != AuthErrorType.None)
+        {
             return AuthResult.Failure(content.ErrorType);
+        }
 
         if (string.IsNullOrWhiteSpace(content.AccessToken))
+        {
             return AuthResult.Failure(AuthErrorType.Unknown);
+        }
+         
 
         return AuthResult.Success(content.AccessToken!);
     }
@@ -48,7 +55,9 @@ public class AuthService : IAuthService
         }
 
         if (response.Content is null)
+        {
             return AuthResult.Failure(AuthErrorType.Unknown);
+        }
 
         var content = response.Content;
 
@@ -61,4 +70,3 @@ public class AuthService : IAuthService
         return AuthResult.Success(content.AccessToken!);
     }
 }
-

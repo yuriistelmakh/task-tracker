@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
-using System.ComponentModel.DataAnnotations;
 using TaskTracker.Domain.DTOs.Auth;
 using TaskTracker.Domain.Enums;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
+using TaskTracker.WebApp.Models;
 
 namespace TaskTracker.WebApp.Components.Pages.Auth;
 
@@ -68,9 +68,13 @@ public partial class Login
         };
 
         if (model.Login.Contains('@'))
+        {
             request.Email = model.Login;
+        }
         else
+        {
             request.Tag = model.Login;
+        }
 
         var result = await AuthService.LoginAsync(request);
 
@@ -87,29 +91,28 @@ public partial class Login
         switch (result.ErrorType)
         {
             case AuthErrorType.UserNotFound:
-                _messageStore.Add(
-                    _editContext.Field(nameof(LoginModel.Login)),
-                    "User was not found");
-                break;
+                {
+                    _messageStore.Add(
+                        _editContext.Field(nameof(LoginModel.Login)),
+                        "User was not found");
+                    break;
+                }
 
             case AuthErrorType.InvalidPassword:
-                _messageStore.Add(
-                    _editContext.Field(nameof(LoginModel.Password)),
-                    "Incorrect password");
-                break;
+                {
+                    _messageStore.Add(
+                        _editContext.Field(nameof(LoginModel.Password)),
+                        "Incorrect password");
+                    break;
+                }
 
             default:
-                SnackBar.Add("Something went wrong. Please try again later.", Severity.Error);
-                break;
+                {
+                    SnackBar.Add("Something went wrong. Please try again later.", Severity.Error);
+                    break;
+                }
         }
 
         _editContext.NotifyValidationStateChanged();
-    }
-
-    class LoginModel
-    {
-        public string Login { get; set; } = string.Empty;
-
-        public string Password { get; set; } = string.Empty;
     }
 }

@@ -8,12 +8,12 @@
 
     <MudCard Width="350px"
              Elevation="4"
-             Color="Color.Primary">
+             Color=@Color.Primary>
 
         <MudCardHeader>
             <CardHeaderContent>
-                <MudText Typo="Typo.h5"
-                         Align="Align.Center">
+                <MudText Typo=@Typo.h5
+                         Align=@Align.Center>
                     Log into your account
                 </MudText>
             </CardHeaderContent>
@@ -25,29 +25,29 @@
                 <DataAnnotationsValidator />
 
                 <MudTextField Label="Email or tag"
-                              @bind-Value="model.Login"
+                              @bind-Value=@model.Login
                               For=@(() => model.Login)
-                              Variant="Variant.Outlined"
-                              Margin="Margin.None"
+                              Variant=@Variant.Outlined
+                              Margin=@Margin.None
                               Class="mb-4" />
 
                 <MudTextField Label="Password"
-                              @bind-Value="model.Password"
+                              @bind-Value=@model.Password
                               For=@(() => model.Password)
-                              Variant="Variant.Outlined"
+                              Variant=@Variant.Outlined
                               InputType=@PasswordInputType
-                              Adornment="Adornment.End"
+                              Adornment=@Adornment.End
                               AdornmentIcon=@PasswordInputIcon
                               OnAdornmentClick=@TogglePasswordVisibility
-                              Margin="Margin.None"
+                              Margin=@Margin.None
                               Class="mb-4" />
 
-                <MudButton ButtonType="ButtonType.Submit"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary"
+                <MudButton ButtonType=@ButtonType.Submit
+                           Variant=@Variant.Filled
+                           Color=@Color.Primary
                            FullWidth=true
                            Class="mt-6"
-                           Size="Size.Large">
+                           Size=@Size.Large>
                     Log in
                 </MudButton>
             </EditForm>
