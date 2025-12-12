@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using TaskTracker.Domain.DTOs.Auth;
 using TaskTracker.Domain.Enums;
 using TaskTracker.Services.Abstraction.Interfaces;
+using TaskTracker.WebApp.Models;
 
 namespace TaskTracker.WebApp.Components.Pages.Auth;
 
@@ -97,14 +98,5 @@ public partial class Login
         }
 
         _editContext.NotifyValidationStateChanged();
-    }
-
-    class LoginModel
-    {
-        [Required(ErrorMessage = "This field is required")]
-        public string Login { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "This field is required")]
-        public string Password { get; set; } = string.Empty;
     }
 }

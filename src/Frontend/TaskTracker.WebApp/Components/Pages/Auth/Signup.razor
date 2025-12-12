@@ -8,12 +8,12 @@
 
     <MudCard Width="350px"
              Elevation="4"
-             Color="Color.Primary">
+             Color=@Color.Primary>
 
         <MudCardHeader>
             <CardHeaderContent>
-                <MudText Typo="Typo.h5"
-                         Align="Align.Center">
+                <MudText Typo=@Typo.h5
+                         Align=@Align.Center>
                     Create a new account
                 </MudText>
             </CardHeaderContent>
@@ -25,56 +25,56 @@
                 <DataAnnotationsValidator />
 
                 <MudTextField Label="Email"
-                              @bind-Value="model.Email"
+                              @bind-Value=@model.Email
                               For=@(() => model.Email)
-                              Variant="Variant.Outlined"
-                              Margin="Margin.None"
+                              Variant=@Variant.Outlined
+                              Margin=@Margin.None
                               Class="mb-4" />
 
                 <MudTextField Label="Password"
-                              @bind-Value="model.Password"
+                              @bind-Value=@model.Password
                               For=@(() => model.Password)
-                              Variant="Variant.Outlined"
+                              Variant=@Variant.Outlined
                               InputType=@PasswordInputType
-                              Adornment="Adornment.End"
+                              Adornment=@Adornment.End
                               AdornmentIcon=@PasswordInputIcon
                               OnAdornmentClick=@TogglePasswordVisibility
-                              Margin="Margin.None"
+                              Margin=@Margin.None
                               Class="mb-4" />
 
                 <MudTextField Label="Repeat password"
-                              @bind-Value="model.RepeatPassword"
+                              @bind-Value=@model.RepeatPassword
                               For=@(() => model.RepeatPassword)
-                              Variant="Variant.Outlined"
+                              Variant=@Variant.Outlined
                               InputType=@RepeatPasswordInputType
-                              Adornment="Adornment.End"
+                              Adornment=@Adornment.End
                               AdornmentIcon=@RepeatPasswordInputIcon
                               OnAdornmentClick=@ToggleRepeatPasswordVisibility
-                              Margin="Margin.None"
+                              Margin=@Margin.None
                               Class="mb-4" />
 
                 <MudTextField Label="Display name"
-                              @bind-Value="model.DisplayName"
+                              @bind-Value=@model.DisplayName
                               For=@(() => model.DisplayName)
-                              Variant="Variant.Outlined"
-                              Margin="Margin.None"
+                              Variant=@Variant.Outlined
+                              Margin=@Margin.None
                               Class="mb-4" />
 
                 <MudTextField Label="Tag"
-                              @bind-Value="model.Tag"
+                              @bind-Value=@model.Tag
                               For=@(() => model.Tag)
-                              Variant="Variant.Outlined"
-                              Adornment="Adornment.Start"
+                              Variant=@Variant.Outlined
+                              Adornment=@Adornment.Start
                               AdornmentText=@("@")
-                              Margin="Margin.None"
+                              Margin=@Margin.None
                               Class="mb-4" />
 
-                <MudButton ButtonType="ButtonType.Submit"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           FullWidth="true"
+                <MudButton ButtonType=@ButtonType.Submit
+                           Variant=@Variant.Filled
+                           Color=@Color.Primary
+                           FullWidth=true
                            Class="mt-6"
-                           Size="Size.Large">
+                           Size=@Size.Large>
                     Log in
                 </MudButton>
             </EditForm>
