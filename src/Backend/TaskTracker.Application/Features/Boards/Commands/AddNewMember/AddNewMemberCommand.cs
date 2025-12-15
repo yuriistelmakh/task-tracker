@@ -9,5 +9,5 @@ public class AddNewMemberCommand : IRequest<int>
 
     public int BoardId { get; set; }
 
-    public BoardRoles Role { get; set; } = BoardRoles.Editor;
+    public BoardRole Role { get; set; } = BoardRole.Editor;
 }

@@ -1,0 +1,62 @@
+﻿@page "/login"
+@rendermode InteractiveServer
+
+<MudSnackbarProvider />
+
+<MudContainer Style="height: 100vh"
+              Class="d-flex align-center justify-center mud-width-full">
+
+    <MudCard Width="350px"
+             Elevation="4"
+             Color=@Color.Primary>
+
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo=@Typo.h5
+                         Align=@Align.Center>
+                    Log into your account
+                </MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+
+        <MudCardContent Class="d-flex flex-column w-100">
+            <EditForm EditContext=@_editContext
+                      OnValidSubmit=@OnValidSubmit>
+                <DataAnnotationsValidator />
+
+                <MudTextField Label="Email or tag"
+                              @bind-Value=@model.Login
+                              For=@(() => model.Login)
+                              Variant=@Variant.Outlined
+                              Margin=@Margin.None
+                              Class="mb-4" />
+
+                <MudTextField Label="Password"
+                              @bind-Value=@model.Password
+                              For=@(() => model.Password)
+                              Variant=@Variant.Outlined
+                              InputType=@PasswordInputType
+                              Adornment=@Adornment.End
+                              AdornmentIcon=@PasswordInputIcon
+                              OnAdornmentClick=@TogglePasswordVisibility
+                              Margin=@Margin.None
+                              Class="mb-4" />
+
+                <MudButton ButtonType=@ButtonType.Submit
+                           Variant=@Variant.Filled
+                           Color=@Color.Primary
+                           FullWidth=true
+                           Class="mt-6"
+                           Size=@Size.Large>
+                    Log in
+                </MudButton>
+            </EditForm>
+
+            <div class="d-flex justify-center mt-4">
+                <MudLink Href="/signup">
+                    Don't have an account? Sign up.
+                </MudLink>
+            </div>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>

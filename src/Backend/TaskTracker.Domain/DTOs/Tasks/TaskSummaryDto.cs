@@ -11,7 +11,7 @@ public class TaskSummaryDto
 
     public required string Title { get; set; }
 
-    public Priorities Priority { get; set; } = Priorities.Medium;
+    public Priority Priority { get; set; } = Priority.Medium;
 
     public int Order { get; set; } = 0;
 

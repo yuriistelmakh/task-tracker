@@ -10,7 +10,7 @@ using TaskTracker.Domain.Enums;
 
 namespace TaskTracker.Application.Features.Auth.Commands.Signup;
 
-public class SignupCommandHandler : IRequestHandler<SignupCommand, AuthResponse?>
+public class SignupCommandHandler : IRequestHandler<SignupCommand, AuthResponse>
 {
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
     private readonly IPasswordHasher _passwordHasher;
@@ -25,15 +25,20 @@ public class SignupCommandHandler : IRequestHandler<SignupCommand, AuthResponse?
         _jwtTokenGenerator = jwtTokenGenerator;
     }
 
-    public async Task<AuthResponse?> Handle(SignupCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResponse> Handle(SignupCommand request, CancellationToken cancellationToken)
     {
         using var uow = _unitOfWorkFactory.Create();
 
-        if (await uow.UserRepository.GetByEmailOrTagAsync(request.Email, request.Tag) is not null)
+        if (await uow.UserRepository.GetByEmailAsync(request.Email) is not null)
         {
-            return null;
+            return new AuthResponse { ErrorType = AuthErrorType.EmailTaken };
         }
 
+        if (await uow.UserRepository.GetByTagAsync(request.Tag) is not null)
+        {
+            return new AuthResponse { ErrorType = AuthErrorType.TagTaken };
+        }
+        
         var passwordHash = _passwordHasher.Generate(request.Password);
 
         var user = new User
@@ -43,7 +48,7 @@ public class SignupCommandHandler : IRequestHandler<SignupCommand, AuthResponse?
             PasswordHash = passwordHash,
             CreatedAt = DateTime.UtcNow,
             IsDeleted = false,
-            Role = Roles.User,
+            Role = Role.User,
             Tag = request.Tag
         };
 

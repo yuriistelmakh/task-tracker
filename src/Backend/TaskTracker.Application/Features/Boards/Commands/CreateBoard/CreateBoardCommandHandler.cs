@@ -37,7 +37,7 @@ public class CreateBoardCommandHandler : IRequestHandler<CreateBoardCommand, int
             BoardId = newId,
             UserId = board.CreatedBy,
             JoinedAt = DateTime.UtcNow,
-            Role = BoardRoles.Owner,
+            Role = BoardRole.Owner,
         };
 
         await uow.BoardRepository.AddMemberAsync(boardMember);

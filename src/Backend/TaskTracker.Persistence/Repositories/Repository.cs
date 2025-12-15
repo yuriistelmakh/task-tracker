@@ -17,27 +17,27 @@ public class Repository<T, TId> : IRepository<T, TId> where T: class
         Transaction = transaction;
     }
 
-    public async Task<TId?> AddAsync(T entity)
+    public virtual async Task<TId?> AddAsync(T entity)
     {
         return await Connection.InsertAsync<TId, T>(entity, transaction: Transaction);
     }
 
-    public async Task<int> DeleteAsync(TId id)
+    public virtual async Task<int> DeleteAsync(TId id)
     {
         return await Connection.DeleteAsync<T>(id, transaction: Transaction);
     }
 
-    public async Task<IEnumerable<T>> GetAllAsync()
+    public virtual async Task<IEnumerable<T>> GetAllAsync()
     {
         return await Connection.GetListAsync<T>(new { }, transaction: Transaction);
     }
 
-    public async Task<T?> GetAsync(TId id)
+    public virtual async Task<T?> GetAsync(TId id)
     {
         return await Connection.GetAsync<T>(id, transaction: Transaction);
     }
 
-    public async Task<int> UpdateAsync(T entity)
+    public virtual async Task<int> UpdateAsync(T entity)
     {
         return await Connection.UpdateAsync<T>(entity, transaction: Transaction);
     }

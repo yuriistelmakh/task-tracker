@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using System.Data;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using TaskTracker.Application.Interfaces.Repositories;
 using TaskTracker.Domain.Entities;
@@ -13,7 +14,7 @@ public class UserRepository : Repository<User, int>, IUserRepository
     {
     }
 
-    public async Task<int> DeleteUserAsync(int id)
+    public override async Task<int> DeleteAsync(int id)
     {
         var sql = @"
             UPDATE Users
@@ -26,16 +27,30 @@ public class UserRepository : Repository<User, int>, IUserRepository
         return await Connection.ExecuteAsync(sql, transaction: Transaction, param: new { Id = id });
     }
 
-    public async Task<User?> GetByEmailOrTagAsync(string email, string tag)
+    public async Task<User?> GetByEmailAsync(string email)
     {
         var sql = @"
             SELECT *
             FROM Users
             WHERE 
-                (Email = @Email OR Tag = @Tag)
+                Email = @Email
                 AND IsDeleted = 0";
 
-        var users = await Connection.QueryAsync<User>(sql, transaction: Transaction, param: new { email, tag });
+        var users = await Connection.QueryAsync<User>(sql, transaction: Transaction, param: new { email });
+
+        return users.FirstOrDefault();
+    }
+
+    public async Task<User?> GetByTagAsync(string tag)
+    {
+        var sql = @"
+            SELECT *
+            FROM Users
+            WHERE 
+                Tag = @Tag
+                AND IsDeleted = 0";
+
+        var users = await Connection.QueryAsync<User>(sql, transaction: Transaction, param: new { tag });
 
         return users.FirstOrDefault();
     }
