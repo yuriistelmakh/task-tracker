@@ -3,13 +3,13 @@
 
 <MudLayout>
 
-    <MudAppBar Elevation="4"
+    <MudAppBar Elevation=4
                Color=@Color.Primary>
         <MudText Typo=@Typo.h6>
             TaskTracker
         </MudText>
 
-        <MudTextField @bind-Value="_search"
+        <MudTextField @bind-Value=@search
                       Placeholder="Search..."
                       Variant=@Variant.Outlined
                       Style="width: 250px"
@@ -23,7 +23,7 @@
         <MudButton Color=@Color.Inherit>
             <MudIcon Icon=@Icons.Material.Filled.AccountCircle
                      Size=@Size.Large />
-            <MudText Class="ml-2">Username</MudText>
+            <MudText Class="ml-2">@username</MudText>
         </MudButton>
     </MudAppBar>
 
@@ -49,7 +49,7 @@
                 <MudStack>
                     @foreach (var board in Boards)
                     {
-                        <MudPaper Elevation="4"
+                        <MudPaper Elevation=4
                                   Class="board-card">
                             <MudStack>
 
@@ -71,7 +71,6 @@
                                                  Color=@Color.Inherit
                                                  Size=@Size.Large
                                                  Class="mr-2">
-
                                         </MudIcon>
 
                                         <MudText Typo=@Typo.body2>
@@ -87,11 +86,12 @@
                 <form action="/auth/logout" method="get">
                     <AntiforgeryToken />
 
-                    <MudButton ButtonType="ButtonType.Submit"
-                               Variant="Variant.Filled"
-                               Color="Color.Error"
-                               StartIcon="@Icons.Material.Filled.Logout">
-                        Вийти
+                    <!-- temporarily -->
+                    <MudButton ButtonType=ButtonType.Submit
+                               Variant=Variant.Filled
+                               Color=Color.Error
+                               StartIcon=@Icons.Material.Filled.Logout>
+                        Logout
                     </MudButton>
                 </form>
             </MudStack>

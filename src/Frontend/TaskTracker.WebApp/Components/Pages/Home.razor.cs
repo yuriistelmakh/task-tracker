@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
+using System.Security.Claims;
 using TaskTracker.Domain.DTOs.Boards;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
+using TaskTracker.WebApp.Models;
 
 namespace TaskTracker.WebApp.Components.Pages;
 
@@ -18,13 +21,23 @@ public partial class Home
     [Inject]
     public NavigationManager Nav { private get; set; } = default!;
 
-    string _search = "";
+    [Inject]
+    public AuthenticationStateProvider AuthStateProvider { private get; set; } = default!;
+
+    string search = "";
+
+    string username = "";
 
     List<BoardVm> Boards = [];
 
     protected override async Task OnInitializedAsync()
     {
-        var boardDtos = await BoardsService.GetAllAsync(1);
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        username = user.FindFirst(ClaimTypes.Name)?.Value ?? "Anonymous";
+
+        var boardDtos = await BoardsService.GetAllAsync();
 
         if (boardDtos is null)
         {
@@ -42,20 +55,5 @@ public partial class Home
             OwnerIconUrl = bd.Owner.AvatarUrl
         }).ToList();
 
-    }
-
-    public class BoardVm
-    {
-        public required string Title { get; set; }
-
-        public bool IsArchived { get; set; }
-
-        public int TasksCount { get; set; }
-
-        public int MembersCount { get; set; }
-
-        public required string OwnerName { get; set; }
-
-        public string? OwnerIconUrl { get; set; }
     }
 }

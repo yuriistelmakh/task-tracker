@@ -13,9 +13,9 @@ public class BoardsService : IBoardsService
         _boardsApi = boardsApi;
     }
 
-    public async Task<IEnumerable<BoardSummaryDto>?> GetAllAsync(int id)
+    public async Task<IEnumerable<BoardSummaryDto>?> GetAllAsync()
     {
-        var result = await _boardsApi.GetAllAsync(id);
+        var result = await _boardsApi.GetAllAsync();
 
         if (!result.IsSuccessful)
         {

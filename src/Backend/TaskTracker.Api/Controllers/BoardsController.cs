@@ -17,6 +17,7 @@ namespace TaskTracker.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class BoardsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -27,18 +28,17 @@ public class BoardsController : ControllerBase
     }
 
 
-    //TODO: temporarily getting id from the query for the sake of test
-    [HttpGet("my-boards/{id}")]
-    public async Task<IActionResult> GetAllAsync(int id)
+    [HttpGet("my-boards")]
+    public async Task<IActionResult> GetAllAsync()
     {
-        //var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        //if (string.IsNullOrEmpty(userIdString))
-        //{
-        //    return Unauthorized("Id was not found in the token");
-        //}
+        if (string.IsNullOrEmpty(userIdString))
+        {
+            return Unauthorized("Id was not found in the token");
+        }
 
-        //int id = int.Parse(userIdString);
+        int id = int.Parse(userIdString);
 
         var query = new GetAllBoardsQuery(id);
 

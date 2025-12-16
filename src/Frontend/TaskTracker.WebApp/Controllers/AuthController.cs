@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using TaskTracker.Domain.DTOs.Auth;
 using TaskTracker.Domain.Enums;
@@ -54,11 +55,15 @@ public class AuthController : Controller
             return RedirectToLoginWithError(AuthErrorType.Unknown, login, returnUrl);
         }
 
+        var handler = new JwtSecurityTokenHandler();
+        var jwt = handler.ReadJwtToken(content.AccessToken);
+        var displayName = jwt.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+
         var claims = new List<Claim>
         {
-            new(ClaimTypes.Name, login),
-            new("AccessToken", content.AccessToken),
-            new("RefreshToken", content.RefreshToken ?? "")
+            new Claim(ClaimTypes.Name, displayName!),
+            new Claim("AccessToken", content.AccessToken),
+            new Claim("RefreshToken", content.RefreshToken ?? "")
         };
 
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -107,9 +112,9 @@ public class AuthController : Controller
 
         var claims = new List<Claim>
         {
-            new(ClaimTypes.Name, model.Email),
-            new("AccessToken", content.AccessToken!),
-            new("RefreshToken", content.RefreshToken ?? "")
+            new Claim(ClaimTypes.Name, model.DisplayName),
+            new Claim("AccessToken", content.AccessToken!),
+            new Claim("RefreshToken", content.RefreshToken ?? "")
         };
 
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -132,22 +137,10 @@ public class AuthController : Controller
         var query = new QueryString();
         query = query.Add("errorCode", ((int)errorType).ToString());
 
-        if (!string.IsNullOrEmpty(model.Email))
-        {
-            query = query.Add("email", model.Email);
-        }
-        if (!string.IsNullOrEmpty(model.Tag))
-        {
-            query = query.Add("tag", model.Tag);
-        }
-        if (!string.IsNullOrEmpty(model.DisplayName))
-        {
-            query = query.Add("displayName", model.DisplayName);
-        }
-        if (!string.IsNullOrEmpty(customError))
-        {
-            query = query.Add("customError", customError);
-        }
+        if (!string.IsNullOrEmpty(model.Email)) query = query.Add("email", model.Email);
+        if (!string.IsNullOrEmpty(model.Tag)) query = query.Add("tag", model.Tag);
+        if (!string.IsNullOrEmpty(model.DisplayName)) query = query.Add("displayName", model.DisplayName);
+        if (!string.IsNullOrEmpty(customError)) query = query.Add("customError", customError);
 
         return Redirect("/signup" + query.ToString());
     }

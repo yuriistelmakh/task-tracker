@@ -13,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<AuthHeaderHandler>();
 
 builder.Services.AddMudServices();
 
@@ -20,7 +22,7 @@ builder.Services.AddRefitClient<IAuthApi>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7275"));
 
 builder.Services.AddRefitClient<IBoardsApi>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7275"));
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7275")).AddHttpMessageHandler<AuthHeaderHandler>();;
 
 builder.Services.AddBlazoredLocalStorage();
 

@@ -4,5 +4,5 @@ namespace TaskTracker.Services.Abstraction.Interfaces.Services;
 
 public interface IBoardsService
 {
-    Task<IEnumerable<BoardSummaryDto>?> GetAllAsync(int id); 
+    Task<IEnumerable<BoardSummaryDto>?> GetAllAsync(); 
 }
