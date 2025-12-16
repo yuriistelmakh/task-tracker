@@ -21,22 +21,10 @@ public partial class Home
     [Inject]
     public NavigationManager Nav { private get; set; } = default!;
 
-    [Inject]
-    public AuthenticationStateProvider AuthStateProvider { private get; set; } = default!;
-
-    string search = "";
-
-    string username = "";
-
     List<BoardVm> Boards = [];
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        username = user.FindFirst(ClaimTypes.Name)?.Value ?? "Anonymous";
-
         var boardDtos = await BoardsService.GetAllAsync();
 
         if (boardDtos is null)
