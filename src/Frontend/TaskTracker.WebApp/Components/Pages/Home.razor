@@ -84,7 +84,16 @@
                         </MudPaper>
                     }
                 </MudStack>
+                <form action="/auth/logout" method="get">
+                    <AntiforgeryToken />
 
+                    <MudButton ButtonType="ButtonType.Submit"
+                               Variant="Variant.Filled"
+                               Color="Color.Error"
+                               StartIcon="@Icons.Material.Filled.Logout">
+                        Вийти
+                    </MudButton>
+                </form>
             </MudStack>
 
         </MudContainer>

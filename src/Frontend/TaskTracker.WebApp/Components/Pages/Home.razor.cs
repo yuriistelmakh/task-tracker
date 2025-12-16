@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using TaskTracker.Domain.DTOs.Boards;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
 
 namespace TaskTracker.WebApp.Components.Pages;
 
+[Authorize]
 public partial class Home
 {
     [Inject]
@@ -22,8 +24,6 @@ public partial class Home
 
     protected override async Task OnInitializedAsync()
     {
-        Nav.NavigateTo("/login", true);
-
         var boardDtos = await BoardsService.GetAllAsync(1);
 
         if (boardDtos is null)

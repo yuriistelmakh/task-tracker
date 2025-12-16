@@ -8,5 +8,5 @@ public interface IJwtTokenService
 {
     string GenerateAccessToken(User user);
     RefreshToken GenerateRefreshToken();
-    Task<AuthResult> RefreshTokenAsync(string accessToken, string refreshToken);
+    Task<AuthResponse> RefreshTokenAsync(string accessToken, string refreshToken);
 }

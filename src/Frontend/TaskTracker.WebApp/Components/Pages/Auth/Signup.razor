@@ -1,4 +1,5 @@
 ﻿@page "/signup"
+@using TaskTracker.WebApp.Models
 @rendermode InteractiveServer
 
 <MudSnackbarProvider />
@@ -6,8 +7,8 @@
 <MudContainer Style="height: 100vh"
               Class="d-flex align-center justify-center mud-width-full">
 
-    <MudCard Width="350px"
-             Elevation="4"
+    <MudCard Width="400px"
+             Elevation=4
              Color=@Color.Primary>
 
         <MudCardHeader>
@@ -20,13 +21,20 @@
         </MudCardHeader>
 
         <MudCardContent Class="d-flex flex-column w-100">
+
             <EditForm EditContext=@_editContext
-                      OnValidSubmit=@OnValidSubmit>
+                      OnValidSubmit=OnValidSubmit
+                      action="/auth/signup"
+                      method="post"
+                      id="signup-form">
+
                 <DataAnnotationsValidator />
+                <AntiforgeryToken />
 
                 <MudTextField Label="Email"
                               @bind-Value=@model.Email
                               For=@(() => model.Email)
+                              UserAttributes=@(new() { { "name", "email" } })
                               Variant=@Variant.Outlined
                               Margin=@Margin.None
                               Class="mb-4" />
@@ -34,6 +42,7 @@
                 <MudTextField Label="Password"
                               @bind-Value=@model.Password
                               For=@(() => model.Password)
+                              UserAttributes=@(new() { { "name", "password" } })
                               Variant=@Variant.Outlined
                               InputType=@PasswordInputType
                               Adornment=@Adornment.End
@@ -45,6 +54,7 @@
                 <MudTextField Label="Repeat password"
                               @bind-Value=@model.RepeatPassword
                               For=@(() => model.RepeatPassword)
+                              UserAttributes=@(new() { { "name", "repeatPassword" } })
                               Variant=@Variant.Outlined
                               InputType=@RepeatPasswordInputType
                               Adornment=@Adornment.End
@@ -56,6 +66,7 @@
                 <MudTextField Label="Display name"
                               @bind-Value=@model.DisplayName
                               For=@(() => model.DisplayName)
+                              UserAttributes=@(new() { { "name", "displayName" } })
                               Variant=@Variant.Outlined
                               Margin=@Margin.None
                               Class="mb-4" />
@@ -63,9 +74,10 @@
                 <MudTextField Label="Tag"
                               @bind-Value=@model.Tag
                               For=@(() => model.Tag)
+                              UserAttributes=@(new() { { "name", "tag" } })
                               Variant=@Variant.Outlined
                               Adornment=@Adornment.Start
-                              AdornmentText=@("@")
+                              AdornmentText="@("@")"
                               Margin=@Margin.None
                               Class="mb-4" />
 
@@ -75,7 +87,7 @@
                            FullWidth=true
                            Class="mt-6"
                            Size=@Size.Large>
-                    Log in
+                    Sign up
                 </MudButton>
             </EditForm>
 

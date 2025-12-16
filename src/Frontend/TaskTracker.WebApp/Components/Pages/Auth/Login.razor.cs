@@ -1,44 +1,71 @@
-﻿using Blazored.LocalStorage;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
+﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using TaskTracker.Domain.DTOs.Auth;
 using TaskTracker.Domain.Enums;
-using TaskTracker.Services.Abstraction.Interfaces.Services;
 using TaskTracker.WebApp.Models;
 
 namespace TaskTracker.WebApp.Components.Pages.Auth;
 
 public partial class Login
 {
-    [Inject]
-    public ISnackbar SnackBar { private get; set; } = default!;
+    [Inject] public ISnackbar SnackBar { private get; set; } = default!;
 
-    [Inject]
-    public IAuthService AuthService { private get; set; } = default!;
+    [SupplyParameterFromQuery(Name = "returnUrl")]
+    public string? ReturnUrl { get; set; }
 
-    [Inject]
-    public ILocalStorageService LocalStorage { private get; set; } = default!;
+    [SupplyParameterFromQuery(Name = "errorCode")]
+    public int? ErrorCode { get; set; }
+
+    [SupplyParameterFromQuery(Name = "loginAttempt")]
+    public string? LoginAttempt { get; set; }
 
     private readonly LoginModel model = new();
+
+    private bool _isLoginError;
+    private string? _loginErrorText;
+
+    private bool _isPasswordError;
+    private string? _passwordErrorText;
 
     InputType PasswordInputType = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.Visibility;
     bool isPasswordVisible = false;
 
-    private EditContext _editContext = default!;
-    private ValidationMessageStore _messageStore = default!;
-
     protected override void OnInitialized()
     {
-        _editContext = new EditContext(model);
-        _messageStore = new ValidationMessageStore(_editContext);
-
-        _editContext.OnFieldChanged += (s, e) =>
+        if (!string.IsNullOrEmpty(LoginAttempt))
         {
-            _messageStore.Clear(e.FieldIdentifier);
-            _editContext.NotifyValidationStateChanged();
-        };
+            model.Login = LoginAttempt;
+        }
+
+        if (ErrorCode.HasValue)
+        {
+            HandleAuthError((AuthErrorType)ErrorCode.Value);
+        }
+    }
+
+    private void HandleAuthError(AuthErrorType errorType)
+    {
+        switch (errorType)
+        {
+            case AuthErrorType.UserNotFound:
+            {
+                _isLoginError = true;
+                _loginErrorText = "User was not found";
+                break;
+            }
+            case AuthErrorType.InvalidPassword:
+            {
+                _isPasswordError = true;
+                _passwordErrorText = "Wrong password";
+                break;
+            }
+            case AuthErrorType.Unknown:
+            default:
+            {
+                SnackBar.Add("Server error. Try again later.", Severity.Error);
+                break;
+            }
+        }
     }
 
     void TogglePasswordVisibility()
@@ -55,64 +82,5 @@ public partial class Login
             PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
             PasswordInputType = InputType.Text;
         }
-    }
-
-    async Task OnValidSubmit()
-    {
-        _messageStore.Clear();
-        _editContext.NotifyValidationStateChanged();
-
-        var request = new LoginRequest
-        {
-            Password = model.Password
-        };
-
-        if (model.Login.Contains('@'))
-        {
-            request.Email = model.Login;
-        }
-        else
-        {
-            request.Tag = model.Login;
-        }
-
-        var result = await AuthService.LoginAsync(request);
-
-        if (result.IsSuccess)
-        {
-            SnackBar.Add("You authorized successfully. Now wait for home page implementation lmao",
-                Severity.Success);
-
-            await LocalStorage.SetItemAsync("accessToken", result.AccessToken);
-
-            return;
-        }
-
-        switch (result.ErrorType)
-        {
-            case AuthErrorType.UserNotFound:
-                {
-                    _messageStore.Add(
-                        _editContext.Field(nameof(LoginModel.Login)),
-                        "User was not found");
-                    break;
-                }
-
-            case AuthErrorType.InvalidPassword:
-                {
-                    _messageStore.Add(
-                        _editContext.Field(nameof(LoginModel.Password)),
-                        "Incorrect password");
-                    break;
-                }
-
-            default:
-                {
-                    SnackBar.Add("Something went wrong. Please try again later.", Severity.Error);
-                    break;
-                }
-        }
-
-        _editContext.NotifyValidationStateChanged();
     }
 }

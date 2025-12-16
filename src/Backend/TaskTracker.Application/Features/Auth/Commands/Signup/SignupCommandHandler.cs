@@ -10,7 +10,7 @@ using TaskTracker.Domain.Enums;
 
 namespace TaskTracker.Application.Features.Auth.Commands.Signup;
 
-public class SignupCommandHandler : IRequestHandler<SignupCommand, AuthResult>
+public class SignupCommandHandler : IRequestHandler<SignupCommand, AuthResponse>
 {
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
     private readonly IPasswordHasher _passwordHasher;
@@ -25,18 +25,18 @@ public class SignupCommandHandler : IRequestHandler<SignupCommand, AuthResult>
         _jwtTokenGenerator = jwtTokenGenerator;
     }
 
-    public async Task<AuthResult> Handle(SignupCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResponse> Handle(SignupCommand request, CancellationToken cancellationToken)
     {
         using var uow = _unitOfWorkFactory.Create();
 
         if (await uow.UserRepository.GetByEmailAsync(request.Email) is not null)
         {
-            return new AuthResult { ErrorType = AuthErrorType.EmailTaken };
+            return new AuthResponse { ErrorType = AuthErrorType.EmailTaken };
         }
 
         if (await uow.UserRepository.GetByTagAsync(request.Tag) is not null)
         {
-            return new AuthResult { ErrorType = AuthErrorType.TagTaken };
+            return new AuthResponse { ErrorType = AuthErrorType.TagTaken };
         }
         
         var passwordHash = _passwordHasher.Generate(request.Password);
@@ -64,6 +64,6 @@ public class SignupCommandHandler : IRequestHandler<SignupCommand, AuthResult>
 
         uow.Commit();
 
-        return new AuthResult { AccessToken = accessToken, RefreshToken = refreshToken };
+        return new AuthResponse { AccessToken = accessToken, RefreshToken = refreshToken.Token };
     }
 }

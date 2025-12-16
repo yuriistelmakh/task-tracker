@@ -32,19 +32,6 @@ public class AuthController : ControllerBase
 
         var result = await _mediator.Send(command);
         
-        if (result.RefreshToken is not null)
-        {
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = result.RefreshToken.ExpiresAt
-            };
-
-            Response.Cookies.Append("refreshToken", result.RefreshToken.Token, cookieOptions);
-        }
-
         return Ok(result);
     }
 

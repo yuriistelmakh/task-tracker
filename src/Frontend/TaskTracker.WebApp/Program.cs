@@ -5,6 +5,7 @@ using TaskTracker.Services;
 using TaskTracker.Services.Abstraction.Interfaces.APIs;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
 using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,19 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IBoardsService, BoardsService>();
 
+builder.Services.AddControllers();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = "AuthCookie";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Strict; 
+        options.LoginPath = "/login";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    });
+
 var app = builder.Build();
 
 app.UseStaticFiles();
@@ -40,9 +54,15 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.MapControllers();
+
 app.Run();

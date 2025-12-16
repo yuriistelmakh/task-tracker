@@ -12,6 +12,7 @@ using TaskTracker.Application.Interfaces.Auth;
 using TaskTracker.Application.Interfaces.UoW;
 using TaskTracker.Domain.DTOs.Auth;
 using TaskTracker.Domain.Entities;
+using TaskTracker.Domain.Enums;
 
 namespace TaskTracker.Infrastructure.Auth;
 
@@ -64,12 +65,12 @@ public class JwtTokenService : IJwtTokenService
         };
     }
 
-    public async Task<AuthResult?> RefreshTokenAsync(string accessToken, string refreshToken)
+    public async Task<AuthResponse> RefreshTokenAsync(string accessToken, string refreshToken)
     {
         var principal = GetPrincipalFromExpiredToken(accessToken);
         if (principal is null)
         {
-            return null;
+            return new AuthResponse { ErrorType = AuthErrorType.Unknown };
         }
 
         var userIdString = principal.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
@@ -102,10 +103,10 @@ public class JwtTokenService : IJwtTokenService
 
         uow.Commit();
 
-        return new AuthResult
+        return new AuthResponse
         {
             AccessToken = newAcessToken,
-            RefreshToken = newRefreshToken
+            RefreshToken = newRefreshToken.Token
         };
     }
 

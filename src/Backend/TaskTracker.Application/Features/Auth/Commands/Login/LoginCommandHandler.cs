@@ -11,7 +11,7 @@ using TaskTracker.Domain.Mapping;
 
 namespace TaskTracker.Application.Features.Auth.Commands.Login;
 
-public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResult>
+public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponse>
 {
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
     private readonly IJwtTokenService _jwtTokenGenerator;
@@ -26,7 +26,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResult>
         _jwtTokenGenerator = jwtTokenGenerator;
     }
 
-    public async Task<AuthResult> Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         using var uow = _unitOfWorkFactory.Create();
 
@@ -36,12 +36,12 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResult>
 
         if (user is null)
         {
-            return new AuthResult { ErrorType = AuthErrorType.UserNotFound };
+            return new AuthResponse { ErrorType = AuthErrorType.UserNotFound };
         }
 
         if (!_passwordHasher.Verify(request.Password, user.PasswordHash))
         {
-            return new AuthResult { ErrorType = AuthErrorType.InvalidPassword };
+            return new AuthResponse { ErrorType = AuthErrorType.InvalidPassword };
         }
 
         var accessToken = _jwtTokenGenerator.GenerateAccessToken(user);
@@ -53,11 +53,11 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResult>
 
         uow.Commit();
 
-        return new AuthResult
+        return new AuthResponse
         {
             ErrorType = AuthErrorType.None,
             AccessToken = accessToken,
-            RefreshToken = refreshToken
+            RefreshToken = refreshToken.Token
         };
     }
 }
