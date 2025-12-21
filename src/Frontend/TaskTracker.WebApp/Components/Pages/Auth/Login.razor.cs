@@ -1,13 +1,17 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using TaskTracker.Domain.DTOs.Auth;
 using TaskTracker.Domain.Enums;
+using TaskTracker.Services.Abstraction.Interfaces.Services;
 using TaskTracker.WebApp.Models;
 
 namespace TaskTracker.WebApp.Components.Pages.Auth;
 
 public partial class Login
 {
-    [Inject] public ISnackbar SnackBar { private get; set; } = default!;
+    [Inject] private ISnackbar SnackBar { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+    [Inject] private IAuthService AuthService { get; set; } = default!;
 
     [SupplyParameterFromQuery(Name = "returnUrl")]
     public string? ReturnUrl { get; set; }
@@ -19,6 +23,7 @@ public partial class Login
     public string? LoginAttempt { get; set; }
 
     private readonly LoginModel model = new();
+    private bool _isProcessing;
 
     private bool _isLoginError;
     private string? _loginErrorText;
@@ -26,9 +31,9 @@ public partial class Login
     private bool _isPasswordError;
     private string? _passwordErrorText;
 
-    InputType PasswordInputType = InputType.Password;
-    string PasswordInputIcon = Icons.Material.Filled.Visibility;
-    bool isPasswordVisible = false;
+    private InputType PasswordInputType = InputType.Password;
+    private string PasswordInputIcon = Icons.Material.Filled.Visibility;
+    private bool isPasswordVisible = false;
 
     protected override void OnInitialized()
     {
@@ -43,32 +48,75 @@ public partial class Login
         }
     }
 
+    private async Task HandleLogin()
+    {
+        _isProcessing = true;
+        ClearErrors();
+
+        try
+        {
+            var request = new LoginRequest
+            {
+                Password = model.Password
+            };
+
+            if (model.Login.Contains('@'))
+            {
+                request.Email = model.Login;
+            }
+            else
+            {
+                request.Tag = model.Login;
+            }
+
+            var result = await AuthService.LoginAsync(request);
+
+            if (result == AuthErrorType.None)
+            {
+                Navigation.NavigateTo(ReturnUrl ?? "/");
+            }
+            else
+            {
+                HandleAuthError(result);
+            }
+        }
+        catch (Exception)
+        {
+            SnackBar.Add("An unexpected error occurred. Please try again.", Severity.Error);
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
+    }
+
     private void HandleAuthError(AuthErrorType errorType)
     {
         switch (errorType)
         {
             case AuthErrorType.UserNotFound:
-            {
                 _isLoginError = true;
                 _loginErrorText = "User was not found";
                 break;
-            }
             case AuthErrorType.InvalidPassword:
-            {
                 _isPasswordError = true;
                 _passwordErrorText = "Wrong password";
                 break;
-            }
-            case AuthErrorType.Unknown:
             default:
-            {
                 SnackBar.Add("Server error. Try again later.", Severity.Error);
                 break;
-            }
         }
     }
 
-    void TogglePasswordVisibility()
+    private void ClearErrors()
+    {
+        _isLoginError = false;
+        _isPasswordError = false;
+        _loginErrorText = null;
+        _passwordErrorText = null;
+    }
+
+    private void TogglePasswordVisibility()
     {
         if (isPasswordVisible)
         {

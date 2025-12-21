@@ -103,10 +103,18 @@ public class JwtTokenService : IJwtTokenService
 
         uow.Commit();
 
+        var userData = new AuthUserData
+        {
+            AccessToken = accessToken,
+            RefreshToken = newRefreshToken.Token,
+            DisplayName = user.DisplayName,
+            Tag = user.Tag,
+        };
+
         return new AuthResponse
         {
-            AccessToken = newAcessToken,
-            RefreshToken = newRefreshToken.Token
+            ErrorType = AuthErrorType.None,
+            UserData = userData
         };
     }
 

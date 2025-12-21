@@ -1,6 +1,6 @@
 ﻿namespace TaskTracker.WebApp.Models;
 
-public class BoardVm
+public class BoardModel
 {
     public required string Title { get; set; }
 

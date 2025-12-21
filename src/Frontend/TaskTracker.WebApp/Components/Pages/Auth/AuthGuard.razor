@@ -1,0 +1,17 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+
+<AuthorizeView Roles=@Roles>
+    <Authorized>
+        @ChildContent(context)
+    </Authorized>
+
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+
+    <Authorizing>
+        <div class="d-flex justify-center align-center" style="height: 100vh;">
+            <MudProgressCircular Indeterminate=true Color=@Color.Primary />
+        </div>
+    </Authorizing>
+</AuthorizeView>

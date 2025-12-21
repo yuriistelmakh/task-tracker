@@ -9,7 +9,6 @@ using TaskTracker.WebApp.Models;
 
 namespace TaskTracker.WebApp.Components.Pages;
 
-[Authorize]
 public partial class Home
 {
     [Inject]
@@ -24,18 +23,27 @@ public partial class Home
     [Inject]
     public AuthenticationStateProvider AuthStateProvider { private get; set; } = default!;
 
+    [Inject]
+    public IAuthService AuthService { private get; set; } = default!;
+
     string search = "";
 
     string username = "";
 
-    List<BoardVm> Boards = [];
+    List<BoardModel> Boards = [];
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+
         var user = authState.User;
 
-        username = user.FindFirst(ClaimTypes.Name)?.Value ?? "Anonymous";
+        if (!user.Identity!.IsAuthenticated)
+        {
+            return;
+        }
+
+        username = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 
         var boardDtos = await BoardsService.GetAllAsync();
 
@@ -45,7 +53,7 @@ public partial class Home
             return;
         }
 
-        Boards = boardDtos.Select(bd => new BoardVm
+        Boards = boardDtos.Select(bd => new BoardModel
         {
             Title = bd.Title,
             IsArchived = bd.IsArchived,
@@ -54,6 +62,11 @@ public partial class Home
             OwnerName = bd.Owner.DisplayName,
             OwnerIconUrl = bd.Owner.AvatarUrl
         }).ToList();
+    }
 
+    private async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+        Nav.NavigateTo("/login");
     }
 }

@@ -23,13 +23,9 @@
         <MudCardContent Class="d-flex flex-column w-100">
 
             <EditForm EditContext=@_editContext
-                      OnValidSubmit=OnValidSubmit
-                      action="/auth/signup"
-                      method="post"
-                      id="signup-form">
+                      OnValidSubmit=HandleSignup>
 
                 <DataAnnotationsValidator />
-                <AntiforgeryToken />
 
                 <MudTextField Label="Email"
                               @bind-Value=@model.Email
@@ -47,7 +43,7 @@
                               InputType=@PasswordInputType
                               Adornment=@Adornment.End
                               AdornmentIcon=@PasswordInputIcon
-                              OnAdornmentClick=@TogglePasswordVisibility
+                              OnAdornmentClick=TogglePasswordVisibility
                               Margin=@Margin.None
                               Class="mb-4" />
 
@@ -59,7 +55,7 @@
                               InputType=@RepeatPasswordInputType
                               Adornment=@Adornment.End
                               AdornmentIcon=@RepeatPasswordInputIcon
-                              OnAdornmentClick=@ToggleRepeatPasswordVisibility
+                              OnAdornmentClick=ToggleRepeatPasswordVisibility
                               Margin=@Margin.None
                               Class="mb-4" />
 
@@ -77,7 +73,7 @@
                               UserAttributes=@(new() { { "name", "tag" } })
                               Variant=@Variant.Outlined
                               Adornment=@Adornment.Start
-                              AdornmentText="@("@")"
+                              AdornmentText=@("@")
                               Margin=@Margin.None
                               Class="mb-4" />
 
@@ -86,8 +82,17 @@
                            Color=@Color.Primary
                            FullWidth=true
                            Class="mt-6"
+                           Disabled=@_isProcessing
                            Size=@Size.Large>
-                    Sign up
+                    @if (_isProcessing)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size=@Size.Small Indeterminate=true />
+                        <MudText Class="ms-2">Processing...</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Sign up</MudText>
+                    }
                 </MudButton>
             </EditForm>
 
