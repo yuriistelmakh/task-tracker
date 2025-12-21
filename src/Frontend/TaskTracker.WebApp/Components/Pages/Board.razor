@@ -1,1 +1,60 @@
-﻿
+﻿@page "/boards/{Id:int}"
+@using TaskTracker.WebApp.Components.Layout.Headers
+@rendermode InteractiveServer
+
+<Header SearchPlaceholder="Search tasks...">
+    <LeftContent>
+        <MudIconButton Icon=@Icons.Material.Filled.ChevronLeft
+                       Size=@Size.Large
+                       Color=@Color.Inherit
+                       Edge=@Edge.Start
+                       Class="pa-1 mr-1"
+                       Href="/" />
+    </LeftContent>
+</Header>
+
+<MudMainContent Class="ma-8">
+    <MudGrid Spacing=@spacing Justify="Justify.FlexStart">
+        @foreach (var column in Columns)
+        {
+            <MudItem>
+                <MudPaper Class="d-flex flex-column align-start justify-center mud-width-full pt-2"
+                          MinHeight="500px"
+                          MinWidth="300px">
+                    <MudContainer Class="d-flex flex-column flex-grow-1 pb-4">
+                        <MudText Class="py-2">@column.Title</MudText>
+                        @foreach (var task in column.Tasks)
+                        {
+                            <div>
+                                <MudPaper Class="task d-flex flex-column my-1 mud-theme-secondary cursor-pointer overflow-hidden" Elevation="1">
+                                    <div style="height: 4px; width: 100%; background-color: @GetColorForPriority(task.Priority);"></div>
+                                    <div class="d-flex align-center py-2">
+                                        <MudText Class="px-4">@task.Title</MudText>
+                                        <MudSpacer />
+                                        <MudCheckBox T="bool" />
+                                    </div>
+                                </MudPaper>
+                            </div>
+                        }
+                        <MudSpacer />
+                        <MudButton>
+                            <MudIcon Icon=@Icons.Material.Filled.Add />
+                            <MudText>Add another card</MudText>
+                        </MudButton>
+                    </MudContainer>
+                </MudPaper>
+            </MudItem>
+        }
+
+        <MudItem>
+            <MudPaper Class="d-flex align-center justify-center mud-width-full cursor-pointer"
+                      Elevation=0
+                      Style="min-height: 500px; min-width: 300px; border: 2px dashed var(--mud-palette-secondary); background-color: transparent;">
+                <MudStack AlignItems=AlignItems.Center Spacing=2>
+                    <MudIcon Icon=@Icons.Material.Filled.Add Size=@Size.Large Color=@Color.Secondary />
+                    <MudText Typo=@Typo.h6 Color=@Color.Secondary>Add another column</MudText>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudMainContent>

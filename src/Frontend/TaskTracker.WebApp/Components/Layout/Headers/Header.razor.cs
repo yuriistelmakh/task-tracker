@@ -12,6 +12,9 @@ public partial class Header
     [Parameter]
     public RenderFragment? RightContent { get; set; }
 
+    [Parameter]
+    public string SearchPlaceholder { get; set; } = "Search...";
+
     [Inject]
     public AuthenticationStateProvider AuthStateProvider { private get; set; } = default!;
 

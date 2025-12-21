@@ -24,4 +24,16 @@ public class BoardsService : IBoardsService
 
         return result.Content;
     }
+
+    public async Task<BoardDetailsDto?> GetAsync(int id)
+    {
+        var result = await _boardsApi.GetByIdAsync(id);
+
+        if (!result.IsSuccessful)
+        {
+            return null;
+        }
+
+        return result.Content;
+    }
 }

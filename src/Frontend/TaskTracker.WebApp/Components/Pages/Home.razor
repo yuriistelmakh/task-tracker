@@ -2,34 +2,35 @@
 @using TaskTracker.WebApp.Components.Layout.Headers
 @rendermode InteractiveServer
 
-<MudLayout>
+<Header SearchPlaceholder="Search boards..."/>
 
-    <Header/>
+<MudMainContent>
+    <MudContainer Class="mt-8">
+        <MudStack>
 
-    <MudMainContent>
-        <MudContainer Class="mt-8">
+            <MudStack Row=true
+                      AlignItems=@AlignItems.Center
+                      Justify=@Justify.SpaceBetween>
+
+                <MudText Typo=@Typo.h5>
+                    Your boards
+                </MudText>
+
+                <MudButton Variant=@Variant.Filled
+                           Color=@Color.Primary
+                           StartIcon=@Icons.Material.Filled.Add
+                           @onclick='() => Nav.NavigateTo("/board")'>
+                    Create a board
+                </MudButton>
+            </MudStack>
+
             <MudStack>
-
-                <MudStack Row=true
-                          AlignItems=@AlignItems.Center
-                          Justify=@Justify.SpaceBetween>
-
-                    <MudText Typo=@Typo.h5>
-                        Your boards
-                    </MudText>
-
-                    <MudButton Variant=@Variant.Filled
-                               Color=@Color.Primary
-                               StartIcon=@Icons.Material.Filled.Add>
-                        Create a board
-                    </MudButton>
-                </MudStack>
-
-                <MudStack>
-                    @foreach (var board in Boards)
-                    {
+                @foreach (var board in Boards)
+                {
+                    <div>
                         <MudPaper Elevation=4
-                                  Class="board-card">
+                                  Class="board-card"
+                                  @onclick='() => OnBoardClicked(board.Id)'>
                             <MudStack>
 
                                 <MudText Typo=@Typo.h6>
@@ -60,22 +61,21 @@
 
                             </MudStack>
                         </MudPaper>
-                    }
-                </MudStack>
-                <form action="/auth/logout" method="get">
-                    <AntiforgeryToken />
-
-                    <!-- temporarily -->
-                    <MudButton ButtonType=ButtonType.Submit
-                               Variant=Variant.Filled
-                               Color=Color.Error
-                               StartIcon=@Icons.Material.Filled.Logout>
-                        Logout
-                    </MudButton>
-                </form>
+                    </div>
+                }
             </MudStack>
+            <form action="/auth/logout" method="get">
+                <AntiforgeryToken />
 
-        </MudContainer>
-    </MudMainContent>
+                <!-- temporarily -->
+                <MudButton ButtonType=ButtonType.Submit
+                           Variant=Variant.Filled
+                           Color=Color.Error
+                           StartIcon=@Icons.Material.Filled.Logout>
+                    Logout
+                </MudButton>
+            </form>
+        </MudStack>
 
-</MudLayout>
+    </MudContainer>
+</MudMainContent>

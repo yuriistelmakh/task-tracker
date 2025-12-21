@@ -1,21 +1,21 @@
 ﻿<MudAppBar Elevation=4
            Color=@Color.Primary>
+    @LeftContent
+
     <MudText Typo=@Typo.h6>
         TaskTracker
     </MudText>
-
-    
 
     <MudTextField @bind-Value=@search
                   Placeholder="Search..."
                   Variant=@Variant.Outlined
                   Style="width: 250px"
-                  Class="search-bar ml-8 white-adornment"
+                  Class="search-bar white-adornment ml-8"
                   Margin=@Margin.Dense
                   AdornmentIcon=@Icons.Material.Filled.Search
                   Adornment=@Adornment.Start />
 
-    @LeftContent
+    
     <MudSpacer/>
     @RightContent
     

@@ -1,0 +1,4 @@
+﻿::deep .task:hover {
+    background: var(--mud-palette-secondary-darken) !important;
+    transition: 0.3s;
+}

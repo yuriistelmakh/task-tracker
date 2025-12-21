@@ -1,0 +1,10 @@
+﻿::deep .board-card {
+    border-radius: 20px;
+    padding: 24px 32px;
+    cursor: pointer;
+}
+
+::deep .board-card:hover {
+    background: var(--mud-palette-gray-lighter) !important;
+    transition: 0.3s;
+}

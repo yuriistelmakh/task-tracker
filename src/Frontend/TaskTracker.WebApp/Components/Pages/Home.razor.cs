@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
-using System.Security.Claims;
-using TaskTracker.Domain.DTOs.Boards;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
 using TaskTracker.WebApp.Models;
 
@@ -35,6 +32,7 @@ public partial class Home
 
         Boards = boardDtos.Select(bd => new BoardVm
         {
+            Id = bd.Id,
             Title = bd.Title,
             IsArchived = bd.IsArchived,
             TasksCount = bd.TasksCount,
@@ -43,5 +41,10 @@ public partial class Home
             OwnerIconUrl = bd.Owner.AvatarUrl
         }).ToList();
 
+    }
+
+    private void OnBoardClicked(int boardId)
+    {
+        Nav.NavigateTo($"/boards/{boardId}");
     }
 }
