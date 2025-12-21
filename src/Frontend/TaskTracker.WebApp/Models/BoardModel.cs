@@ -1,6 +1,6 @@
 ﻿namespace TaskTracker.WebApp.Models;
 
-public class BoardVm
+public class BoardModel
 {
     public int Id { get; set; }
 

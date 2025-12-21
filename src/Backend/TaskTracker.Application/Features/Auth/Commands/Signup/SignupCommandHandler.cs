@@ -64,6 +64,18 @@ public class SignupCommandHandler : IRequestHandler<SignupCommand, AuthResponse>
 
         uow.Commit();
 
-        return new AuthResponse { AccessToken = accessToken, RefreshToken = refreshToken.Token };
+        var userData = new AuthUserData
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken.Token,
+            DisplayName = user.DisplayName,
+            Tag = user.Tag
+        };
+
+        return new AuthResponse()
+        {
+            ErrorType = AuthErrorType.None,
+            UserData = userData
+        };
     }
 }

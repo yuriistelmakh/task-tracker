@@ -1,81 +1,102 @@
 ﻿@page "/"
-@using TaskTracker.WebApp.Components.Layout.Headers
-@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Components.Authorization
+@using TaskTracker.WebApp.Components.Pages.Auth
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
-<Header SearchPlaceholder="Search boards..."/>
+<AuthGuard>
+    <MudLayout>
 
-<MudMainContent>
-    <MudContainer Class="mt-8">
-        <MudStack>
+        <MudAppBar Elevation=4
+                   Color=@Color.Primary>
+            <MudText Typo=@Typo.h6>
+                TaskTracker
+            </MudText>
 
-            <MudStack Row=true
-                      AlignItems=@AlignItems.Center
-                      Justify=@Justify.SpaceBetween>
+            <MudTextField @bind-Value=@search
+                          Placeholder="Search..."
+                          Variant=@Variant.Outlined
+                          Style="width: 250px"
+                          Class="search-bar ml-8 white-adornment"
+                          Margin=@Margin.Dense
+                          AdornmentIcon=@Icons.Material.Filled.Search
+                          Adornment=@Adornment.Start />
 
-                <MudText Typo=@Typo.h5>
-                    Your boards
-                </MudText>
+            <MudSpacer />
 
-                <MudButton Variant=@Variant.Filled
-                           Color=@Color.Primary
-                           StartIcon=@Icons.Material.Filled.Add
-                           @onclick='() => Nav.NavigateTo("/board")'>
-                    Create a board
-                </MudButton>
-            </MudStack>
+            <MudButton Color=@Color.Inherit>
+                <MudIcon Icon=@Icons.Material.Filled.AccountCircle
+                         Size=@Size.Large />
+                <MudText Class="ml-2">@username</MudText>
+            </MudButton>
+        </MudAppBar>
 
-            <MudStack>
-                @foreach (var board in Boards)
-                {
-                    <div>
-                        <MudPaper Elevation=4
-                                  Class="board-card"
-                                  @onclick='() => OnBoardClicked(board.Id)'>
-                            <MudStack>
+        <MudMainContent>
+            <MudContainer Class="mt-8">
+                <MudStack>
 
-                                <MudText Typo=@Typo.h6>
-                                    @board.Title
-                                </MudText>
+                    <MudStack Row=true
+                              AlignItems=@AlignItems.Center
+                              Justify=@Justify.SpaceBetween>
 
-                                <MudStack Row=true AlignItems=@AlignItems.Center>
-                                    <MudText Typo=@Typo.body2
-                                             Class="board-meta">
-                                        @board.TasksCount tasks&nbsp;&nbsp;
-                                        @board.MembersCount members
+                        <MudText Typo=@Typo.h5>
+                            Your boards
+                        </MudText>
+
+                        <MudButton Variant=@Variant.Filled
+                                   Color=@Color.Primary
+                                   StartIcon=@Icons.Material.Filled.Add>
+                            Create a board
+                        </MudButton>
+                    </MudStack>
+
+                    <MudStack>
+                        @foreach (var board in Boards)
+                        {
+                            <MudPaper Elevation=4
+                                      Class="board-card">
+                                <MudStack>
+
+                                    <MudText Typo=@Typo.h6>
+                                        @board.Title
                                     </MudText>
 
-                                    <MudSpacer />
-
-                                    <MudButton Variant=@Variant.Text>
-                                        <MudIcon Icon=@Icons.Material.Filled.AccountCircle
-                                                 Color=@Color.Inherit
-                                                 Size=@Size.Large
-                                                 Class="mr-2">
-                                        </MudIcon>
-
-                                        <MudText Typo=@Typo.body2>
-                                            @board.OwnerName
+                                    <MudStack Row=true AlignItems=@AlignItems.Center>
+                                        <MudText Typo=@Typo.body2
+                                                 Class="board-meta">
+                                            @board.TasksCount tasks&nbsp;&nbsp;
+                                            @board.MembersCount members
                                         </MudText>
-                                    </MudButton>
+
+                                        <MudSpacer />
+
+                                        <MudButton Variant=@Variant.Text>
+                                            <MudIcon Icon=@Icons.Material.Filled.AccountCircle
+                                                     Color=@Color.Inherit
+                                                     Size=@Size.Large
+                                                     Class="mr-2">
+                                            </MudIcon>
+
+                                            <MudText Typo=@Typo.body2>
+                                                @board.OwnerName
+                                            </MudText>
+                                        </MudButton>
+                                    </MudStack>
+
                                 </MudStack>
+                            </MudPaper>
+                        }
+                    </MudStack>
+                    <MudButton ButtonType=ButtonType.Submit
+                               Variant=Variant.Filled
+                               Color=Color.Error
+                               StartIcon=@Icons.Material.Filled.Logout
+                               @onclick=@Logout>
+                        Logout
+                    </MudButton>
+                </MudStack>
 
-                            </MudStack>
-                        </MudPaper>
-                    </div>
-                }
-            </MudStack>
-            <form action="/auth/logout" method="get">
-                <AntiforgeryToken />
+            </MudContainer>
+        </MudMainContent>
 
-                <!-- temporarily -->
-                <MudButton ButtonType=ButtonType.Submit
-                           Variant=Variant.Filled
-                           Color=Color.Error
-                           StartIcon=@Icons.Material.Filled.Logout>
-                    Logout
-                </MudButton>
-            </form>
-        </MudStack>
-
-    </MudContainer>
-</MudMainContent>
+    </MudLayout>
+</AuthGuard>

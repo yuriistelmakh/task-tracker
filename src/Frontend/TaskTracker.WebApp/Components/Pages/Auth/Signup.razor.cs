@@ -1,25 +1,18 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.JSInterop;
 using MudBlazor;
+using TaskTracker.Domain.DTOs.Auth;
 using TaskTracker.Domain.Enums;
+using TaskTracker.Services.Abstraction.Interfaces.Services;
 using TaskTracker.WebApp.Models;
 
 namespace TaskTracker.WebApp.Components.Pages.Auth;
 
 public partial class Signup
 {
-    [Inject]
-    public ISnackbar Snackbar { private get; set; } = default!;
-
-    [Inject]
-    public IJSRuntime JS { private get; set; } = default!;
-
-    [SupplyParameterFromQuery(Name = "errorCode")]
-    public int? ErrorCode { get; set; }
-
-    [SupplyParameterFromQuery(Name = "customError")]
-    public string? CustomError { get; set; }
+    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+    [Inject] private IAuthService AuthService { get; set; } = default!;
 
     [SupplyParameterFromQuery(Name = "email")]
     public string? EmailParam { get; set; }
@@ -33,6 +26,7 @@ public partial class Signup
     private readonly SignupModel model = new();
     private EditContext _editContext = default!;
     private ValidationMessageStore _messageStore = default!;
+    private bool _isProcessing;
 
     InputType PasswordInputType = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.Visibility;
@@ -44,18 +38,9 @@ public partial class Signup
 
     protected override void OnInitialized()
     {
-        if (!string.IsNullOrEmpty(EmailParam))
-        {
-            model.Email = EmailParam;
-        }
-        if (!string.IsNullOrEmpty(TagParam))
-        {
-            model.Tag = TagParam;
-        }
-        if (!string.IsNullOrEmpty(DisplayNameParam))
-        {
-            model.DisplayName = DisplayNameParam;
-        }
+        if (!string.IsNullOrEmpty(EmailParam)) model.Email = EmailParam;
+        if (!string.IsNullOrEmpty(TagParam)) model.Tag = TagParam;
+        if (!string.IsNullOrEmpty(DisplayNameParam)) model.DisplayName = DisplayNameParam;
 
         _editContext = new EditContext(model);
         _messageStore = new ValidationMessageStore(_editContext);
@@ -65,30 +50,46 @@ public partial class Signup
             _messageStore.Clear(e.FieldIdentifier);
             _editContext.NotifyValidationStateChanged();
         };
-
-        if (!string.IsNullOrEmpty(CustomError))
-        {
-            AddErrorToField(nameof(model.Password), CustomError);
-            Snackbar.Add(CustomError, Severity.Error);
-        }
-
-        if (ErrorCode.HasValue)
-        {
-            HandleAuthError((AuthErrorType)ErrorCode.Value);
-        }
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    private async Task HandleSignup()
     {
-        if (firstRender)
+        _isProcessing = true;
+        _messageStore.Clear();
+        
+        try
         {
-            if (ErrorCode.HasValue || !string.IsNullOrEmpty(CustomError))
+            var request = new SignupRequest
             {
-                _editContext.NotifyValidationStateChanged();
-                StateHasChanged();
+                Email = model.Email,
+                Password = model.Password,
+                DisplayName = model.DisplayName,
+                Tag = model.Tag
+            };
+
+            var result = await AuthService.SignupAsync(request);
+
+            if (result == AuthErrorType.None)
+            {
+                Snackbar.Add("Account created successfully!", Severity.Success);
+                
+                await Task.Delay(50);
+                
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                HandleAuthError(result);
             }
         }
-        base.OnAfterRender(firstRender);
+        catch (Exception)
+        {
+            Snackbar.Add("An unexpected error occurred. Please try again.", Severity.Error);
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
     }
 
     private void HandleAuthError(AuthErrorType errorType)
@@ -96,24 +97,19 @@ public partial class Signup
         switch (errorType)
         {
             case AuthErrorType.EmailTaken:
-            {
                 AddErrorToField(nameof(model.Email), "This email is already taken");
                 break;
-            }
+                
             case AuthErrorType.TagTaken:
-            {
                 AddErrorToField(nameof(model.Tag), "This tag is already taken");
                 break;
-            }
+                
             case AuthErrorType.None:
-            {
                 break;
-            }
+                
             default:
-            {
-                Snackbar.Add("Something went wrong. Please try again later.", Severity.Error);
+                Snackbar.Add("Registration failed. Please try again later.", Severity.Error);
                 break;
-            }
         }
     }
 
@@ -122,11 +118,6 @@ public partial class Signup
         var field = _editContext.Field(fieldName);
         _messageStore.Add(field, errorMessage);
         _editContext.NotifyValidationStateChanged();
-    }
-
-    private async Task OnValidSubmit()
-    {
-        await JS.InvokeVoidAsync("submitFormById", "signup-form");
     }
 
     void TogglePasswordVisibility()

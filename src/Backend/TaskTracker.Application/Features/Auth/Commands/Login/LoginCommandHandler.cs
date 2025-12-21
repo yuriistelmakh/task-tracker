@@ -53,11 +53,18 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponse>
 
         uow.Commit();
 
+        var userData = new AuthUserData
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken.Token,
+            DisplayName = user.DisplayName,
+            Tag = user.Tag
+        };
+
         return new AuthResponse
         {
             ErrorType = AuthErrorType.None,
-            AccessToken = accessToken,
-            RefreshToken = refreshToken.Token
+            UserData = userData
         };
     }
 }
