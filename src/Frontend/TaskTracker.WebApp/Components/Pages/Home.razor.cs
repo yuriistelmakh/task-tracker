@@ -31,6 +31,11 @@ public partial class Home
 
     protected override async Task OnInitializedAsync()
     {
+        if (!await UserService.IsUserAuthenticated())
+        {
+            return;
+        }
+
         username = await UserService.GetUserDisplayName() ?? "Anonymous";
 
         var boardDtos = await BoardsService.GetAllAsync();

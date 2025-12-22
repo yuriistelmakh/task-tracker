@@ -13,6 +13,12 @@ public class CurrentUserService : ICurrentUserService
         _authProvider = authProvider;
     }
 
+    public async Task<bool> IsUserAuthenticated()
+    {
+        var state = await _authProvider.GetAuthenticationStateAsync();
+        return state.User.Identity?.IsAuthenticated ?? false;
+    }
+
     public async Task<string?> GetUserDisplayName()
     {
         var state = await _authProvider.GetAuthenticationStateAsync();
