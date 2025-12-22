@@ -5,6 +5,7 @@ using MudBlazor;
 using System.Security.Claims;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
 using TaskTracker.WebApp.Models;
+using TaskTracker.WebApp.Models.Mapping;
 
 namespace TaskTracker.WebApp.Components.Pages;
 
@@ -52,16 +53,7 @@ public partial class Home
             return;
         }
 
-        Boards = boardDtos.Select(bd => new BoardModel
-        {
-            Id = bd.Id,
-            Title = bd.Title,
-            IsArchived = bd.IsArchived,
-            TasksCount = bd.TasksCount,
-            MembersCount = bd.MembersCount,
-            OwnerName = bd.Owner.DisplayName,
-            OwnerIconUrl = bd.Owner.AvatarUrl
-        }).ToList();
+        Boards = boardDtos.Select(bd => bd.ToBoardModel()).ToList();
     }
 
     private async Task Logout()

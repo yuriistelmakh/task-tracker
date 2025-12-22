@@ -6,6 +6,7 @@ using TaskTracker.Domain.Enums;
 using TaskTracker.Services;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
 using TaskTracker.WebApp.Models;
+using TaskTracker.WebApp.Models.Mapping;
 
 namespace TaskTracker.WebApp.Components.Pages;
 
@@ -39,22 +40,10 @@ public partial class Board
             return;
         }
 
-        Columns = dto.Columns.Select(c => new ColumnModel
-        {
-            Id = c.Id,
-            Title = c.Title,
-            Order = c.Order,
-            Tasks = c.Tasks.Select(t => new TaskModel
-            {
-                Id = t.Id,
-                Title = t.Title,
-                Priority = t.Priority,
-                Order = t.Order,
-                IsComplete = t.IsComplete
-            }).OrderBy(t => t.Order).ToList()
-        })
-        .OrderBy(c => c.Order)
-        .ToList() ?? [];
+
+        Columns = dto.Columns.Select(c => c.ToColumModel())
+            .OrderBy(c => c.Order)
+            .ToList();
     }
 
     private static void OnAddTaskClick(ColumnModel column)
