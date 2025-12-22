@@ -2,6 +2,8 @@
 
 public class BoardModel
 {
+    public int Id { get; set; }
+
     public required string Title { get; set; }
 
     public bool IsArchived { get; set; }

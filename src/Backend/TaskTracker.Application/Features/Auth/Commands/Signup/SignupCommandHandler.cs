@@ -69,7 +69,8 @@ public class SignupCommandHandler : IRequestHandler<SignupCommand, AuthResponse>
             AccessToken = accessToken,
             RefreshToken = refreshToken.Token,
             DisplayName = user.DisplayName,
-            Tag = user.Tag
+            Tag = user.Tag,
+            Id = user.Id
         };
 
         return new AuthResponse()

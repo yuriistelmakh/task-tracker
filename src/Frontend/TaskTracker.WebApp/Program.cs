@@ -6,7 +6,6 @@ using TaskTracker.Services.Abstraction.Interfaces.APIs;
 using TaskTracker.Services;
 using TaskTracker.WebApp.Components;
 using TaskTracker.Services.Auth;
-using Microsoft.AspNetCore.Authentication.Cookies; // Перевірте namespace вашого AuthHeaderHandler
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,10 +19,14 @@ builder.Services.AddProjectServices();
 builder.Services.AddTransient<AuthHeaderHandler>();
 
 builder.Services.AddRefitClient<IAuthApi>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseAddress"]));
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]));
 
 builder.Services.AddRefitClient<IBoardsApi>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseAddress"]))
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]))
+    .AddHttpMessageHandler<AuthHeaderHandler>();
+
+builder.Services.AddRefitClient<ITasksApi>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]))
     .AddHttpMessageHandler<AuthHeaderHandler>();
 
 builder.Services.AddCascadingAuthenticationState();

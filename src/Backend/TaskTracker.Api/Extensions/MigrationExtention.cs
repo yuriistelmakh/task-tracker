@@ -4,13 +4,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading.Tasks;
 using TaskTracker.Database;
 
 namespace TaskTracker.Api.Extensions;
 
 public static class MigrationExtension
 {
-    public static IHost MigrateDatabase(this IHost host)
+    public async static Task<IHost> MigrateDatabase(this IHost host)
     {
         using var scope = host.Services.CreateScope();
 
@@ -23,7 +24,7 @@ public static class MigrationExtension
             logger.LogInformation("Starting database migration...");
 
             var connectionString = configuration.GetConnectionString("DefaultConnection")!;
-            DatabaseInitializer.Initialize(connectionString, logger);
+            await DatabaseInitializer.InitializeAsync(connectionString, logger);
         }
         catch (Exception ex)
         {

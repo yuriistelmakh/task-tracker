@@ -1,4 +1,6 @@
-﻿namespace TaskTracker.Domain.DTOs.Boards;
+﻿using TaskTracker.Domain.DTOs.Users;
+
+namespace TaskTracker.Domain.DTOs.Boards;
 
 public class BoardSummaryDto
 {

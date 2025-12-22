@@ -1,18 +1,15 @@
 ﻿@page "/"
-@using Microsoft.AspNetCore.Components.Authorization
 @using TaskTracker.WebApp.Components.Pages.Auth
-@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <AuthGuard>
     <MudLayout>
-
         <MudAppBar Elevation=4
                    Color=@Color.Primary>
             <MudText Typo=@Typo.h6>
                 TaskTracker
             </MudText>
 
-            <MudTextField @bind-Value=@search
+            <MudTextField @bind-Value="search"
                           Placeholder="Search..."
                           Variant=@Variant.Outlined
                           Style="width: 250px"
@@ -33,7 +30,6 @@
         <MudMainContent>
             <MudContainer Class="mt-8">
                 <MudStack>
-
                     <MudStack Row=true
                               AlignItems=@AlignItems.Center
                               Justify=@Justify.SpaceBetween>
@@ -52,38 +48,41 @@
                     <MudStack>
                         @foreach (var board in Boards)
                         {
-                            <MudPaper Elevation=4
-                                      Class="board-card">
-                                <MudStack>
+                            <div>
+                                <MudPaper Elevation=4
+                                          Class="board-card"
+                                          @onclick=@(() => OnBoardClicked(board.Id))>
+                                    <MudStack>
 
-                                    <MudText Typo=@Typo.h6>
-                                        @board.Title
-                                    </MudText>
-
-                                    <MudStack Row=true AlignItems=@AlignItems.Center>
-                                        <MudText Typo=@Typo.body2
-                                                 Class="board-meta">
-                                            @board.TasksCount tasks&nbsp;&nbsp;
-                                            @board.MembersCount members
+                                        <MudText Typo=@Typo.h6>
+                                            @board.Title
                                         </MudText>
 
-                                        <MudSpacer />
-
-                                        <MudButton Variant=@Variant.Text>
-                                            <MudIcon Icon=@Icons.Material.Filled.AccountCircle
-                                                     Color=@Color.Inherit
-                                                     Size=@Size.Large
-                                                     Class="mr-2">
-                                            </MudIcon>
-
-                                            <MudText Typo=@Typo.body2>
-                                                @board.OwnerName
+                                        <MudStack Row=true AlignItems=@AlignItems.Center>
+                                            <MudText Typo=@Typo.body2
+                                                     Class="board-meta">
+                                                @board.TasksCount tasks&nbsp;&nbsp;
+                                                @board.MembersCount members
                                             </MudText>
-                                        </MudButton>
-                                    </MudStack>
 
-                                </MudStack>
-                            </MudPaper>
+                                            <MudSpacer />
+
+                                            <MudButton Variant=@Variant.Text>
+                                                <MudIcon Icon=@Icons.Material.Filled.AccountCircle
+                                                         Color=@Color.Inherit
+                                                         Size=@Size.Large
+                                                         Class="mr-2">
+                                                </MudIcon>
+
+                                                <MudText Typo=@Typo.body2>
+                                                    @board.OwnerName
+                                                </MudText>
+                                            </MudButton>
+                                        </MudStack>
+
+                                    </MudStack>
+                                </MudPaper>
+                            </div>
                         }
                     </MudStack>
                     <MudButton ButtonType=ButtonType.Submit

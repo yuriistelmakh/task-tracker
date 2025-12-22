@@ -58,7 +58,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponse>
             AccessToken = accessToken,
             RefreshToken = refreshToken.Token,
             DisplayName = user.DisplayName,
-            Tag = user.Tag
+            Tag = user.Tag,
+            Id = user.Id
         };
 
         return new AuthResponse

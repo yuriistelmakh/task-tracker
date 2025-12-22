@@ -1,0 +1,25 @@
+﻿::deep .task:hover {
+    background: var(--mud-palette-secondary-darken) !important;
+    transition: 0.3s;
+}
+
+::deep .task-add-field .mud-input.mud-input-filled {
+    background-color: transparent !important;
+    color: white;
+}
+
+::deep .task-add-field .mud-input.mud-input-filled:hover {
+    background-color: transparent !important;
+}
+
+::deep .task-add-field .mud-input.mud-input-filled::before {
+    border-bottom: none !important;
+}
+
+::deep .task-add-field .mud-input.mud-input-filled.mud-input-underline:after {
+    border-bottom: none;
+}
+
+::deep .mud-input > input.mud-input-root.mud-input-root-filled {
+    padding: 15px !important;
+}
