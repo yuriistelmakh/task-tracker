@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using TaskTracker.Domain.DTOs.Tasks;
 using TaskTracker.Domain.Enums;
+using TaskTracker.Services;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
 using TaskTracker.WebApp.Models;
 
@@ -48,14 +49,15 @@ public partial class Board
                 Id = t.Id,
                 Title = t.Title,
                 Priority = t.Priority,
-                Order = t.Order
+                Order = t.Order,
+                IsComplete = t.IsComplete
             }).OrderBy(t => t.Order).ToList()
         })
         .OrderBy(c => c.Order)
         .ToList() ?? [];
     }
 
-    private void OnAddTaskClick(ColumnModel column)
+    private static void OnAddTaskClick(ColumnModel column)
     {
         column.IsAddTaskOpen = true;
     }
@@ -64,45 +66,75 @@ public partial class Board
     {
         if (e.Key == "Enter")
         {
-            if (string.IsNullOrEmpty(column.NewTaskTitle))
-            {
-                return;
-            }
+            await AddNewTask(column);
+        }
+    }
 
-            var titleToSend = column.NewTaskTitle;
+    private async Task AddNewTask(ColumnModel column)
+    {
+        if (string.IsNullOrEmpty(column.NewTaskTitle))
+        {
+            return;
+        }
 
-            var newTask = new TaskModel
-            {
-                Title = titleToSend,
-                Priority = Priority.Medium,
-                Order = column.Tasks.Count
-            };
+        var titleToSend = column.NewTaskTitle;
 
-            column.NewTaskTitle = string.Empty;
-            column.IsAddTaskOpen = false;
+        var newTask = new TaskModel
+        {
+            Title = titleToSend,
+            Priority = Priority.Medium,
+            Order = column.Tasks.Count
+        };
 
-            column.Tasks.Add(newTask);
+        column.NewTaskTitle = string.Empty;
+        column.IsAddTaskOpen = false;
 
-            var request = new CreateTaskRequest
-            {
-                ColumnId = column.Id,
-                Order = newTask.Order,
-                Title = titleToSend
-            };
+        column.Tasks.Add(newTask);
 
-            var result = await TasksService.CreateAsync(request);
+        var request = new CreateTaskRequest
+        {
+            ColumnId = column.Id,
+            Order = newTask.Order,
+            Title = titleToSend
+        };
 
-            if (!result.IsSuccess)
-            {
-                column.Tasks.Remove(newTask);
-                column.IsAddTaskOpen = true;
-                column.NewTaskTitle = titleToSend;
+        var result = await TasksService.CreateAsync(request);
 
-                Snackbar.Add($"Error occurred: {result.ErrorMessage}", Severity.Error);
-                return;
-            }
+        if (!result.IsSuccess)
+        {
+            column.Tasks.Remove(newTask);
+            column.IsAddTaskOpen = true;
+            column.NewTaskTitle = titleToSend;
 
-            newTask.Id = result.Value;
+            Snackbar.Add($"Error occurred: {result.ErrorMessage}", Severity.Error);
+            return;
+        }
+
+        newTask.Id = result.Value;
+    }
+
+    private static void AddTaskClose(ColumnModel column)
+    {
+        column.IsAddTaskOpen = false;
+        column.NewTaskTitle = string.Empty;
+    }
+    
+    private async void OnCheckedChange(TaskModel task)
+    {
+        task.IsComplete = !task.IsComplete;
+
+        var request = new ChangeTaskStatusRequest
+        {
+            IsComplete = task.IsComplete
+        };
+
+        var result = await TasksService.ChangeStatusAsync(task.Id, request);
+
+        if (!result.IsSuccess)
+        {
+            task.IsComplete = !task.IsComplete;
+
+            Snackbar.Add($"Error occurred: {result.ErrorMessage}", Severity.Error);
         }
     }
 

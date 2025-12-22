@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using TaskTracker.Application.Features.Tasks.Commands.ChangeStatus;
 using TaskTracker.Application.Features.Tasks.Commands.CreateTask;
 using TaskTracker.Application.Features.Tasks.Commands.DeleteTask;
 using TaskTracker.Application.Features.Tasks.Commands.UpdateTask;
@@ -51,6 +52,23 @@ public class TasksController : ControllerBase
             ColumnId = request.ColumnId,
             DueDate = request.DueDate,
             Priority = request.Priority,
+            UpdatedBy = request.UpdatedBy
+        };
+
+        var isSuccess = await _mediator.Send(command);
+
+        return isSuccess
+            ? NoContent()
+            : NotFound();
+    }
+
+    [HttpPatch("{id}/status")]
+    public async Task<IActionResult> ChangeStatus(int id, [FromBody] ChangeTaskStatusRequest request)
+    {
+        var command = new ChangeTaskStatusCommand
+        {
+            Id = id,
+            IsComplete = request.IsComplete,
             UpdatedBy = request.UpdatedBy
         };
 

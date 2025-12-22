@@ -15,4 +15,6 @@ public class TaskSummaryDto
     public int Order { get; set; } = 0;
 
     public int? AssigneeId { get; set; }
+
+    public bool IsComplete { get; set; }
 }

@@ -20,20 +20,31 @@
             @foreach (var column in Columns)
             {
                 <MudItem>
-                    <MudPaper Class="d-flex flex-column align-start justify-center mud-width-full pt-2"
+                    <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full pt-2"
                               MinHeight="250px"
-                              MinWidth="300px">
-                        <MudContainer Class="d-flex flex-column flex-grow-1 pb-4">
-                            <MudText Class="py-2">@column.Title</MudText>
+                              MinWidth="375px"
+                              MaxHeight="500px">
+                        <MudText Class="px-8 py-2">@column.Title</MudText>
+                        <MudContainer Class="d-flex flex-column flex-grow-1 pb-4 overflow-y-auto">
                             @foreach (var task in column.Tasks)
                             {
                                 <div>
-                                    <MudPaper Class="task d-flex flex-column my-1 mud-theme-secondary cursor-pointer overflow-hidden" Elevation="1">
+                                    <MudPaper Class="task d-flex flex-column my-1 mud-theme-secondary cursor-pointer overflow-hidden"
+                                              Elevation="1">
                                         <div style="height: 4px; width: 100%; background-color: @GetColorForPriority(task.Priority);"></div>
                                         <div class="d-flex align-center py-2">
-                                            <MudText Class="px-4">@task.Title</MudText>
+
+                                            <MudText Class="px-4"
+                                                     Style=@(task.IsComplete ? "text-decoration: line-through;" : "")>
+                                                @task.Title
+                                            </MudText>
+
                                             <MudSpacer />
-                                            <MudCheckBox T="bool" />
+
+                                            <MudCheckBox T=bool
+                                                         ValueChanged=@(() => OnCheckedChange(task))
+                                                         Value="task.IsComplete">
+                                            </MudCheckBox>
                                         </div>
                                     </MudPaper>
                                 </div>
@@ -50,17 +61,29 @@
                                                           Class="task-add-field"
                                                           AutoFocus=true
                                                           Placeholder="Enter a title"
-                                                          OnKeyDown=@(e => HandleEnter(e, column))></MudTextField>
+                                                          OnKeyDown=@(e => HandleEnter(e, column))>
+                                            </MudTextField>
+
+                                            <MudIconButton Class="pa-2"
+                                                           Icon=@Icons.Material.Filled.Check
+                                                           @onclick=@(() => AddNewTask(column))>
+                                            </MudIconButton>
+
+                                            <MudIconButton Class="pa-2 pr-3"
+                                                           Icon=@Icons.Material.Filled.Close
+                                                           Color=@Color.Error
+                                                           @onclick=@(() => AddTaskClose(column))>
+                                            </MudIconButton>
                                         </div>
                                     </MudPaper>
                                 </div>
                             }
-                            <MudButton Class="my-4"
-                                       @onclick=@(() => OnAddTaskClick(column))>
-                                <MudIcon Icon=@Icons.Material.Filled.Add />
-                                <MudText>Add another card</MudText>
-                            </MudButton>
                         </MudContainer>
+                        <MudButton Class="pa-4 ma-2"
+                                   @onclick=@(() => OnAddTaskClick(column))>
+                            <MudIcon Icon=@Icons.Material.Filled.Add />
+                            <MudText>Add another card</MudText>
+                        </MudButton>
                     </MudPaper>
                 </MudItem>
             }

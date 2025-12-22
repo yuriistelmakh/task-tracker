@@ -6,7 +6,6 @@ using TaskTracker.Services.Abstraction.Interfaces.APIs;
 using TaskTracker.Services;
 using TaskTracker.WebApp.Components;
 using TaskTracker.Services.Auth;
-using Microsoft.AspNetCore.Authentication.Cookies; // Перевірте namespace вашого AuthHeaderHandler
 
 var builder = WebApplication.CreateBuilder(args);
 

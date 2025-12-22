@@ -13,6 +13,7 @@ public static class TaskMapping
             Order = task.Order,
             Priority = task.Priority,
             ColumndId = task.ColumnId,
-            AssigneeId = task.AssigneeId
+            AssigneeId = task.AssigneeId,
+            IsComplete = task.IsComplete
         };
 }

@@ -11,4 +11,6 @@ public class TaskModel
     public Priority Priority { get; set; } = Priority.Medium;
 
     public int Order { get; set; }
+
+    public bool IsComplete { get; set; } = false;
 }
