@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
+﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using System.Security.Claims;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
 using TaskTracker.WebApp.Models;
 using TaskTracker.WebApp.Models.Mapping;
@@ -21,7 +18,7 @@ public partial class Home
     public NavigationManager Nav { private get; set; } = default!;
 
     [Inject]
-    public AuthenticationStateProvider AuthStateProvider { private get; set; } = default!;
+    public ICurrentUserService UserService { private get; set; } = default!;
 
     [Inject]
     public IAuthService AuthService { private get; set; } = default!;
@@ -34,16 +31,7 @@ public partial class Home
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-
-        var user = authState.User;
-
-        if (!user.Identity!.IsAuthenticated)
-        {
-            return;
-        }
-
-        username = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+        username = await UserService.GetUserDisplayName() ?? "Anonymous";
 
         var boardDtos = await BoardsService.GetAllAsync();
 

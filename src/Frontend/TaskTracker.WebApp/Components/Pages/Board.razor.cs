@@ -40,7 +40,6 @@ public partial class Board
             return;
         }
 
-
         Columns = dto.Columns.Select(c => c.ToColumModel())
             .OrderBy(c => c.Order)
             .ToList();
@@ -127,7 +126,7 @@ public partial class Board
         }
     }
 
-    private string GetColorForPriority(Priority priority) => priority switch
+    private static string GetColorForPriority(Priority priority) => priority switch
     {
         Priority.High => "var(--mud-palette-error)",
         Priority.Medium => "var(--mud-palette-warning)",
