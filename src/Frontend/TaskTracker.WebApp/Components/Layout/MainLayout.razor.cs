@@ -8,20 +8,20 @@ public partial class MainLayout
     {
         PaletteLight = new PaletteLight()
         {
-            Primary = "#5A7863",       // Основний колір (кнопки, активні посилання)
-            Secondary = "#90AB8B",     // Другорядний колір
-            AppbarBackground = "#3B4953", // Колір верхньої панелі (Header)
-            AppbarText = "#EBF4DD",    // Колір тексту на верхній панелі
+            Primary = "#5A7863",       // Primary color (buttons, active links)
+            Secondary = "#90AB8B",     // Secondary color
+            AppbarBackground = "#3B4953", // Top panel color (Header)
+            AppbarText = "#EBF4DD",    // Text color on the top panel
 
-            Background = "#EBF4DD",    // Загальний фон сторінки
-            Surface = "#FFFFFF",       // Фон карток (MudCard, поверхні) - залишив білим для контрасту
+            Background = "#EBF4DD",    // General page background
+            Surface = "#FFFFFF",       // Card background (MudCard, surfaces) - white for contrast
             
-            TextPrimary = "#3B4953",   // Основний колір тексту
-            TextSecondary = "#5A7863", // Колір другорядного тексту
+            TextPrimary = "#3B4953",   // Primary text color
+            TextSecondary = "#5A7863", // Secondary text color
 
-            DrawerBackground = "#FFFFFF", // Фон бокового меню
-            DrawerText = "#3B4953",       // Текст у меню
-            DrawerIcon = "#5A7863"        // Іконки у меню
+            DrawerBackground = "#FFFFFF", // Sidebar menu background
+            DrawerText = "#3B4953",       // Menu text
+            DrawerIcon = "#5A7863"        // Menu icons
         }
     };
 }
