@@ -24,6 +24,8 @@ public static class BoardMapping
             Id = board.Id,
             Title = board.Title,
             Owner = board.Creator.ToUserSummaryDto(),
-            IsArchived = board.IsArchived
+            IsArchived = board.IsArchived,
+            MembersCount = board.Members.Count,
+            TasksCount = board.Columns.Sum(c => c.Tasks.Count)
         };
 }

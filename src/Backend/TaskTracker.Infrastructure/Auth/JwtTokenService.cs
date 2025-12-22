@@ -12,6 +12,7 @@ using TaskTracker.Application.Interfaces.Auth;
 using TaskTracker.Application.Interfaces.UoW;
 using TaskTracker.Domain.DTOs.Auth;
 using TaskTracker.Domain.Entities;
+using TaskTracker.Domain.Enums;
 
 namespace TaskTracker.Infrastructure.Auth;
 
@@ -35,7 +36,7 @@ public class JwtTokenService : IJwtTokenService
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Tag),
+            new Claim(ClaimTypes.Name, user.DisplayName),
             new Claim(ClaimTypes.Role, user.Role.ToString())
         };
 
@@ -64,12 +65,12 @@ public class JwtTokenService : IJwtTokenService
         };
     }
 
-    public async Task<AuthResponse?> RefreshTokenAsync(string accessToken, string refreshToken)
+    public async Task<AuthResponse> RefreshTokenAsync(string accessToken, string refreshToken)
     {
         var principal = GetPrincipalFromExpiredToken(accessToken);
         if (principal is null)
         {
-            return null;
+            return new AuthResponse { ErrorType = AuthErrorType.Unknown };
         }
 
         var userIdString = principal.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
@@ -102,10 +103,18 @@ public class JwtTokenService : IJwtTokenService
 
         uow.Commit();
 
+        var userData = new AuthUserData
+        {
+            AccessToken = accessToken,
+            RefreshToken = newRefreshToken.Token,
+            DisplayName = user.DisplayName,
+            Tag = user.Tag,
+        };
+
         return new AuthResponse
         {
-            AccessToken = newAcessToken,
-            RefreshToken = newRefreshToken.Token
+            ErrorType = AuthErrorType.None,
+            UserData = userData
         };
     }
 

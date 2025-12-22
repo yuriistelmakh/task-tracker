@@ -6,5 +6,6 @@ public enum AuthErrorType
     UserNotFound,
     InvalidPassword,
     EmailTaken,
-    TagTaken
+    TagTaken,
+    Unknown
 }

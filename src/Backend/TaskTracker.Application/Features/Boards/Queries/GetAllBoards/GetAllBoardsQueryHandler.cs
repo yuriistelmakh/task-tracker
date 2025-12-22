@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using TaskTracker.Application.Interfaces.UoW;
 using TaskTracker.Domain.DTOs.Boards;
-using TaskTracker.Domain.DTOs.Users;
 using TaskTracker.Domain.Mapping;
 
 namespace TaskTracker.Application.Features.Boards.Queries.GetAllBoards;
@@ -23,7 +22,7 @@ public class GetAllBoardsQueryHandler : IRequestHandler<GetAllBoardsQuery, IEnum
     {
         using var uow = _unitOfWorkFactory.Create();
 
-        var boards = await uow.BoardRepository.GetAllWithOwnersAsync(request.UserId);
+        var boards = await uow.BoardRepository.GetAllWithDetailsAsync(request.UserId);
 
         var boardsDto = boards.Select(b => b.ToBoardSummaryDto());
 

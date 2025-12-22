@@ -4,13 +4,28 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>ebc7e649-986f-4aa4-a44e-e8d26d532c7f</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="AuthController\**" />
+    <Compile Remove="wwwroot\pages\**" />
+    <Content Remove="AuthController\**" />
+    <Content Remove="wwwroot\pages\**" />
+    <EmbeddedResource Remove="AuthController\**" />
+    <EmbeddedResource Remove="wwwroot\pages\**" />
+    <None Remove="AuthController\**" />
+    <None Remove="wwwroot\pages\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.11" />
     <PackageReference Include="MudBlazor" Version="8.15.0" />
     <PackageReference Include="Refit" Version="9.0.2" />
     <PackageReference Include="Refit.HttpClientFactory" Version="9.0.2" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
   </ItemGroup>
 
   <ItemGroup>

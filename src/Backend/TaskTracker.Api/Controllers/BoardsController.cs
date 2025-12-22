@@ -27,6 +27,7 @@ public class BoardsController : ControllerBase
         _mediator = mediator;
     }
 
+
     [HttpGet("my-boards")]
     public async Task<IActionResult> GetAllAsync()
     {

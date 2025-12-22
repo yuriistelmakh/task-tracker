@@ -59,28 +59,102 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
         return board;
     }
 
-    public async Task<IEnumerable<Board>> GetAllWithOwnersAsync(int userId)
+    public async Task<IEnumerable<Board>> GetAllWithDetailsAsync(int userId)
     {
-        var sql = @"
-            SELECT b.*, u.* FROM Boards b
+        var sqlBoards = @"
+            SELECT b.*, u.* 
+            FROM Boards b
             JOIN BoardMembers bm ON b.Id = bm.BoardId
-            JOIN Users u ON b.CreatedBy = u.id
+            JOIN Users u ON b.CreatedBy = u.Id
             WHERE b.IsArchived = 0
-                AND bm.UserId = @UserId";
+              AND bm.UserId = @UserId";
 
-        var boards = await Connection.QueryAsync<Board, User, Board>(
-            sql,
+        var boards = (await Connection.QueryAsync<Board, User, Board>(
+            sqlBoards,
             (board, user) =>
             {
                 board.Creator = user;
                 return board;
             },
-            transaction: Transaction,
+            param: new { userId },
             splitOn: "Id",
-            param: new { userId }
-        );
+            transaction: Transaction
+        )).ToList();
+
+        if (!boards.Any())
+            return boards;
+
+        await LoadBoardDetailsAsync(boards);
 
         return boards;
+    }
+
+    private async Task LoadBoardDetailsAsync(List<Board> boards)
+    {
+        var boardIds = boards.Select(b => b.Id).ToArray();
+
+        var sqlColumns = @"
+            SELECT * 
+            FROM Columns
+            WHERE BoardId IN @BoardIds
+            ORDER BY [Order];";
+
+        var columns = (await Connection.QueryAsync<BoardColumn>(
+            sqlColumns,
+            new { BoardIds = boardIds },
+            transaction: Transaction
+        )).ToList();
+
+        var columnIds = columns.Select(c => c.Id).ToArray();
+
+        if (columnIds.Length != 0)
+        {
+            var sqlTasks = @"
+                SELECT *
+                FROM Tasks
+                WHERE ColumnId IN @ColumnIds
+                ORDER BY [Order];";
+
+            var tasks = (await Connection.QueryAsync<BoardTask>(
+                sqlTasks,
+                new { ColumnIds = columnIds },
+                transaction: Transaction
+            )).ToList();
+
+            var tasksByColumn = tasks.ToLookup(t => t.ColumnId);
+
+            foreach (var column in columns)
+            {
+                column.Tasks = tasksByColumn[column.Id].ToList();
+            }
+        }
+
+        var sqlMembers = @"
+            SELECT m.*, u.*
+            FROM BoardMembers m
+            JOIN Users u ON m.UserId = u.Id
+            WHERE m.BoardId IN @BoardIds";
+
+        var members = (await Connection.QueryAsync<BoardMember, User, BoardMember>(
+            sqlMembers,
+            (member, user) =>
+            {
+                member.User = user;
+                return member;
+            },
+            new { BoardIds = boardIds },
+            splitOn: "Id",
+            transaction: Transaction
+        )).ToList();
+
+        var columnsByBoard = columns.ToLookup(c => c.BoardId);
+        var membersByBoard = members.ToLookup(m => m.BoardId);
+
+        foreach (var board in boards)
+        {
+            board.Columns = columnsByBoard[board.Id].ToList();
+            board.Members = membersByBoard[board.Id].ToList();
+        }
     }
 
     public async Task<int> AddMemberAsync(BoardMember boardMember)

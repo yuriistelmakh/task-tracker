@@ -6,6 +6,7 @@ using TaskTracker.Application.Features.Auth.Commands.TokenRefresh;
 using TaskTracker.Application.Features.Auth.Commands.Signup;
 using TaskTracker.Domain.DTOs.Auth;
 using TaskTracker.Domain.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace TaskTracker.Api.Controllers;
 [Route("api/[controller]")]
@@ -30,7 +31,7 @@ public class AuthController : ControllerBase
         };
 
         var result = await _mediator.Send(command);
-
+        
         return Ok(result);
     }
 
