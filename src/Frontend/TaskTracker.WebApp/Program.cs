@@ -20,10 +20,14 @@ builder.Services.AddProjectServices();
 builder.Services.AddTransient<AuthHeaderHandler>();
 
 builder.Services.AddRefitClient<IAuthApi>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7275"));
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]));
 
 builder.Services.AddRefitClient<IBoardsApi>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7275"))
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]))
+    .AddHttpMessageHandler<AuthHeaderHandler>();
+
+builder.Services.AddRefitClient<ITasksApi>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]))
     .AddHttpMessageHandler<AuthHeaderHandler>();
 
 builder.Services.AddCascadingAuthenticationState();

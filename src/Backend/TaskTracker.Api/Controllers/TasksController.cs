@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TaskTracker.Application.Features.Tasks.Commands.CreateTask;
@@ -10,6 +11,7 @@ namespace TaskTracker.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class TasksController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -27,6 +29,7 @@ public class TasksController : ControllerBase
             ColumnId = request.ColumnId,
             Title = request.Title,
             CreatedBy = request.CreatedBy,
+            Order = request.Order,
         };
 
         var result = await _mediator.Send(command);

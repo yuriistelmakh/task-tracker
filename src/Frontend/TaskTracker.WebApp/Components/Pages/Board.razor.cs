@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
+using TaskTracker.Domain.DTOs.Tasks;
 using TaskTracker.Domain.Enums;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
 using TaskTracker.WebApp.Models;
@@ -15,13 +17,16 @@ public partial class Board
     public IBoardsService BoardsService { get; set; } = default!;
 
     [Inject]
+    public ITasksService TasksService { get; set; } = default!;
+
+    [Inject]
     public ISnackbar Snackbar { get; set; } = default!;
 
     int columnsCount = 4;
 
     int spacing => 12 / columnsCount;
 
-    List<ColumnVm> Columns = [];
+    List<ColumnModel> Columns = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -33,19 +38,72 @@ public partial class Board
             return;
         }
 
-        Columns = dto.Columns.Select(c => new ColumnVm
+        Columns = dto.Columns.Select(c => new ColumnModel
         {
+            Id = c.Id,
             Title = c.Title,
             Order = c.Order,
-            Tasks = c.Tasks.Select(t => new TaskVm
+            Tasks = c.Tasks.Select(t => new TaskModel
             {
+                Id = t.Id,
                 Title = t.Title,
                 Priority = t.Priority,
                 Order = t.Order
-            }).OrderBy(t => t.Order)
+            }).OrderBy(t => t.Order).ToList()
         })
         .OrderBy(c => c.Order)
         .ToList() ?? [];
+    }
+
+    private void OnAddTaskClick(ColumnModel column)
+    {
+        column.IsAddTaskOpen = true;
+    }
+
+    private async Task HandleEnter(KeyboardEventArgs e, ColumnModel column)
+    {
+        if (e.Key == "Enter")
+        {
+            if (string.IsNullOrEmpty(column.NewTaskTitle))
+            {
+                return;
+            }
+
+            var titleToSend = column.NewTaskTitle;
+
+            var newTask = new TaskModel
+            {
+                Title = titleToSend,
+                Priority = Priority.Medium,
+                Order = column.Tasks.Count
+            };
+
+            column.NewTaskTitle = string.Empty;
+            column.IsAddTaskOpen = false;
+
+            column.Tasks.Add(newTask);
+
+            var request = new CreateTaskRequest
+            {
+                ColumnId = column.Id,
+                Order = newTask.Order,
+                Title = titleToSend
+            };
+
+            var result = await TasksService.CreateAsync(request);
+
+            if (!result.IsSuccess)
+            {
+                column.Tasks.Remove(newTask);
+                column.IsAddTaskOpen = true;
+                column.NewTaskTitle = titleToSend;
+
+                Snackbar.Add($"Error occurred: {result.ErrorMessage}", Severity.Error);
+                return;
+            }
+
+            newTask.Id = result.Value;
+        }
     }
 
     private string GetColorForPriority(Priority priority) => priority switch

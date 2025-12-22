@@ -2,8 +2,10 @@
 
 namespace TaskTracker.WebApp.Models;
 
-public class TaskVm
+public class TaskModel
 {
+    public int Id { get; set; }
+
     public required string Title { get; set; }
 
     public Priority Priority { get; set; } = Priority.Medium;

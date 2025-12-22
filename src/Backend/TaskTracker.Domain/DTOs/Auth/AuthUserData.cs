@@ -9,5 +9,7 @@ public class AuthUserData
     public required string DisplayName { get; set; }
 
     public required string Tag { get; set; }
+
+    public int Id { get; set; }
 }
 

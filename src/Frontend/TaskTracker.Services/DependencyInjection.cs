@@ -16,6 +16,7 @@ public static class DependencyInjection
 
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IBoardsService, BoardsService>();
+        services.AddScoped<ITasksService, TasksService>();
 
         services.AddScoped<CustomAuthStateProvider>();
         services.AddScoped<AuthenticationStateProvider>(sp => 

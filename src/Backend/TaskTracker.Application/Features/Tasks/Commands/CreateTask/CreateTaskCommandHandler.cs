@@ -25,7 +25,8 @@ public class CreateTaskCommandHandler : IRequestHandler<CreateTaskCommand, int>
             ColumnId = request.ColumnId,
             Title = request.Title,
             CreatedAt = DateTime.UtcNow,
-            CreatedBy = request.CreatedBy
+            CreatedBy = request.CreatedBy,
+            Order = request.Order
         };
 
         var result = await uow.TaskRepository.AddAsync(task);
