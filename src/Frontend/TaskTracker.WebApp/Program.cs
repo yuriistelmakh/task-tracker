@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using MudBlazor.Services;
 using Refit;
 using TaskTracker.Services.Abstraction.Interfaces.APIs;
@@ -26,6 +25,10 @@ builder.Services.AddRefitClient<IBoardsApi>()
     .AddHttpMessageHandler<AuthHeaderHandler>();
 
 builder.Services.AddRefitClient<ITasksApi>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]))
+    .AddHttpMessageHandler<AuthHeaderHandler>();
+
+builder.Services.AddRefitClient<IColumnsApi>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]))
     .AddHttpMessageHandler<AuthHeaderHandler>();
 

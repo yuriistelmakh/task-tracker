@@ -24,4 +24,12 @@ public class CurrentUserService : ICurrentUserService
         var state = await _authProvider.GetAuthenticationStateAsync();
         return state.User.FindFirst(ClaimTypes.Name)?.Value;
     }
+
+    public async Task<int?> GetUserId()
+    {
+        var state = await _authProvider.GetAuthenticationStateAsync();
+        var userIdString = state.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        return int.TryParse(userIdString, out var userId) ? userId : null;
+    }
 }

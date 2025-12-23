@@ -1,6 +1,7 @@
-﻿@page "/boards/{Id:int}"
+﻿@page "/boards/{BoardId:int}"
 @using TaskTracker.WebApp.Components.Layout.Headers
 @using TaskTracker.WebApp.Components.Pages.Auth
+@using TaskTracker.WebApp.Models
 @rendermode InteractiveServer
 
 <AuthGuard>
@@ -11,106 +12,158 @@
                            Color=@Color.Inherit
                            Edge=@Edge.Start
                            Class="pa-1 mr-1"
-                           Href="/"/>
+                           Href="/" />
         </LeftContent>
     </Header>
 
-    <MudMainContent Class="ma-8">
-        <MudGrid Spacing=@spacing Justify="Justify.FlexStart">
-            @foreach (var column in Columns)
-            {
-                <MudItem>
-                    <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full pt-2"
-                              MinHeight="250px"
-                              MinWidth="375px"
-                              MaxHeight="500px">
+    <div>
+        <MudMainContent Class="mt-8 mx-8 overflow-x-auto custom-scrollbar"
+                        Style="height: calc(100vh - var(--mud-appbar-height));">
+            <MudDropContainer T=@TaskModel
+                              Items=@_allTasks
+                              Class="d-flex flex-nowrap gap-4"
+                              @ref=@_dropContainer
+                              ItemsSelector=@((item,dropzone) => item.ColumnId.ToString() == dropzone)
+                              ItemDropped=@TaskDropped>
+                <ChildContent>
+                    @foreach (var column in Columns)
+                    {
+                        <MudItem>
+                            <MudPaper Class="d-flex flex-column mud-width-full pt-2"
+                                      MinHeight="75px"
+                                      MinWidth="325px"
+                                      MaxHeight="500px">
 
-                        <MudText Class="px-8 py-2">
-                            @column.Title
-                        </MudText>
+                                <MudText Class="px-4 py-2" Typo=@Typo.h6>
+                                    @column.Title
+                                </MudText>
 
-                        <MudContainer Class="d-flex flex-column flex-grow-1 pb-4 overflow-y-auto">
-                            @foreach (var task in column.Tasks)
-                            {
-                                <div>
-                                    <MudPaper Class="task d-flex flex-column my-1 mud-theme-secondary cursor-pointer overflow-hidden"
-                                              Elevation=1>
-                                        <div style="height: 4px; width: 100%; background-color: @GetColorForPriority(task.Priority);"></div>
-                                        <div class="d-flex align-center py-2">
+                                <MudContainer Class="d-flex flex-column flex-grow-1 flex-shrink-1 pb-4 overflow-y-auto px-2">
+                                    <MudDropZone T=@TaskModel
+                                                 Identifier=@column.Id.ToString()
+                                                 Class="flex-grow-1"
+                                                 AllowReorder=true
+                                                 Style="min-height: 10px;" />
 
-                                            <MudText Class="px-4"
-                                                     Style=@(task.IsComplete ? "text-decoration: line-through;" : "")>
-                                                @task.Title
-                                            </MudText>
+                                    @if (column.IsAddTaskOpen)
+                                    {
+                                        <div>
+                                            <MudPaper Class="task d-flex flex-column my-1 mud-theme-secondary cursor-pointer overflow-hidden"
+                                                      Elevation=1>
+                                                <div class="d-flex align-center py-2">
+                                                    <MudTextField @bind-Value=@column.NewTaskTitle
+                                                                  Immediate=true
+                                                                  Variant=@Variant.Filled
+                                                                  Class="task-add-field"
+                                                                  AutoFocus=true
+                                                                  Placeholder="Enter a title"
+                                                                  OnKeyDown=@(e => HandleAddTaskEnter(e, column))>
+                                                    </MudTextField>
 
-                                            <MudSpacer/>
+                                                    <MudIconButton Class="pa-2"
+                                                                   Icon=@Icons.Material.Filled.Check
+                                                                   @onclick=@(() => AddNewTask(column))>
+                                                    </MudIconButton>
 
-                                            <MudCheckBox T=bool
-                                                         ValueChanged=@(() => OnCheckedChange(task))
-                                                         Value=@task.IsComplete>
-                                            </MudCheckBox>
+                                                    <MudIconButton Class="pa-2 pr-3"
+                                                                   Icon=@Icons.Material.Filled.Close
+                                                                   Color=@Color.Error
+                                                                   @onclick=@(() => AddTaskClose(column))>
+                                                    </MudIconButton>
+                                                </div>
+                                            </MudPaper>
                                         </div>
-                                    </MudPaper>
-                                </div>
-                            }
-                            @if (column.IsAddTaskOpen)
-                            {
-                                <div>
-                                    <MudPaper Class="task d-flex flex-column my-1 mud-theme-secondary cursor-pointer overflow-hidden"
-                                              Elevation=1>
-                                        <div class="d-flex align-center py-2">
-                                            <MudTextField @bind-Value=@column.NewTaskTitle
-                                                          Immediate=true
-                                                          Variant=@Variant.Filled
-                                                          Class="task-add-field"
-                                                          AutoFocus=true
-                                                          Placeholder="Enter a title"
-                                                          OnKeyDown=@(e => HandleEnter(e, column))>
-                                            </MudTextField>
+                                    }
+                                </MudContainer>
 
-                                            <MudIconButton Class="pa-2"
-                                                           Icon=@Icons.Material.Filled.Check
-                                                           @onclick=@(() => AddNewTask(column))>
-                                            </MudIconButton>
+                                <MudButton Class="pa-4 justify-start flex-shrink-0"
+                                           FullWidth=true
+                                           @onclick=@(() => OnAddTaskClick(column))>
+                                    <MudIcon Icon=@Icons.Material.Filled.Add Class="mr-2" />
+                                    <MudText>Add another card</MudText>
+                                </MudButton>
+                            </MudPaper>
+                        </MudItem>
+                    }
 
-                                            <MudIconButton Class="pa-2 pr-3"
-                                                           Icon=@Icons.Material.Filled.Close
-                                                           Color=@Color.Error
-                                                           @onclick=@(() => AddTaskClose(column))>
-                                            </MudIconButton>
-                                        </div>
-                                    </MudPaper>
-                                </div>
-                            }
-                        </MudContainer>
-                        <MudButton Class="pa-4 ma-2"
-                                   @onclick=@(() => OnAddTaskClick(column))>
-                            <MudIcon Icon=@Icons.Material.Filled.Add />
-                            <MudText>Add another card</MudText>
-                        </MudButton>
-                    </MudPaper>
-                </MudItem>
-            }
+                    @if (isAddColumnOpen)
+                    {
+                        <MudItem>
+                            <MudPaper Class="d-flex flex-column justify-center mud-width-full"
+                                      MinHeight="100px"
+                                      MinWidth="375px">
 
-            <MudItem>
-                <MudPaper Class="d-flex align-center justify-center mud-width-full cursor-pointer"
-                          Style="border: 2px dashed var(--mud-palette-secondary); background-color: transparent;"
-                          Height="500px"
-                          Width="375px">
-                    <MudStack AlignItems=@AlignItems.Center 
-                              Spacing=2>
+                                <MudTextField @bind-Value=@addColumnTitle
+                                              Immediate=true
+                                              Variant=@Variant.Outlined
+                                              FullWidth=true
+                                              Class="px-4 pt-4"
+                                              AutoFocus=true
+                                              Placeholder="Enter column title"
+                                              @onkeydown=@((e) => HandleAddColumnEnter(e))>
+                                </MudTextField>
 
-                        <MudIcon Icon=@Icons.Material.Filled.Add 
-                                 Size=@Size.Large 
-                                 Color=@Color.Secondary/>
+                                <MudStack Row=true Class="align-self-end px-2 py-1">
+                                    <MudIconButton Class="pa-2"
+                                                   Icon=@Icons.Material.Filled.Check
+                                                   @onclick=@(() => AddNewColumn())>
+                                    </MudIconButton>
 
-                        <MudText Typo=@Typo.h6 
-                                 Color=@Color.Secondary>
-                                 Add another column
-                        </MudText>
-                    </MudStack>
-                </MudPaper>
-            </MudItem>
-        </MudGrid>
-    </MudMainContent>
+                                    <MudIconButton Class="pa-2"
+                                                   Icon=@Icons.Material.Filled.Close
+                                                   Color=@Color.Error
+                                                   @onclick=@(() => AddNewColumnClose())>
+                                    </MudIconButton>
+                                </MudStack>
+                            </MudPaper>
+                        </MudItem>
+                    }
+                    else
+                    {
+                        <MudItem>
+                            <MudPaper Class="d-flex align-center justify-center mud-width-full cursor-pointer"
+                                      Style="border: 2px dashed var(--mud-palette-secondary); background-color: transparent; height: 525px; width: 375px;"
+                                      @onclick=OnAddColumnClick>
+                                <MudStack AlignItems=@AlignItems.Center
+                                          Spacing=2>
+
+                                    <MudIcon Icon=@Icons.Material.Filled.Add
+                                             Size=@Size.Large
+                                             Color=@Color.Secondary />
+
+                                    <MudText Typo=@Typo.h6
+                                             Color=@Color.Secondary>
+                                        Add another column
+                                    </MudText>
+                                </MudStack>
+                            </MudPaper>
+                        </MudItem>
+                    }
+                </ChildContent>
+                <ItemRenderer Context="task">
+                    <div>
+                        <MudPaper Class="task d-flex flex-column my-1 mud-theme-secondary cursor-pointer overflow-hidden"
+                                  Elevation=1>
+                            <div style="height: 4px; width: 100%; background-color: @GetColorForPriority(task.Priority);"></div>
+
+                            <div class="d-flex align-center py-2">
+                                <MudText Class="px-4"
+                                         Style=@(task.IsComplete ? "text-decoration: line-through;" : "")>
+                                    @task.Title
+                                </MudText>
+
+                                <MudSpacer />
+
+                                <MudCheckBox T="bool"
+                                             ValueChanged=@(() => OnCheckedChange(task))
+                                             Value=@task.IsComplete>
+                                </MudCheckBox>
+                            </div>
+                        </MudPaper>
+                    </div>
+                </ItemRenderer>
+
+            </MudDropContainer>
+        </MudMainContent>
+    </div>
 </AuthGuard>

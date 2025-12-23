@@ -9,24 +9,24 @@ public class TasksService : ITasksService
 {
     private readonly ITasksApi _tasksApi;
 
-    private readonly ISessionCacheService _cache;
+    private readonly ICurrentUserService _userService;
 
-    public TasksService(ITasksApi tasksApi, ISessionCacheService cache)
+    public TasksService(ITasksApi tasksApi, ICurrentUserService userService)
     {
         _tasksApi = tasksApi;
-        _cache = cache;
+        _userService = userService;
     }
 
     public async Task<Result<int>> CreateAsync(CreateTaskRequest request)
     {
-        var userData = _cache.GetSessionData(_cache.CurrentSessionId);
+        var userId = await _userService.GetUserId();
 
-        if (userData is null)
+        if (userId is null)
         {
-            return Result<int>.Failure("User data was not cached");
+            return Result<int>.Failure("User id was not found");
         }
 
-        request.CreatedBy = userData.Id;
+        request.CreatedBy = userId.Value;
 
         var response = await _tasksApi.CreateAsync(request);
 
@@ -40,14 +40,14 @@ public class TasksService : ITasksService
 
     public async Task<Result> ChangeStatusAsync(int id, ChangeTaskStatusRequest request)
     {
-        var userData = _cache.GetSessionData(_cache.CurrentSessionId);
+        var userId = await _userService.GetUserId();
 
-        if (userData is null)
+        if (userId is null)
         {
-            return Result.Failure("User data was not cached");
+            return Result.Failure("User id was not found");
         }
 
-        request.UpdatedBy = userData.Id;
+        request.UpdatedBy = userId.Value;
 
         var response = await _tasksApi.ChangeStatus(id, request);
 

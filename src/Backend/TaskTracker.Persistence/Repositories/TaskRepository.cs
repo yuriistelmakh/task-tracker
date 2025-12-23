@@ -25,4 +25,30 @@ public class TaskRepository : Repository<BoardTask, int>, IBoardTaskRepository
 
         return result > 0;
     }
+
+    public async Task<bool> UpdateOrderAsync(int id, int order)
+    {
+        var sql = @"
+            UPDATE Tasks
+            SET [Order] = @Order
+            WHERE Id = @Id
+        ";
+
+        var result = await Connection.ExecuteAsync(sql, param: new { order, id }, transaction: Transaction);
+
+        return result > 0;
+    }
+
+    public async Task<bool> MoveToColumn(int id, int columnId)
+    {
+        var sql = @"
+            UPDATE Tasks
+            SET ColumnId = @ColumnId
+            WHERE Id = @Id
+        ";
+
+        var result = await Connection.ExecuteAsync(sql, param: new { id, columnId }, transaction: Transaction);
+
+        return result > 0;
+    }
 }
