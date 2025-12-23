@@ -137,6 +137,8 @@ public partial class Board
             IsComplete = task.IsComplete
         };
 
+        _dropContainer.Refresh();
+
         var result = await TasksService.ChangeStatusAsync(task.Id, request);
 
         if (!result.IsSuccess)
@@ -144,6 +146,8 @@ public partial class Board
             task.IsComplete = !task.IsComplete;
 
             Snackbar.Add($"Error occurred: {result.ErrorMessage}", Severity.Error);
+
+            _dropContainer.Refresh();
         }
     }
 

@@ -8,17 +8,17 @@
     color: white;
 }
 
-    ::deep .task-add-field .mud-input.mud-input-filled:hover {
-        background-color: transparent !important;
-    }
+::deep .task-add-field .mud-input.mud-input-filled:hover {
+    background-color: transparent !important;
+}
 
-    ::deep .task-add-field .mud-input.mud-input-filled::before {
-        border-bottom: none !important;
-    }
+::deep .task-add-field .mud-input.mud-input-filled::before {
+    border-bottom: none !important;
+}
 
-    ::deep .task-add-field .mud-input.mud-input-filled.mud-input-underline:after {
-        border-bottom: none;
-    }
+::deep .task-add-field .mud-input.mud-input-filled.mud-input-underline:after {
+    border-bottom: none;
+}
 
 ::deep .mud-input > input.mud-input-root.mud-input-root-filled {
     padding: 15px !important;
