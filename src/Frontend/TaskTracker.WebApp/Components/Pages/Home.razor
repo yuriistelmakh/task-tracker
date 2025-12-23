@@ -9,7 +9,7 @@
                 TaskTracker
             </MudText>
 
-            <MudTextField @bind-Value="search"
+            <MudTextField @bind-Value="_search"
                           Placeholder="Search..."
                           Variant=@Variant.Outlined
                           Style="width: 250px"
@@ -23,7 +23,7 @@
             <MudButton Color=@Color.Inherit>
                 <MudIcon Icon=@Icons.Material.Filled.AccountCircle
                          Size=@Size.Large />
-                <MudText Class="ml-2">@username</MudText>
+                <MudText Class="ml-2">@_username</MudText>
             </MudButton>
         </MudAppBar>
 
@@ -46,7 +46,7 @@
                     </MudStack>
 
                     <MudStack>
-                        @foreach (var board in Boards)
+                        @foreach (var board in _boards)
                         {
                             <div>
                                 <MudPaper Elevation=4

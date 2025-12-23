@@ -1,10 +1,11 @@
-﻿using TaskTracker.Domain.DTOs.Boards;
+﻿using TaskTracker.Domain;
+using TaskTracker.Domain.DTOs.Boards;
 
 namespace TaskTracker.Services.Abstraction.Interfaces.Services;
 
 public interface IBoardsService
 {
-    Task<IEnumerable<BoardSummaryDto>?> GetAllAsync();
+    Task<Result<IEnumerable<BoardSummaryDto>>> GetAllAsync();
 
-    Task<BoardDetailsDto?> GetAsync(int id);
+    Task<Result<BoardDetailsDto>> GetAsync(int id);
 }

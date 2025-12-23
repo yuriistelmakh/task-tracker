@@ -13,4 +13,6 @@ public class TaskModel
     public int Order { get; set; }
 
     public bool IsComplete { get; set; } = false;
+
+    public int ColumnId { get; set; }
 }

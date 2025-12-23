@@ -5,4 +5,6 @@ public interface ICurrentUserService
     Task<string?> GetUserDisplayName();
 
     Task<bool> IsUserAuthenticated();
+
+    Task<int?> GetUserId();
 }

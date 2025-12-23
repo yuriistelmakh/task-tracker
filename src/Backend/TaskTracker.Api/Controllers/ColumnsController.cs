@@ -1,9 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Threading.Tasks;
 using TaskTracker.Application.Features.Columns.Commands.CreateBoardColumns;
 using TaskTracker.Application.Features.Columns.Commands.DeleteColumn;
+using TaskTracker.Application.Features.Columns.Commands.ReorderColumnTasks;
 using TaskTracker.Application.Features.Columns.Commands.UpdateColumn;
 using TaskTracker.Domain.DTOs.Columns;
 
@@ -35,6 +37,23 @@ public class ColumnsController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost("{id}/reorder")]
+    public async Task<IActionResult> ReorderAsync(ReorderColumnTasksRequest request)
+    {
+        var command = new ReorderColumnTasksCommand
+        {
+            IdToOrder = request.MoveTaskRequests.ToDictionary(r => r.TaskId, r => r.NewOrder),
+            ColumnId = request.ColumnId,
+            TaskId = request.MovedTaskId
+        };
+
+        var isSuccess = await _mediator.Send(command);
+
+        return isSuccess
+            ? NoContent()
+            : BadRequest();
+    }
+
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateColumnRequest request)
     {
@@ -50,7 +69,7 @@ public class ColumnsController : ControllerBase
 
         return isSucess
             ? NoContent()
-            : NotFound();
+            : BadRequest();
     }
 
     [HttpDelete("{id}")]
