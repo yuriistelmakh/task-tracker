@@ -30,25 +30,27 @@ public partial class Board
 
     private MudDropContainer<TaskModel> _dropContainer = default!;
 
-    bool isAddColumnOpen = false;
+    bool _isAddColumnOpen = false;
 
-    string addColumnTitle = string.Empty;
+    string _addColumnTitle = string.Empty;
 
     List<TaskModel> _allTasks = [];
 
-    List<ColumnModel> Columns = [];
+    List<ColumnModel> _columns = [];
 
     protected override async Task OnInitializedAsync()
     {
-        var dto = await BoardsService.GetAsync(BoardId);
+        var result = await BoardsService.GetAsync(BoardId);
 
-        if (dto is null)
+        if (!result.IsSuccess)
         {
-            Snackbar.Add("Board was not found.", Severity.Error);
+            Snackbar.Add($"Error while fetching the board: {result.ErrorMessage}", Severity.Error);
             return;
         }
 
-        Columns = dto.Columns.Select(c => c.ToColumModel())
+        var dto = result.Value!;
+
+        _columns = dto.Columns.Select(c => c.ToColumModel())
             .OrderBy(c => c.Order)
             .ToList();
 
@@ -161,34 +163,34 @@ public partial class Board
 
     private void OnAddColumnClick()
     {
-        isAddColumnOpen = true;
+        _isAddColumnOpen = true;
     }
 
     private void AddNewColumnClose()
     {
-        isAddColumnOpen = false;
-        addColumnTitle = string.Empty;
+        _isAddColumnOpen = false;
+        _addColumnTitle = string.Empty;
     }
 
     private async Task AddNewColumn()
     {
-        if (string.IsNullOrEmpty(addColumnTitle))
+        if (string.IsNullOrEmpty(_addColumnTitle))
         {
             return;
         }
 
-        var titleToSend = addColumnTitle;
+        var titleToSend = _addColumnTitle;
 
         var newColumn = new ColumnModel
         {
-            Order = Columns.Count,
-            Title = addColumnTitle
+            Order = _columns.Count,
+            Title = _addColumnTitle
         };
 
-        addColumnTitle = string.Empty;
-        isAddColumnOpen = false;
+        _addColumnTitle = string.Empty;
+        _isAddColumnOpen = false;
 
-        Columns.Add(newColumn);
+        _columns.Add(newColumn);
 
         var request = new CreateColumnRequest
         {
@@ -201,9 +203,9 @@ public partial class Board
 
         if (!result.IsSuccess)
         {
-            Columns.Remove(newColumn);
-            isAddColumnOpen = true;
-            addColumnTitle = titleToSend;
+            _columns.Remove(newColumn);
+            _isAddColumnOpen = true;
+            _addColumnTitle = titleToSend;
 
             Snackbar.Add($"Error occurred: {result.ErrorMessage}", Severity.Error);
             return;

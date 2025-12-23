@@ -26,7 +26,7 @@
                               ItemsSelector=@((item,dropzone) => item.ColumnId.ToString() == dropzone)
                               ItemDropped=@TaskDropped>
                 <ChildContent>
-                    @foreach (var column in Columns)
+                    @foreach (var column in _columns)
                     {
                         <MudItem>
                             <MudPaper Class="d-flex flex-column mud-width-full pt-2"
@@ -86,14 +86,14 @@
                         </MudItem>
                     }
 
-                    @if (isAddColumnOpen)
+                    @if (_isAddColumnOpen)
                     {
                         <MudItem>
                             <MudPaper Class="d-flex flex-column justify-center mud-width-full"
                                       MinHeight="100px"
                                       MinWidth="375px">
 
-                                <MudTextField @bind-Value=@addColumnTitle
+                                <MudTextField @bind-Value=@_addColumnTitle
                                               Immediate=true
                                               Variant=@Variant.Outlined
                                               FullWidth=true

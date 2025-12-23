@@ -8,7 +8,6 @@ namespace TaskTracker.Services;
 public class TasksService : ITasksService
 {
     private readonly ITasksApi _tasksApi;
-
     private readonly ICurrentUserService _userService;
 
     public TasksService(ITasksApi tasksApi, ICurrentUserService userService)
@@ -30,12 +29,9 @@ public class TasksService : ITasksService
 
         var response = await _tasksApi.CreateAsync(request);
 
-        if (!response.IsSuccessful)
-        {
-            return Result<int>.Failure(response.Error.Message);
-        }
-
-        return Result<int>.Success(response.Content);
+        return response.IsSuccessful
+            ? Result<int>.Success(response.Content)
+            : Result<int>.Failure(response.Error.Message);
     }
 
     public async Task<Result> ChangeStatusAsync(int id, ChangeTaskStatusRequest request)
@@ -51,11 +47,8 @@ public class TasksService : ITasksService
 
         var response = await _tasksApi.ChangeStatus(id, request);
 
-        if (!response.IsSuccessful)
-        {
-            return Result.Failure(response.Error.Message);
-        }
-
-        return Result.Success();
+        return response.IsSuccessful
+            ? Result.Success()
+            : Result.Failure(response.Error.Message);
     }
 }
