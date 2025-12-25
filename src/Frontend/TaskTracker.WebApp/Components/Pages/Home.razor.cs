@@ -23,11 +23,11 @@ public partial class Home
     [Inject]
     public IAuthService AuthService { private get; set; } = default!;
 
-    string search = "";
+    private string _search = "";
 
-    string username = "";
+    private string _username = "";
 
-    List<BoardModel> Boards = [];
+    private List<BoardModel> _boards = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -36,17 +36,19 @@ public partial class Home
             return;
         }
 
-        username = await UserService.GetUserDisplayName() ?? "Anonymous";
+        _username = await UserService.GetUserDisplayName() ?? "Anonymous";
 
-        var boardDtos = await BoardsService.GetAllAsync();
+        var result = await BoardsService.GetAllAsync();
 
-        if (boardDtos is null)
+        if (!result.IsSuccess)
         {
-            Snackbar.Add("Something went wrong", Severity.Error);
+            Snackbar.Add($"Eroor while fetching boards: {result.ErrorMessage}", Severity.Error);
             return;
         }
 
-        Boards = boardDtos.Select(bd => bd.ToBoardModel()).ToList();
+        var boardDtos = result.Value!;
+
+        _boards = boardDtos.Select(bd => bd.ToBoardModel()).ToList();
     }
 
     private async Task Logout()

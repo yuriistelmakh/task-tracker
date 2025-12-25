@@ -1,5 +1,4 @@
-﻿using System;
-using TaskTracker.Domain.Enums;
+﻿using TaskTracker.Domain.Enums;
 
 namespace TaskTracker.Domain.DTOs.Tasks;
 

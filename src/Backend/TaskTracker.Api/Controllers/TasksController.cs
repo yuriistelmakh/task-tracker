@@ -6,6 +6,7 @@ using TaskTracker.Application.Features.Tasks.Commands.ChangeStatus;
 using TaskTracker.Application.Features.Tasks.Commands.CreateTask;
 using TaskTracker.Application.Features.Tasks.Commands.DeleteTask;
 using TaskTracker.Application.Features.Tasks.Commands.UpdateTask;
+using TaskTracker.Application.Features.Tasks.Queries.GetTaskById;
 using TaskTracker.Domain.DTOs.Tasks;
 
 namespace TaskTracker.Api.Controllers;
@@ -20,6 +21,21 @@ public class TasksController : ControllerBase
     public TasksController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetByIdAsync(int id)
+    {
+        var query = new GetTaskByIdQuery
+        {
+            Id = id
+        };
+
+        var result = await _mediator.Send(query);
+
+        return result is null
+            ? NotFound()
+            : Ok(result);
     }
 
     [HttpPost]
@@ -48,8 +64,6 @@ public class TasksController : ControllerBase
             Description = request.Description,
             AssigneeId = request.AssigneeId,
             IsComplete = request.IsComplete,
-            Order = request.Order,
-            ColumnId = request.ColumnId,
             DueDate = request.DueDate,
             Priority = request.Priority,
             UpdatedBy = request.UpdatedBy

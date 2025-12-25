@@ -15,13 +15,15 @@ public partial class MainLayout
 
             Background = "#EBF4DD",    // General page background
             Surface = "#FFFFFF",       // Card background (MudCard, surfaces) - white for contrast
-            
+
             TextPrimary = "#3B4953",   // Primary text color
-            TextSecondary = "#5A7863", // Secondary text color
+            TextSecondary = "#A0A8AD", // Secondary text color
 
             DrawerBackground = "#FFFFFF", // Sidebar menu background
             DrawerText = "#3B4953",       // Menu text
-            DrawerIcon = "#5A7863"        // Menu icons
+            DrawerIcon = "#5A7863",        // Menu icons
+
+            Success = "#00A344"
         }
     };
 }

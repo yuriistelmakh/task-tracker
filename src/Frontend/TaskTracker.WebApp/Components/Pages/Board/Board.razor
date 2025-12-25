@@ -19,14 +19,14 @@
     <div>
         <MudMainContent Class="mt-8 mx-8 overflow-x-auto custom-scrollbar"
                         Style="height: calc(100vh - var(--mud-appbar-height));">
-            <MudDropContainer T=@TaskModel
+            <MudDropContainer T=@TaskSummaryModel
                               Items=@_allTasks
                               Class="d-flex flex-nowrap gap-4"
                               @ref=@_dropContainer
                               ItemsSelector=@((item,dropzone) => item.ColumnId.ToString() == dropzone)
                               ItemDropped=@TaskDropped>
                 <ChildContent>
-                    @foreach (var column in Columns)
+                    @foreach (var column in _columns)
                     {
                         <MudItem>
                             <MudPaper Class="d-flex flex-column mud-width-full pt-2"
@@ -39,7 +39,7 @@
                                 </MudText>
 
                                 <MudContainer Class="d-flex flex-column flex-grow-1 flex-shrink-1 pb-4 overflow-y-auto px-2">
-                                    <MudDropZone T=@TaskModel
+                                    <MudDropZone T=@TaskSummaryModel
                                                  Identifier=@column.Id.ToString()
                                                  Class="flex-grow-1"
                                                  AllowReorder=true
@@ -86,14 +86,14 @@
                         </MudItem>
                     }
 
-                    @if (isAddColumnOpen)
+                    @if (_isAddColumnOpen)
                     {
                         <MudItem>
                             <MudPaper Class="d-flex flex-column justify-center mud-width-full"
                                       MinHeight="100px"
                                       MinWidth="375px">
 
-                                <MudTextField @bind-Value=@addColumnTitle
+                                <MudTextField @bind-Value=@_addColumnTitle
                                               Immediate=true
                                               Variant=@Variant.Outlined
                                               FullWidth=true
@@ -143,12 +143,13 @@
                 <ItemRenderer Context="task">
                     <div>
                         <MudPaper Class="task d-flex flex-column my-1 mud-theme-secondary cursor-pointer overflow-hidden"
-                                  Elevation=1>
+                                  Elevation=1
+                                  @onclick=@(() => OnTaskClicked(task.Id))>
                             <div style="height: 4px; width: 100%; background-color: @GetColorForPriority(task.Priority);"></div>
 
                             <div class="d-flex align-center py-2">
                                 <MudText Class="px-4"
-                                         Style=@(task.IsComplete ? "text-decoration: line-through;" : "")>
+                                         Style="@(task.IsComplete ? "text-decoration: line-through;" : "")">
                                     @task.Title
                                 </MudText>
 

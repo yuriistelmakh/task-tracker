@@ -8,7 +8,6 @@ namespace TaskTracker.Services;
 public class ColumnsService : IColumnsService
 {
     private readonly ICurrentUserService _userService;
-
     private readonly IColumnsApi _columnsApi;
 
     public ColumnsService(ICurrentUserService userService, IColumnsApi columnsApi)
@@ -30,23 +29,17 @@ public class ColumnsService : IColumnsService
 
         var result = await _columnsApi.CreateAsync(request);
 
-        if (!result.IsSuccessful)
-        {
-            return Result<int>.Failure(result.Error.Message);
-        }
-
-        return Result<int>.Success(result.Content);
+        return result.IsSuccessful
+            ? Result<int>.Success(result.Content)
+            : Result<int>.Failure(result.Error.Message);
     }
 
     public async Task<Result> ReorderAsync(int columndId, ReorderColumnTasksRequest request)
     {
         var response = await _columnsApi.ReorderAsync(columndId, request);
 
-        if (!response.IsSuccessful)
-        {
-            return Result.Failure(response.Error.Message);
-        }
-
-        return Result.Success();
+        return response.IsSuccessful
+            ? Result.Success()
+            : Result.Failure(response.Error.Message);
     }
 }

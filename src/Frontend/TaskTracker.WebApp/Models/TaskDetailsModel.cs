@@ -1,10 +1,9 @@
-﻿using System;
-using TaskTracker.Domain.DTOs.Users;
+﻿using TaskTracker.Domain.DTOs.Users;
 using TaskTracker.Domain.Enums;
 
-namespace TaskTracker.Domain.DTOs.Tasks;
+namespace TaskTracker.WebApp.Models;
 
-public class TaskDetailsDto
+public class TaskDetailsModel
 {
     public int Id { get; set; }
 
@@ -26,7 +25,7 @@ public class TaskDetailsDto
 
     public bool IsComplete { get; set; }
 
-    public string? ColumnTitle { get; set; }
+    public required string ColumnTitle { get; set; }
 
-    public UserSummaryDto? AssigneeDto { get; set; }
+    public UserSummaryModel? AssigneeModel { get; set; }
 }
