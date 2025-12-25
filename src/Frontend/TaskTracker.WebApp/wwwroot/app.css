@@ -4,7 +4,6 @@
     box-sizing: border-box;
 }
 
-
 /* Task view dialog (since dialog boxes cannot be modified through .razor.css) */
 
 .add-attachment-container {

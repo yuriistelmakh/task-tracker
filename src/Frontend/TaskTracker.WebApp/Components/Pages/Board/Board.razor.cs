@@ -71,7 +71,7 @@ public partial class Board
 
     private async Task HandleAddTaskEnter(KeyboardEventArgs e, ColumnModel column)
     {
-        if (e.Key == "Enter")
+        if (e.Key == "Enter" && !e.ShiftKey)
         {
             await AddNewTask(column);
         }
@@ -332,6 +332,7 @@ public partial class Board
                 if (taskInList is not null)
                 {
                     taskInList.Title = updatedTask.Title;
+                    taskInList.Priority = updatedTask.Priority;
                     _dropContainer.Refresh();
                 }
             }
