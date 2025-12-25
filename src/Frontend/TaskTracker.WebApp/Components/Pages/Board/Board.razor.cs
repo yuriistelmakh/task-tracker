@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using MudBlazor;
 using System.Security.Cryptography.X509Certificates;
 using TaskTracker.Domain.DTOs.Columns;
@@ -31,6 +32,9 @@ public partial class Board
     [Inject]
     public IDialogService DialogService { get; set; } = default!;
 
+    [Inject]
+    public IJSRuntime JS { get; set; } = default!;
+
     private MudDropContainer<TaskSummaryModel> _dropContainer = default!;
 
     private bool _isAddColumnOpen = false;
@@ -40,6 +44,14 @@ public partial class Board
     private List<TaskSummaryModel> _allTasks = [];
 
     private List<ColumnModel> _columns = [];
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("registerPageAutoScroll");
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
