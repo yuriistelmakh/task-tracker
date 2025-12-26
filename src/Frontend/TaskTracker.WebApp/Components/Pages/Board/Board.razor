@@ -33,7 +33,9 @@
                                       MinHeight="75px"
                                       Width="325px">
 
-                                <MudText Class="px-4 py-2" Typo=@Typo.h6>
+                                <MudText Class="px-4 py-2" 
+                                         Typo=@Typo.h6
+                                         Style="word-break: break-word">
                                     @column.Title
                                 </MudText>
 
@@ -56,6 +58,7 @@
                                                                   Class="task-add-field flex-grow-1"
                                                                   Style="word-break: break-word;"
                                                                   Lines=2
+                                                                  MaxLength=200
                                                                   AutoFocus=true
                                                                   Placeholder="Enter a title"
                                                                   AutoGrow=true
@@ -102,6 +105,7 @@
                                               FullWidth=true
                                               Class="px-4 pt-4"
                                               AutoFocus=true
+                                              MaxLength=50
                                               Placeholder="Enter column title"
                                               @onkeydown=@((e) => HandleAddColumnEnter(e))>
                                 </MudTextField>
@@ -124,7 +128,7 @@
                     else
                     {
                         <MudItem>
-                            <MudPaper Class="d-flex align-center justify-center mud-width-full cursor-pointer"
+                            <MudPaper Class="d-flex align-center justify-center mud-width-full cursor-pointer mr-4"
                                       Height="525px"
                                       Width="375px"
                                       Style="border: 2px dashed var(--mud-palette-secondary); background-color: transparent;"

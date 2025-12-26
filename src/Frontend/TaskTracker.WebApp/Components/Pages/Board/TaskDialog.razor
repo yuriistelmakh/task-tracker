@@ -22,6 +22,7 @@
                                   Typo=@Typo.h5
                                   AutoFocus=true
                                   OnBlur=@SaveTitle
+                                  MaxLength=200
                                   OnKeyDown=@HandleTitleKeyDown
                                   Class="ma-0 pa-0 title-input"
                                   Immediate=true
@@ -34,7 +35,14 @@
 
                         <MudText Typo=@Typo.h5
                                  Class="flex-grow-1">
-                            <u>@task.Title</u>
+                            @if (task.Title.Length > 40)
+                            {
+                                @($"{task.Title.Substring(0, 40)}...")
+                            }
+                            else
+                            {
+                                @task.Title
+                            }
                         </MudText>
                     </div>
                 }
@@ -69,6 +77,12 @@
                     <MudText Typo=@Typo.h6>
                         Description
                     </MudText>
+
+                    
+                    <MudIconButton Icon=@(_isDescriptionExpanded ? Icons.Material.Filled.ArrowDropUp : Icons.Material.Filled.ArrowDropDown)
+                                   Class="pa-0"
+                                   Ripple=false
+                                   @onclick=@OnExtendDescription/>
                 </MudStack>
 
                 @if (!_isTaskLoaded)
@@ -80,7 +94,8 @@
                     <MudTextField @bind-Value=@task.Description
                                   Variant=@Variant.Outlined
                                   Lines=2
-                                  MaxLines=4
+                                  MaxLength=700
+                                  AutoGrow=_isDescriptionExpanded
                                   Immediate=true>
 
                     </MudTextField>
@@ -243,7 +258,7 @@
                 <MudStack Row=true
                           Spacing=2 
                           AlignItems=@AlignItems.Center>
-                    <MudDatePicker
+                    <MudDatePicker Label="Date"
                                    Variant=@Variant.Outlined
                                    Margin=@Margin.Dense
                                    @bind-Date=@task.DueDate
@@ -294,7 +309,8 @@
                 {
                     <MudStack Row=true
                           Spacing=1
-                          AlignItems=@AlignItems.Center>
+                          AlignItems=@AlignItems.Center
+                          Class="px-1">
                           <MudIcon Icon=@Icons.Material.Outlined.Schedule
                                    Size=@Size.Small/>
                     <MudText Typo=@Typo.caption>

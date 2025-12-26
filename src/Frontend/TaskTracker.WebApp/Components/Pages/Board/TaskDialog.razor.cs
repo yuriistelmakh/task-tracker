@@ -47,7 +47,9 @@ public partial class TaskDialog
 
     private bool _isTitleEditing = false;
 
-    private string _titleBeforeEditing;
+    private bool _isDescriptionExpanded = false;
+
+    private string _titleBeforeEditing = string.Empty;
 
     private TimeSpan? TaskTime
     {
@@ -189,6 +191,11 @@ public partial class TaskDialog
         {
             SaveTitle();
         }
+    }
+
+    private void OnExtendDescription()
+    {
+        _isDescriptionExpanded = !_isDescriptionExpanded;
     }
 
     private void OnCloseClick()
