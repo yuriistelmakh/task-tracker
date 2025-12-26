@@ -3,10 +3,13 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using MudBlazor;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using TaskTracker.Domain.DTOs.Columns;
 using TaskTracker.Domain.DTOs.Tasks;
 using TaskTracker.Domain.Enums;
+using TaskTracker.Services.Abstraction.Interfaces.APIs;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
+using TaskTracker.WebApp.Components.Shared;
 using TaskTracker.WebApp.Models;
 using TaskTracker.WebApp.Models.Mapping;
 
@@ -348,6 +351,90 @@ public partial class Board
                     _dropContainer.Refresh();
                 }
             }
+        }
+    }
+
+    private void HandleEditColumnEnter(KeyboardEventArgs args, ColumnModel column)
+    {
+        if (args.Key == "Enter")
+        {
+            EditColumn(column);
+            column.IsEditing = false;
+        }
+    }
+
+    private async void EditColumn(ColumnModel column)
+    {
+        if (string.IsNullOrEmpty(column.Title))
+        {
+            column.Title = column.OldTitle!;
+            return;
+        }
+
+        var request = new UpdateColumnRequest
+        {
+            Title = column.Title,
+            Order = column.Order
+        };
+
+        var result = await ColumnsService.UpdateAsync(column.Id, request);
+
+        if (!result.IsSuccess)
+        {
+            column.Title = column.OldTitle!;
+            Snackbar.Add($"Error editing column: {result.ErrorMessage}");
+        }
+
+        column.IsEditing = false;
+    }
+
+    private void EditColumnClose(ColumnModel column)
+    {
+        column.Title = column.OldTitle!;
+        column.IsEditing = false;
+    }
+
+    private void OnEditColumnClick(ColumnModel column)
+    {
+        column.IsEditing = true;
+        column.OldTitle = column.Title;
+    }
+
+    private async Task OnDeleteColumnClick(ColumnModel column)
+    {
+        var parameters = new DialogParameters<CustomDialog>
+        {
+            { x => x.Title, "Warning" },
+            { x => x.Description, "Are you sure you want to delete this column with all tasks inside?"},
+            { x => x.MainButtonText, "Delete" },
+            { x => x.MainButtonColor, Color.Error },
+            { x => x.MainButtonVariant, Variant.Filled }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = await DialogService.ShowAsync<CustomDialog>(string.Empty, parameters, options);
+
+        var result = await dialog.Result;
+
+        bool isConfirmed = false;
+
+        if (result.Data is not null)
+        {
+            isConfirmed = (bool)result.Data;
+        }
+        
+        if (isConfirmed == true)
+        {
+            var response = await ColumnsService.DeleteAsync(column.Id);
+
+            if (!response.IsSuccess)
+            {
+                Snackbar.Add($"Error while deleting column: {response.ErrorMessage}", Severity.Error);
+                return;
+            }
+
+            _columns.Remove(column);
         }
     }
 }

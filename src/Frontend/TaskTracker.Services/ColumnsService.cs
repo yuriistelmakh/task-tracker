@@ -42,4 +42,31 @@ public class ColumnsService : IColumnsService
             ? Result.Success()
             : Result.Failure(response.Error.Message);
     }
+
+    public async Task<Result> UpdateAsync(int columnId, UpdateColumnRequest request)
+    {
+        var userId = await _userService.GetUserId();
+
+        if (userId is null)
+        {
+            return Result.Failure("User id was not found");
+        }
+
+        request.UpdatedBy = userId.Value;
+
+        var response = await _columnsApi.UpdateAsync(columnId, request);
+
+        return response.IsSuccessful
+            ? Result.Success()
+            : Result.Failure(response.Error.Message);
+    }
+
+    public async Task<Result> DeleteAsync(int id)
+    {
+        var response = await _columnsApi.DeleteAsync(id);
+
+        return response.IsSuccessful
+            ? Result.Success()
+            : Result.Failure(response.Error.Message);
+    }
 }

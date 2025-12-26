@@ -8,36 +8,80 @@
     <Header SearchPlaceholder="Search tasks...">
         <LeftContent>
             <MudIconButton Icon=@Icons.Material.Filled.ChevronLeft
-                           Size=@Size.Large
-                           Color=@Color.Inherit
-                           Edge=@Edge.Start
-                           Class="pa-1 mr-1"
-                           Href="/" />
+            Size=@Size.Large
+            Color=@Color.Inherit
+            Edge=@Edge.Start
+            Class="pa-1 mr-1"
+            Href="/" />
         </LeftContent>
     </Header>
 
     <div>
         <MudMainContent Class="mt-8 mx-8"
-                        Style="height: calc(100vh - var(--mud-appbar-height));">
+        Style="height: calc(100vh - var(--mud-appbar-height));">
             <MudDropContainer T=@TaskSummaryModel
-                              Items=@_allTasks
-                              Class="d-flex flex-nowrap gap-4"
-                              @ref=@_dropContainer
-                              ItemsSelector=@((item,dropzone) => item.ColumnId.ToString() == dropzone)
-                              ItemDropped=@TaskDropped>
+            Items=@_allTasks
+            Class="d-flex flex-nowrap gap-4"
+            @ref=@_dropContainer
+            ItemsSelector=@((item,dropzone) => item.ColumnId.ToString() == dropzone)
+            ItemDropped=@TaskDropped>
                 <ChildContent>
                     @foreach (var column in _columns)
                     {
                         <MudItem>
                             <MudPaper Class="d-flex flex-column mud-width-full pt-2 mb-4"
-                                      MinHeight="75px"
-                                      Width="325px">
+                            MinHeight="75px"
+                            Width="325px">
 
-                                <MudText Class="px-4 py-2" 
-                                         Typo=@Typo.h6
-                                         Style="word-break: break-word">
-                                    @column.Title
-                                </MudText>
+                                <MudContainer Class="px-4 py-1 d-flex">
+                                    @if (column.IsEditing)
+                                    {
+                                        <MudTextField @bind-Value=@column.Title
+                                                      Immediate=true
+                                                      Variant=@Variant.Text
+                                                      FullWidth=true
+                                                      AutoFocus=true
+                                                      MaxLength=50
+                                                      Placeholder="Enter column title"
+                                                      Style="font-size: 1.2rem"
+                                                      @onkeydown=@((e) => HandleEditColumnEnter(e, column))>
+                                        </MudTextField>
+
+                                        <MudIconButton Class="pa-2 flex-shrink-0"
+                                                       Icon=@Icons.Material.Filled.Close
+                                                       Color=@Color.Error
+                                                       @onclick=@(() => EditColumnClose(column))>
+                                        </MudIconButton>
+                                    }
+                                    else
+                                    {
+                                        <MudText Typo=@Typo.h6
+                                                 Class="flex-grow-1"
+                                                 Style="word-break: break-word">
+                                            @column.Title
+                                        </MudText>
+
+                                        <MudMenu Icon=@Icons.Material.Filled.MoreVert
+                                                 Color=@Color.Primary
+                                                 Size=@Size.Small
+                                                 AnchorOrigin=@Origin.BottomCenter
+                                                 TransformOrigin=@Origin.TopLeft>
+                                            <MudMenuItem Icon=@Icons.Material.Filled.Edit
+                                                         Class="px-2 py-1"
+                                                         Style="white-space: nowrap;"
+                                                         OnClick=@(() => OnEditColumnClick(column))>
+                                                Change title
+                                            </MudMenuItem>
+                                            <MudMenuItem IconColor=@Color.Error
+                                                         Icon=@Icons.Material.Filled.Delete
+                                                         Style="color: var(--mud-palette-error)"
+                                                         Class="px-2 py-1"
+                                                         OnClick=@(() => OnDeleteColumnClick(column))>
+                                                Delete
+                                            </MudMenuItem>
+                                        </MudMenu>
+                                    }
+                                </MudContainer>
 
                                 <MudContainer Class="d-flex flex-column flex-grow-1 flex-shrink-1 pb-4 px-2">
                                     <MudDropZone T=@TaskSummaryModel

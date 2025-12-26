@@ -8,5 +8,7 @@ public class ColumnModel
     public int Order { get; set; }
 
     public bool IsAddTaskOpen { get; set; }
+    public bool IsEditing { get; set; }
+    public string? OldTitle { get; set; }
     public string? NewTaskTitle { get; set; }
 }

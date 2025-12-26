@@ -10,4 +10,10 @@ public interface IColumnsApi
 
     [Post("/api/columns/{columnId}/reorder")]
     public Task<IApiResponse> ReorderAsync(int columnId, [Body] ReorderColumnTasksRequest request);
+
+    [Put("/api/columns/{id}")]
+    public Task<IApiResponse> UpdateAsync(int id, [Body] UpdateColumnRequest request);
+
+    [Delete("/api/columns/{id}")]
+    public Task<IApiResponse> DeleteAsync(int id);
 }
