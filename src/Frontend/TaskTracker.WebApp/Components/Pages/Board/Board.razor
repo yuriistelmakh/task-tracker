@@ -17,7 +17,7 @@
         <RightContent>
             <MudTooltip Text=@(_isReorderingColumns ? "Done reordering" : "Reorder columns")>
                 <MudIconButton Icon=@(_isReorderingColumns ? Icons.Material.Filled.Check : Icons.Material.Filled.SwapHoriz)
-                               Color=@(_isReorderingColumns ? Color.Success : Color.Inherit)
+                               Color=@Color.Inherit
                                OnClick=@ToggleReorderMode />
             </MudTooltip>
         </RightContent>
@@ -33,7 +33,7 @@
                                   Items=@_columns
                                   ItemsSelector=@((item, dropzone) => true)
                                   ItemDropped=@ColumnDropped
-                                  Class="d-flex flex-nowrap gap-4 pl-4"
+                                  Class="d-flex flex-nowrap gap-4"
                                   @ref=@_columnDropContainer>
                     <ChildContent>
                         <MudDropZone T=@ColumnModel
