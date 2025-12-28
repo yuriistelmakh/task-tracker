@@ -53,6 +53,8 @@ public partial class Board
 
     private List<ColumnModel> _columns = [];
 
+    private List<UserSummaryModel> _boardMembers = [];
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -82,6 +84,16 @@ public partial class Board
             .OrderBy(t => t.ColumnId)
             .ThenBy(t => t.Order)
             .ToList();
+
+        var membersResult = await BoardsService.GetMembersAsync(BoardId);
+
+        if (!membersResult.IsSuccess)
+        {
+            Snackbar.Add($"Error getting board members: {membersResult.ErrorMessage}", Severity.Error);
+            return;
+        }
+
+        _boardMembers = membersResult.Value!.Select(m => m.ToUserSummaryModel()).ToList();
     }
 
     private static void OnAddTaskClick(ColumnModel column)

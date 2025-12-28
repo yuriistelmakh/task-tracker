@@ -15,6 +15,16 @@
                            Href="/" />
         </LeftContent>
         <RightContent>
+            <MudAvatarGroup Max=3
+                            Spacing=3>
+                @foreach (var member in _boardMembers)
+                {
+                    <MudAvatar Class="cursor-pointer">
+                        <MudIcon Icon=@Icons.Material.Filled.AccountCircle/>
+                    </MudAvatar>
+                }
+            </MudAvatarGroup>
+
             <MudTooltip Text=@(_isReorderingColumns ? "Done reordering" : "Reorder columns")>
                 <MudIconButton Icon=@(_isReorderingColumns ? Icons.Material.Filled.Check : Icons.Material.Filled.SwapHoriz)
                                Color=@Color.Inherit
@@ -248,7 +258,7 @@
                                 <div style="height: 4px; width: 100%; background-color: @GetColorForPriority(task.Priority);"></div>
                                 <div class="d-flex align-center py-2">
                                     <MudText Class="px-4 flex-grow-1"
-                                             Style=@((task.IsComplete ? "text-decoration: line-through;" : "") + " word-break: break-word;")>
+                                             Style=@((task.IsComplete ? "text-decoration: line-through;" : "") + " word-break: break-word; white-space: pre-wrap;")>
                                         @task.Title
                                     </MudText>
                                     <MudCheckBox T=bool
