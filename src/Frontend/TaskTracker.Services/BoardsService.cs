@@ -1,4 +1,5 @@
-﻿using TaskTracker.Domain.DTOs.Boards;
+﻿using TaskTracker.Domain;
+using TaskTracker.Domain.DTOs.Boards;
 using TaskTracker.Services.Abstraction.Interfaces.APIs;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
 
@@ -13,27 +14,21 @@ public class BoardsService : IBoardsService
         _boardsApi = boardsApi;
     }
 
-    public async Task<IEnumerable<BoardSummaryDto>?> GetAllAsync()
+    public async Task<Result<IEnumerable<BoardSummaryDto>>> GetAllAsync()
     {
         var result = await _boardsApi.GetAllAsync();
 
-        if (!result.IsSuccessful)
-        {
-            return null;
-        }
-
-        return result.Content;
+        return result.IsSuccessful
+            ? Result<IEnumerable<BoardSummaryDto>>.Success(result.Content)
+            : Result<IEnumerable<BoardSummaryDto>>.Failure(result.Error.Message);
     }
 
-    public async Task<BoardDetailsDto?> GetAsync(int id)
+    public async Task<Result<BoardDetailsDto>> GetAsync(int id)
     {
         var result = await _boardsApi.GetByIdAsync(id);
 
-        if (!result.IsSuccessful)
-        {
-            return null;
-        }
-
-        return result.Content;
+        return result.IsSuccessful
+            ? Result<BoardDetailsDto>.Success(result.Content)
+            : Result<BoardDetailsDto>.Failure(result.Error.Message);
     }
 }

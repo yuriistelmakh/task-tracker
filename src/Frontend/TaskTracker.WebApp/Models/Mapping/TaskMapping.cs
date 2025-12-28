@@ -12,5 +12,6 @@ public static class TaskMapping
             IsComplete = dto.IsComplete,
             Order = dto.Order,
             Priority = dto.Priority,
+            ColumnId = dto.ColumndId
         };
 }
