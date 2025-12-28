@@ -9,7 +9,7 @@ public interface IColumnsApi
     public Task<IApiResponse<int>> CreateAsync([Body] CreateColumnRequest request);
 
     [Post("/api/columns/{columnId}/reorder")]
-    public Task<IApiResponse> ReorderAsync(int columnId, [Body] ReorderColumnTasksRequest request);
+    public Task<IApiResponse> ReorderTasksAsync(int columnId, [Body] ReorderColumnTasksRequest request);
 
     [Put("/api/columns/{id}")]
     public Task<IApiResponse> UpdateAsync(int id, [Body] UpdateColumnRequest request);

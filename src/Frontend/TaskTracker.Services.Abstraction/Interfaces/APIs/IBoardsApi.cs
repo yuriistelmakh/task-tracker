@@ -16,4 +16,7 @@ public interface IBoardsApi
 
     [Get("/api/boards/{id}/members")]
     public Task<IApiResponse<IEnumerable<UserSummaryDto>>> GetMembersAsync(int id);
+
+    [Post("/api/boards/{id}/reorder")]
+    public Task<IApiResponse> ReorderColumnsAsync(int id, ReorderBoardColumnsRequest request);
 }

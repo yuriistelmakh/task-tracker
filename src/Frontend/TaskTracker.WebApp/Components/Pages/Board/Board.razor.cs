@@ -4,6 +4,7 @@ using Microsoft.JSInterop;
 using MudBlazor;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using TaskTracker.Domain.DTOs.Boards;
 using TaskTracker.Domain.DTOs.Columns;
 using TaskTracker.Domain.DTOs.Tasks;
 using TaskTracker.Domain.Enums;
@@ -38,11 +39,15 @@ public partial class Board
     [Inject]
     public IJSRuntime JS { get; set; } = default!;
 
-    private MudDropContainer<TaskSummaryModel> _dropContainer = default!;
+    private MudDropContainer<TaskSummaryModel> _taskDropContainer = default!;
+
+    private MudDropContainer<ColumnModel> _columnDropContainer = default!;
 
     private bool _isAddColumnOpen = false;
 
     private string _addColumnTitle = string.Empty;
+
+    private bool _isReorderingColumns = false;
 
     private List<TaskSummaryModel> _allTasks = [];
 
@@ -116,7 +121,7 @@ public partial class Board
 
         _allTasks.Add(newTask);
 
-        _dropContainer.Refresh();
+        _taskDropContainer.Refresh();
 
         var request = new CreateTaskRequest
         {
@@ -131,7 +136,7 @@ public partial class Board
         {
             column.Tasks.Remove(newTask);
             _allTasks.Remove(newTask);
-            _dropContainer.Refresh();
+            _taskDropContainer.Refresh();
             column.IsAddTaskOpen = true;
             column.NewTaskTitle = titleToSend;
 
@@ -157,7 +162,7 @@ public partial class Board
             IsComplete = task.IsComplete
         };
 
-        _dropContainer.Refresh();
+        _taskDropContainer.Refresh();
 
         var result = await TasksService.ChangeStatusAsync(task.Id, request);
 
@@ -167,7 +172,7 @@ public partial class Board
 
             Snackbar.Add($"Error occurred: {result.ErrorMessage}", Severity.Error);
 
-            _dropContainer.Refresh();
+            _taskDropContainer.Refresh();
         }
     }
 
@@ -307,7 +312,7 @@ public partial class Board
 
             _allTasks = _allTasks.OrderBy(t => t.ColumnId).ThenBy(t => t.Order).ToList();
 
-            _dropContainer.Refresh();
+            _taskDropContainer.Refresh();
             Snackbar.Add($"Error moving task: {result.ErrorMessage}", Severity.Error);
         }
     }
@@ -336,7 +341,7 @@ public partial class Board
                 if (taskToRemove != null)
                 {
                     _allTasks.Remove(taskToRemove);
-                    _dropContainer.Refresh();
+                    _taskDropContainer.Refresh();
                 }
             }
             else if (dialogResult.Action == TaskDialogAction.Update && dialogResult.Task is not null)
@@ -348,7 +353,7 @@ public partial class Board
                 {
                     taskInList.Title = updatedTask.Title;
                     taskInList.Priority = updatedTask.Priority;
-                    _dropContainer.Refresh();
+                    _taskDropContainer.Refresh();
                 }
             }
         }
@@ -435,6 +440,48 @@ public partial class Board
             }
 
             _columns.Remove(column);
+        }
+    }
+
+    private void ToggleReorderMode()
+    {
+        _isReorderingColumns = !_isReorderingColumns;
+    }
+
+    private async Task ColumnDropped(MudItemDropInfo<ColumnModel> dropItem)
+    {
+        var newIndex = dropItem.IndexInZone;
+        
+        var column = dropItem.Item;
+        _columns.Remove(column);
+        
+        newIndex = Math.Clamp(newIndex, 0, _columns.Count);
+        _columns.Insert(newIndex, column);
+
+        for (int i = 0; i < _columns.Count; i++)
+        {
+            _columns[i].Order = i;
+        }
+
+        _columnDropContainer.Refresh();
+
+        var request = new ReorderBoardColumnsRequest
+        {
+            MoveColumnRequests = _columns.Select(c => new MoveColumnRequest
+            {
+                ColumnId = c.Id,
+                NewOrder = c.Order
+            }).ToList()
+        };
+
+        var result = await BoardsService.ReorderColumnsAsync(BoardId, request);
+
+        if (!result.IsSuccess)
+        {
+            Snackbar.Add($"Error moving column: {result.ErrorMessage}", Severity.Error);
+            
+            await OnInitializedAsync();
+            _columnDropContainer.Refresh();
         }
     }
 }

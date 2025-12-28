@@ -4,6 +4,37 @@
     box-sizing: border-box;
 }
 
+@keyframes wiggle {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-1deg);
+    }
+
+    50% {
+        transform: rotate(1deg);
+    }
+
+    75% {
+        transform: rotate(-1deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+.shake-on-hover:hover {
+    animation: wiggle 0.3s ease-in-out infinite;
+    cursor: grab;
+}
+
+.shake-on-hover:active {
+    cursor: grabbing;
+}
+
 /* Task view dialog (since dialog boxes cannot be modified through .razor.css) */
 
 .add-attachment-container {

@@ -36,7 +36,7 @@ public class ColumnsService : IColumnsService
 
     public async Task<Result> ReorderAsync(int columndId, ReorderColumnTasksRequest request)
     {
-        var response = await _columnsApi.ReorderAsync(columndId, request);
+        var response = await _columnsApi.ReorderTasksAsync(columndId, request);
 
         return response.IsSuccessful
             ? Result.Success()

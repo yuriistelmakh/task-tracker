@@ -11,4 +11,6 @@ public interface IBoardsService
     Task<Result<BoardDetailsDto>> GetAsync(int id);
 
     Task<Result<IEnumerable<UserSummaryDto>>> GetMembersAsync(int id);
+
+    Task<Result> ReorderColumnsAsync(int id, ReorderBoardColumnsRequest request);
 }
