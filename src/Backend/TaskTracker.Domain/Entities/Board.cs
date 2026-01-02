@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TaskTracker.Domain.Enums;
 
 namespace TaskTracker.Domain.Entities;
 
@@ -17,6 +18,10 @@ public class Board
 
     public bool IsArchived { get; set; }
 
+    public required string DisplayColor { get; set; }
+
+    public BoardVisibility Visibility { get; set; } = BoardVisibility.Private;
+
     public DateTime CreatedAt { get; set; }
     public int CreatedBy { get; set; }
 
@@ -29,6 +34,6 @@ public class Board
 
     public List<BoardColumn> Columns { get; set; } = [];
 
-    public List<BoardMember> Members { get; set; } = [];
+    public List<User> Members { get; set; } = [];
 }
 

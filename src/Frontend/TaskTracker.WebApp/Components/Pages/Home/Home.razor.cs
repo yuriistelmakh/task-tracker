@@ -5,7 +5,7 @@ using TaskTracker.Services.Abstraction.Interfaces.Services;
 using TaskTracker.WebApp.Models;
 using TaskTracker.WebApp.Models.Mapping;
 
-namespace TaskTracker.WebApp.Components.Pages;
+namespace TaskTracker.WebApp.Components.Pages.Home;
 
 public partial class Home
 {
@@ -23,6 +23,9 @@ public partial class Home
 
     [Inject]
     public IAuthService AuthService { private get; set; } = default!;
+
+    [Inject]
+    public IDialogService DialogService { private get; set; } = default!;
 
     private string _search = "";
 
@@ -43,7 +46,7 @@ public partial class Home
 
         if (!result.IsSuccess)
         {
-            Snackbar.Add($"Eroor while fetching boards: {result.ErrorMessage}", Severity.Error);
+            Snackbar.Add($"Error while fetching boards: {result.ErrorMessage}", Severity.Error);
             return;
         }
 
@@ -52,10 +55,28 @@ public partial class Home
         _boards = boardDtos.Select(bd => bd.ToBoardModel()).ToList();
     }
 
-    private async Task Logout()
+    private async Task OnCreateBoardClicked()
     {
-        await AuthService.LogoutAsync();
-        Nav.NavigateTo("/login");
+        var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+        var dialog = await DialogService.ShowAsync<CreateBoardDialog>(string.Empty, options);
+
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult!.Data is not null)
+        {
+            var result = await BoardsService.GetAllAsync();
+
+            if (!result.IsSuccess)
+            {
+                Snackbar.Add($"Error while fetching boards: {result.ErrorMessage}", Severity.Error);
+                return;
+            }
+
+            var boardDtos = result.Value!;
+
+            _boards = boardDtos.Select(bd => bd.ToBoardModel()).ToList();
+        }
     }
 
     private void OnBoardClicked(int boardId)

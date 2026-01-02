@@ -15,12 +15,11 @@
                            Href="/" />
         </LeftContent>
         <RightContent>
-            <MudAvatarGroup Max=3
-                            Spacing=3>
+            <MudAvatarGroup Max=3 Spacing=3>
                 @foreach (var member in _boardMembers)
                 {
                     <MudAvatar Class="cursor-pointer">
-                        <MudIcon Icon=@Icons.Material.Filled.AccountCircle/>
+                        <MudIcon Icon=@Icons.Material.Filled.AccountCircle />
                     </MudAvatar>
                 }
             </MudAvatarGroup>
@@ -33,9 +32,9 @@
         </RightContent>
     </Header>
 
-    <div>
-        <MudMainContent Class="mt-8 mx-8"
-                        Style="height: calc(100vh - var(--mud-appbar-height));">
+    <div style="margin-top: var(--mud-appbar-height); min-height: calc(100vh - var(--mud-appbar-height)); overflow-x: auto; width: 100%;">
+        <div class="px-8 py-8 d-inline-flex align-start"
+             style="@($"background-color: {_backgroundColor}; min-height: calc(100vh - var(--mud-appbar-height)); min-width: 100%; box-sizing: border-box;")">
 
             @if (_isReorderingColumns)
             {
@@ -49,34 +48,32 @@
                         <MudDropZone T=@ColumnModel
                                      Identifier="board-zone"
                                      Class="d-flex flex-nowrap gap-4"
-                                     Style="min-height: 500px; width: 100%;"
+                                     Style="min-height: 100px;"
                                      AllowReorder=true />
                     </ChildContent>
                     <ItemRenderer Context="column">
-                        <MudItem>
-                            <MudPaper Class="d-flex flex-column mud-width-full pt-2 mb-4 cursor-move shake-on-hover"
-                                      MinHeight="75px"
-                                      Width="325px"
-                                      Elevation=4
-                                      Style="border: 2px dashed var(--mud-palette-primary);">
+                        <MudPaper Class="d-flex flex-column flex-shrink-0 pt-2 cursor-move shake-on-hover"
+                                  MinHeight="75px"
+                                  Width="325px"
+                                  Elevation=4
+                                  Style="border: 2px dashed var(--mud-palette-primary);">
 
-                                <MudContainer Class="px-4 py-4 d-flex align-center">
-                                    <MudIcon Icon=@Icons.Material.Filled.DragIndicator 
-                                             Class="mr-2" />
-                                    <MudText Typo=@Typo.h6>
-                                        @column.Title
-                                    </MudText>
-                                </MudContainer>
+                            <MudContainer Class="px-4 py-4 d-flex align-center">
+                                <MudIcon Icon=@Icons.Material.Filled.DragIndicator
+                                         Class="mr-2" />
+                                <MudText Typo=@Typo.h6>
+                                    @column.Title
+                                </MudText>
+                            </MudContainer>
 
-                                <MudContainer Class="px-4 pb-4">
-                                    <MudText Typo=@Typo.body2
-                                             Color=@Color.Secondary 
-                                             Align=@Align.Center>
-                                        Tasks are hidden while reordering
-                                    </MudText>
-                                </MudContainer>
-                            </MudPaper>
-                        </MudItem>
+                            <MudContainer Class="px-4 pb-4">
+                                <MudText Typo=@Typo.body2
+                                         Color=@Color.Secondary
+                                         Align=@Align.Center>
+                                    Tasks are hidden while reordering
+                                </MudText>
+                            </MudContainer>
+                        </MudPaper>
                     </ItemRenderer>
                 </MudDropContainer>
             }
@@ -91,12 +88,12 @@
                     <ChildContent>
                         @foreach (var column in _columns)
                         {
-                            <MudItem>
-                                <MudPaper Class="d-flex flex-column mud-width-full pt-2 mb-4"
+                            <div class="d-flex flex-column flex-shrink-0" style="width: 325px;">
+                                <MudPaper Class="d-flex flex-column mud-width-full pt-2"
                                           MinHeight="75px"
                                           Width="325px">
 
-                                    <MudContainer Class="px-4 py-1 d-flex">
+                                    <MudContainer Class="px-4 py-1 d-flex flex-shrink-0">
                                         @if (column.IsEditing)
                                         {
                                             <MudTextField @bind-Value=@column.Title
@@ -109,6 +106,7 @@
                                                           Style="font-size: 1.2rem"
                                                           @onkeydown=@((e) => HandleEditColumnEnter(e, column))>
                                             </MudTextField>
+
                                             <MudIconButton Class="pa-2 flex-shrink-0"
                                                            Icon=@Icons.Material.Filled.Close
                                                            Color=@Color.Error
@@ -122,6 +120,7 @@
                                                      Style="word-break: break-word">
                                                 @column.Title
                                             </MudText>
+
                                             <MudMenu Icon=@Icons.Material.Filled.MoreVert
                                                      Color=@Color.Primary
                                                      Size=@Size.Small
@@ -153,7 +152,7 @@
 
                                         @if (column.IsAddTaskOpen)
                                         {
-                                            <div>
+                                            <div class="flex-shrink-0">
                                                 <MudPaper Class="task d-flex flex-column my-1 mud-theme-secondary cursor-pointer overflow-hidden"
                                                           Elevation=1>
                                                     <div class="d-flex align-center py-1">
@@ -170,10 +169,12 @@
                                                                       Margin=@Margin.None
                                                                       OnKeyDown=@(e => HandleAddTaskEnter(e, column))>
                                                         </MudTextField>
+
                                                         <MudIconButton Class="pa-2 flex-shrink-0"
                                                                        Icon=@Icons.Material.Filled.Check
                                                                        @onclick=@(() => AddNewTask(column))>
                                                         </MudIconButton>
+
                                                         <MudIconButton Class="pa-2 pr-3 flex-shrink-0"
                                                                        Icon=@Icons.Material.Filled.Close
                                                                        Color=@Color.Error
@@ -189,18 +190,19 @@
                                                FullWidth=true
                                                @onclick=@(() => OnAddTaskClick(column))>
                                         <MudIcon Icon=@Icons.Material.Filled.Add Class="mr-2" />
-                                        <MudText>Add another card</MudText>
+                                        <MudText>Add another task</MudText>
                                     </MudButton>
                                 </MudPaper>
-                            </MudItem>
+                            </div>
                         }
 
                         @if (_isAddColumnOpen)
                         {
-                            <MudItem>
+                            <div class="d-flex flex-column flex-shrink-0" style="width: 375px;">
                                 <MudPaper Class="d-flex flex-column justify-center mud-width-full"
                                           MinHeight="100px"
                                           MinWidth="375px">
+
                                     <MudTextField @bind-Value=@_addColumnTitle
                                                   Immediate=true
                                                   Variant=@Variant.Outlined
@@ -211,11 +213,13 @@
                                                   Placeholder="Enter column title"
                                                   @onkeydown=@((e) => HandleAddColumnEnter(e))>
                                     </MudTextField>
+
                                     <MudStack Row=true Class="align-self-end px-2 py-1">
                                         <MudIconButton Class="pa-2"
                                                        Icon=@Icons.Material.Filled.Check
                                                        @onclick=@(() => AddNewColumn())>
                                         </MudIconButton>
+
                                         <MudIconButton Class="pa-2"
                                                        Icon=@Icons.Material.Filled.Close
                                                        Color=@Color.Error
@@ -223,44 +227,45 @@
                                         </MudIconButton>
                                     </MudStack>
                                 </MudPaper>
-                            </MudItem>
+                            </div>
                         }
                         else
                         {
-                            <MudItem>
+                            <div class="d-flex flex-column flex-shrink-0" style="width: 375px;">
                                 <MudPaper Class="d-flex align-center justify-center mud-width-full cursor-pointer mr-4"
                                           Height="525px"
                                           Width="375px"
-                                          Style="border: 2px dashed var(--mud-palette-secondary); background-color: transparent;"
+                                          Style="border: 2px dashed white; background-color: transparent;"
                                           @onclick=OnAddColumnClick>
-                                    <MudStack AlignItems=@AlignItems.Center 
+                                    <MudStack AlignItems=@AlignItems.Center
                                               Spacing=2>
 
-                                        <MudIcon Icon=@Icons.Material.Filled.Add 
-                                                 Size=@Size.Large 
-                                                 Color=@Color.Secondary />
+                                        <MudIcon Icon=@Icons.Material.Filled.Add
+                                                 Size=@Size.Large
+                                                 Style="color: white" />
 
-                                        <MudText Typo=@Typo.h6 
-                                                 Color=@Color.Secondary>
-                                                 Add another column
+                                        <MudText Typo=@Typo.h6
+                                                 Style="color: white">
+                                            Add another column
                                         </MudText>
                                     </MudStack>
                                 </MudPaper>
-                            </MudItem>
+                            </div>
                         }
                     </ChildContent>
-
                     <ItemRenderer Context="task">
                         <div>
                             <MudPaper Class="task d-flex flex-column my-1 mud-theme-secondary cursor-pointer overflow-hidden"
                                       Elevation=1
                                       @onclick=@(() => OnTaskClicked(task.Id))>
                                 <div style="height: 4px; width: 100%; background-color: @GetColorForPriority(task.Priority);"></div>
+
                                 <div class="d-flex align-center py-2">
                                     <MudText Class="px-4 flex-grow-1"
                                              Style=@((task.IsComplete ? "text-decoration: line-through;" : "") + " word-break: break-word; white-space: pre-wrap;")>
                                         @task.Title
                                     </MudText>
+
                                     <MudCheckBox T=bool
                                                  ValueChanged=@(() => OnCheckedChange(task))
                                                  Value=@task.IsComplete
@@ -269,8 +274,9 @@
                             </MudPaper>
                         </div>
                     </ItemRenderer>
+
                 </MudDropContainer>
             }
-        </MudMainContent>
+        </div>
     </div>
 </AuthGuard>

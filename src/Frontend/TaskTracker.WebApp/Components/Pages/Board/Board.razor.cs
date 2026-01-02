@@ -39,6 +39,8 @@ public partial class Board
     [Inject]
     public IJSRuntime JS { get; set; } = default!;
 
+    private string _backgroundColor = string.Empty;
+
     private MudDropContainer<TaskSummaryModel> _taskDropContainer = default!;
 
     private MudDropContainer<ColumnModel> _columnDropContainer = default!;
@@ -74,6 +76,8 @@ public partial class Board
         }
 
         var boardDto = result.Value!;
+
+        _backgroundColor = boardDto.DisplayColor;
 
         _columns = boardDto.Columns.Select(c => c.ToColumModel())
             .OrderBy(c => c.Order)
@@ -365,6 +369,7 @@ public partial class Board
                 {
                     taskInList.Title = updatedTask.Title;
                     taskInList.Priority = updatedTask.Priority;
+                    taskInList.IsComplete = updatedTask.IsComplete;
                     _taskDropContainer.Refresh();
                 }
             }

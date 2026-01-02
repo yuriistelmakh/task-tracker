@@ -1,4 +1,5 @@
-﻿using TaskTracker.Domain.DTOs.Users;
+﻿using System.Collections.Generic;
+using TaskTracker.Domain.DTOs.Users;
 
 namespace TaskTracker.Domain.DTOs.Boards;
 
@@ -8,11 +9,13 @@ public class BoardSummaryDto
 
     public required string Title { get; set; }
 
+    public required string DisplayColor { get; set; }
+
     public bool IsArchived { get; set; }
 
     public int TasksCount { get; set; }
 
     public int MembersCount { get; set; }
 
-    public required UserSummaryDto Owner { get; set; }
+    public List<UserSummaryDto> Members { get; set; } = [];
 }

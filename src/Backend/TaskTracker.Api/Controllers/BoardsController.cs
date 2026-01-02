@@ -68,8 +68,9 @@ public class BoardsController : ControllerBase
         var command = new CreateBoardCommand
         {
             Title = request.Title,
-            Description = request.Description,
-            CreatedBy = request.CreatedBy
+            CreatedBy = request.CreatedBy,
+            DisplayColor = request.DisplayColor,
+            Visibility = request.Visibility
         };
 
         var result = await _mediator.Send(command);

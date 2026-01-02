@@ -9,10 +9,12 @@ namespace TaskTracker.Services;
 public class BoardsService : IBoardsService
 {
     private readonly IBoardsApi _boardsApi;
+    private readonly ICurrentUserService _userService;
 
-    public BoardsService(IBoardsApi boardsApi)
+    public BoardsService(IBoardsApi boardsApi, ICurrentUserService userService)
     {
         _boardsApi = boardsApi;
+        _userService = userService;
     }
 
     public async Task<Result<IEnumerable<BoardSummaryDto>>> GetAllAsync()
@@ -22,6 +24,27 @@ public class BoardsService : IBoardsService
         return result.IsSuccessful
             ? Result<IEnumerable<BoardSummaryDto>>.Success(result.Content)
             : Result<IEnumerable<BoardSummaryDto>>.Failure(result.Error.Message);
+    }
+
+    public async Task<Result<int>> CreateAsync(CreateBoardRequest request)
+    {
+        var userId = await _userService.GetUserId();
+
+        if (userId is null)
+        {
+            return Result<int>.Failure("User id was not found");
+        }
+
+        request.CreatedBy = userId.Value;
+
+        var result = await _boardsApi.CreateAsync(request);
+
+        if (!result.IsSuccessful)
+        {
+            return Result<int>.Failure(result.Error.Message);
+        }
+
+        return Result<int>.Success(result.Content);
     }
 
     public async Task<Result<BoardDetailsDto>> GetAsync(int id)

@@ -1,0 +1,154 @@
+﻿@using TaskTracker.Domain.Enums
+<MudDialog TitleClass="pa-0">
+    <DialogContent>
+
+        <MudStack Row=true AlignItems=@AlignItems.Center>
+
+            <MudText Typo=@Typo.h5>
+                <b>Create new board</b>
+            </MudText>
+
+            <MudSpacer/>
+
+            <MudIconButton Icon=@Icons.Material.Filled.Close
+                           @onclick=@OnCloseClick/>
+        </MudStack>
+        
+        <MudDivider Class="py-2"/>
+
+        <MudGrid>
+            <MudItem xs=6>
+                <MudStack>
+                    <MudText><b>Preview</b></MudText>
+                    <MudPaper Style=@($"background-color:{_selectedColor};" + "height: 100px")>
+                        <MudText Class="ma-4"
+                                 Style="color:white">
+                            @_title
+                        </MudText>
+                    </MudPaper>
+                </MudStack>
+            </MudItem>
+            <MudItem xs=6>
+                <MudStack>
+                    <MudText><b>Enter board title</b></MudText>
+                    <MudTextField @bind-Value=@_title
+                                  Variant=@Variant.Outlined
+                                  Margin=@Margin.Dense
+                                  Placeholder="For example: Marketing campaign"
+                                  Counter=50
+                                  MaxLength=50
+                                  Immediate=true
+                                  Required=true>
+
+                    </MudTextField>
+                </MudStack>
+            </MudItem>
+        </MudGrid>
+
+        <MudText Class="py-2">
+            <b>Background color</b>
+        </MudText>
+
+        <MudGrid Spacing=2>
+            @foreach (var color in _backgroundColorOptions)
+            {
+                <MudItem xs=2>
+                    <MudPaper Class="d-flex align-center justify-center py-8 cursor-pointer" 
+                              Elevation=2
+                              Style="@($"background-color:{color}; box-sizing: border-box;" +
+                                    (color == _selectedColor ? "border: 3px solid var(--mud-palette-primary)" : "border: 3px solid transparent"))"
+                              @onclick=@(() => OnColorClick(color))>
+                    </MudPaper>
+                </MudItem>
+            }
+        </MudGrid>
+
+        <MudText Class="py-2">
+            <b>Board visibility</b>
+        </MudText>
+
+        <MudStack>
+            <MudPaper Style="border: 1px solid var(--mud-palette-primary)"
+                      Class="d-flex align-center pa-1 cursor-pointer"
+                      @onclick=@(() => OnVisibilityOptionClicked(BoardVisibility.Private))>
+                <MudIcon Icon=@Icons.Material.Filled.Lock
+                         Class="mx-2"/>
+                <MudStack Spacing=0>
+                    <MudText>
+                        <b>Private</b>
+                    </MudText>
+                    <MudText Typo=@Typo.subtitle2>
+                        Only you can edit this page.
+                    </MudText>
+                </MudStack>
+
+                <MudSpacer/>
+
+                @if (_selectedVisibility == BoardVisibility.Private)
+                {
+                    <MudIcon Icon=@Icons.Material.Filled.CheckCircle
+                             Class="mr-2" />
+                }
+
+            </MudPaper>
+
+            <MudPaper Style="border: 1px solid var(--mud-palette-primary)"
+                      Class="d-flex align-center pa-1 cursor-pointer"
+                      @onclick=@(() => OnVisibilityOptionClicked(BoardVisibility.Readonly))>
+                <MudIcon Icon=@Icons.Material.Filled.Visibility
+                         Class="mx-2" />
+                <MudStack Spacing=0>
+                    <MudText>
+                        <b>Read-only</b>
+                    </MudText>
+                    <MudText Typo=@Typo.subtitle2>
+                        Visitors can only view your board. Only the owner can edit it.
+                    </MudText>
+                </MudStack>
+
+                <MudSpacer />
+
+                @if (_selectedVisibility == BoardVisibility.Readonly)
+                {
+                    <MudIcon Icon=@Icons.Material.Filled.CheckCircle
+                             Class="mr-2" />
+                }
+
+            </MudPaper>
+
+            <MudPaper Style="border: 1px solid var(--mud-palette-primary)"
+                      Class="d-flex align-center pa-1 cursor-pointer"
+                      @onclick=@(() => OnVisibilityOptionClicked(BoardVisibility.Public))>
+                <MudIcon Icon=@Icons.Material.Outlined.Public
+                         Class="mx-2" />
+                <MudStack Spacing=0>
+                    <MudText>
+                        <b>Public</b>
+                    </MudText>
+                    <MudText Typo=@Typo.subtitle2>
+                        Everyone with the link can view and edit this page.
+                    </MudText>
+                </MudStack>
+
+                <MudSpacer/>
+
+                @if (_selectedVisibility == BoardVisibility.Public)
+                {
+                    <MudIcon Icon=@Icons.Material.Filled.CheckCircle
+                             Class="mr-2"/>
+                }
+            </MudPaper>
+        </MudStack>
+
+        <MudDivider Class="my-3"/>
+
+        <MudContainer Class="pa-0 d-flex justify-end gap-2">
+            <MudButton>Cancel</MudButton>
+            <MudButton Variant=@Variant.Filled
+                       Color=@Color.Primary
+                       @onclick=@OnCreateClicked>
+                       Create
+            </MudButton>
+        </MudContainer>
+    </DialogContent>
+</MudDialog>
