@@ -1,0 +1,5 @@
+﻿ALTER TABLE Boards
+ADD DisplayColor NVARCHAR(7) DEFAULT '#5A7863';
+
+ALTER TABLE Boards
+ADD Visibility TINYINT DEFAULT 1;

@@ -11,6 +11,9 @@ public interface IBoardsApi
     [Get("/api/boards/my-boards")]
     Task<IApiResponse<IEnumerable<BoardSummaryDto?>>> GetAllAsync();
 
+    [Post("/api/boards")]
+    Task<IApiResponse<int>> CreateAsync(CreateBoardRequest request);
+
     [Get("/api/boards/{id}")]
     public Task<IApiResponse<BoardDetailsDto?>> GetByIdAsync(int id);
 

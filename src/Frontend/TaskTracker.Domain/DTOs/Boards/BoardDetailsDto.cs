@@ -9,6 +9,8 @@ public class BoardDetailsDto
 
     public required string Title { get; set; }
 
+    public required string DisplayColor { get; set; }
+
     public string? Description { get; set; }
 
     public bool IsArchived { get; set; }

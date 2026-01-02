@@ -94,10 +94,9 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
         var boardIds = boards.Select(b => b.Id).ToArray();
 
         var sqlColumns = @"
-            SELECT * 
-            FROM Columns
-            WHERE BoardId IN @BoardIds
-            ORDER BY [Order];";
+        SELECT * FROM Columns
+        WHERE BoardId IN @BoardIds
+        ORDER BY [Order];";
 
         var columns = (await Connection.QueryAsync<BoardColumn>(
             sqlColumns,
@@ -110,10 +109,10 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
         if (columnIds.Length != 0)
         {
             var sqlTasks = @"
-                SELECT *
-                FROM Tasks
-                WHERE ColumnId IN @ColumnIds
-                ORDER BY [Order];";
+            SELECT *
+            FROM Tasks
+            WHERE ColumnId IN @ColumnIds
+            ORDER BY [Order];";
 
             var tasks = (await Connection.QueryAsync<BoardTask>(
                 sqlTasks,
@@ -130,25 +129,20 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
         }
 
         var sqlMembers = @"
-            SELECT m.*, u.*
-            FROM BoardMembers m
-            JOIN Users u ON m.UserId = u.Id
-            WHERE m.BoardId IN @BoardIds";
+        SELECT m.BoardId, u.* FROM BoardMembers m
+        JOIN Users u ON m.UserId = u.Id
+        WHERE m.BoardId IN @BoardIds";
 
-        var members = (await Connection.QueryAsync<BoardMember, User, BoardMember>(
+        var membersResult = (await Connection.QueryAsync<int, User, (int BoardId, User User)>(
             sqlMembers,
-            (member, user) =>
-            {
-                member.User = user;
-                return member;
-            },
+            (boardId, user) => (boardId, user),
             new { BoardIds = boardIds },
             splitOn: "Id",
             transaction: Transaction
         )).ToList();
 
         var columnsByBoard = columns.ToLookup(c => c.BoardId);
-        var membersByBoard = members.ToLookup(m => m.BoardId);
+        var membersByBoard = membersResult.ToLookup(x => x.BoardId, x => x.User);
 
         foreach (var board in boards)
         {

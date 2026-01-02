@@ -12,6 +12,7 @@ public static class BoardMapping
             Id = board.Id,
             Title = board.Title,
             Owner = board.Creator.ToUserSummaryDto(),
+            DisplayColor = board.DisplayColor,
             CreatedAt = board.CreatedAt,
             Description= board.Description,
             IsArchived = board.IsArchived,
@@ -23,7 +24,8 @@ public static class BoardMapping
         {
             Id = board.Id,
             Title = board.Title,
-            Owner = board.Creator.ToUserSummaryDto(),
+            DisplayColor = board.DisplayColor,
+            Members = board.Members.Select(m => m.ToUserSummaryDto()).ToList(),
             IsArchived = board.IsArchived,
             MembersCount = board.Members.Count,
             TasksCount = board.Columns.Sum(c => c.Tasks.Count)

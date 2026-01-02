@@ -28,7 +28,7 @@
         </MudAppBar>
 
         <MudMainContent>
-            <MudContainer Class="mt-8">
+            <MudContainer Class="my-8">
                 <MudStack>
                     <MudStack Row=true
                               AlignItems=@AlignItems.Center
@@ -40,7 +40,8 @@
 
                         <MudButton Variant=@Variant.Filled
                                    Color=@Color.Primary
-                                   StartIcon=@Icons.Material.Filled.Add>
+                                   StartIcon=@Icons.Material.Filled.Add
+                                   @onclick=@OnCreateBoardClicked>
                             Create a board
                         </MudButton>
                     </MudStack>
@@ -51,7 +52,8 @@
                             <div>
                                 <MudPaper Elevation=4
                                           Class="board-card"
-                                          @onclick=@(() => OnBoardClicked(board.Id))>
+                                          @onclick=@(() => OnBoardClicked(board.Id))
+                                          Style=@($"background-color:{board.DisplayColor};" + "color: white;")>
                                     <MudStack>
 
                                         <MudText Typo=@Typo.h6>
@@ -67,16 +69,16 @@
 
                                             <MudSpacer />
 
-                                            <MudButton Variant=@Variant.Text>
-                                                <MudIcon Icon=@Icons.Material.Filled.AccountCircle
-                                                         Color=@Color.Inherit
-                                                         Size=@Size.Large
-                                                         Class="mr-2">
-                                                </MudIcon>
-
-                                                <MudText Typo=@Typo.body2>
-                                                    @board.OwnerName
-                                                </MudText>
+                                            <MudButton Variant=@Variant.Text
+                                                       Style="color: white;">
+                                                <MudAvatarGroup Max=3>
+                                                    @foreach (var member in board.Members)
+                                                    {
+                                                        <MudAvatar>
+                                                            <MudIcon Icon=@Icons.Material.Filled.AccountCircle/>
+                                                        </MudAvatar>
+                                                    }
+                                                </MudAvatarGroup>
                                             </MudButton>
                                         </MudStack>
 
@@ -85,13 +87,6 @@
                             </div>
                         }
                     </MudStack>
-                    <MudButton ButtonType=ButtonType.Submit
-                               Variant=Variant.Filled
-                               Color=Color.Error
-                               StartIcon=@Icons.Material.Filled.Logout
-                               @onclick=@Logout>
-                        Logout
-                    </MudButton>
                 </MudStack>
 
             </MudContainer>

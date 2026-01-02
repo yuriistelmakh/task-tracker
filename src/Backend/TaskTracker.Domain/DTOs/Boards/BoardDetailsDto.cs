@@ -14,6 +14,8 @@ public class BoardDetailsDto
 
     public string? Description { get; set; }
 
+    public required string DisplayColor { get; set; }
+
     public bool IsArchived { get; set; }
 
     public required UserSummaryDto Owner { get; set; }

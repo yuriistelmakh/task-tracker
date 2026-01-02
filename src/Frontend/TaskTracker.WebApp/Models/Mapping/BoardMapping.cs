@@ -9,10 +9,10 @@ public static class BoardMapping
         {
             Id = dto.Id,
             Title = dto.Title,
-            OwnerName = dto.Owner.DisplayName,
+            DisplayColor = dto.DisplayColor,
             MembersCount = dto.MembersCount,
             TasksCount = dto.TasksCount,
             IsArchived = dto.IsArchived,
-            OwnerIconUrl = dto.Owner.AvatarUrl
+            Members = dto.Members.Select(m => m.ToUserSummaryModel()).ToList()
         };
 }
