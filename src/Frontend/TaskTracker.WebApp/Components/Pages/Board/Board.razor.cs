@@ -1,15 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
-using Microsoft.VisualBasic;
 using MudBlazor;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using TaskTracker.Domain.DTOs.Boards;
 using TaskTracker.Domain.DTOs.Columns;
 using TaskTracker.Domain.DTOs.Tasks;
 using TaskTracker.Domain.Enums;
-using TaskTracker.Services.Abstraction.Interfaces.APIs;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
 using TaskTracker.WebApp.Components.Shared;
 using TaskTracker.WebApp.Models;
@@ -33,6 +29,12 @@ public partial class Board
     public ITasksService TasksService { get; set; } = default!;
 
     [Inject]
+    public IBoardMembersService BoardMembersService { get; set; } = default!;
+
+    [Inject]
+    public ICurrentUserService CurrentUserService { get; set; } = default!;
+
+    [Inject]
     public ISnackbar Snackbar { get; set; } = default!;
 
     [Inject]
@@ -50,6 +52,8 @@ public partial class Board
     private bool _isAddColumnOpen = false;
 
     private string _addColumnTitle = string.Empty;
+
+    private BoardRole _currentUserRole;
 
     private bool _isReorderingColumns = false;
 
@@ -69,6 +73,16 @@ public partial class Board
 
     protected override async Task OnInitializedAsync()
     {
+        var userId = await CurrentUserService.GetUserId();
+
+        if (userId is null)
+        {
+            Snackbar.Add($"User id was not found", Severity.Error);
+            return;
+        }
+
+        // TODO: Fetching of user's role
+
         var result = await BoardsService.GetAsync(BoardId);
 
         if (!result.IsSuccess)
@@ -91,7 +105,7 @@ public partial class Board
             .ThenBy(t => t.Order)
             .ToList();
 
-        var membersResult = await BoardsService.GetMembersAsync(BoardId);
+        var membersResult = await BoardMembersService.GetAllAsync(BoardId);
 
         if (!membersResult.IsSuccess)
         {

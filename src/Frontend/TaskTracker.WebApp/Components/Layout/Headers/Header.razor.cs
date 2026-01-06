@@ -25,9 +25,6 @@ public partial class Header
     public string SearchPlaceholder { get; set; } = "Search...";
 
     [Inject]
-    public ISnackbar Snackbar { get; private set; } = default!;
-
-    [Inject]
     public ICurrentUserService CurrentUserService { get; private set; } = default!;
 
     [Inject]
@@ -38,6 +35,12 @@ public partial class Header
 
     [Inject]
     public IAuthService AuthService { get; private set; } = default!;
+
+    [Inject]
+    public IBoardMembersService BoardMembersService {  get; private set; } = default!;
+
+    [Inject]
+    public ISnackbar Snackbar { get; private set; } = default!;
 
     [Inject]
     public NavigationManager Nav { get; private set; } = default!;
@@ -93,7 +96,7 @@ public partial class Header
             NotificationId = notification.Id
         };
 
-        var result = await BoardsService.AcceptInvitationAsync(invitation.BoardId, request);
+        var result = await BoardMembersService.AcceptInvitationAsync(invitation.BoardId, request);
 
         if (!result.IsSuccess)
         {
@@ -128,7 +131,7 @@ public partial class Header
             NotificationId = notification.Id
         };
 
-        var result = await BoardsService.RejectInvitationAsync(invitation.BoardId, request);
+        var result = await BoardMembersService.RejectInvitationAsync(invitation.BoardId, request);
 
         if (!result.IsSuccess)
         {

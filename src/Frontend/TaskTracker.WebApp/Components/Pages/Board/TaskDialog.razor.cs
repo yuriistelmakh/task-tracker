@@ -26,16 +26,19 @@ public partial class TaskDialog
     IMudDialogInstance MudDialog { get; set; } = default!;
 
     [Inject]
-    public ITasksService TasksService { get; private set; } = default!;
-
-    [Inject]
-    public ISnackbar Snackbar { get; private set; } = default!;
-
-    [Inject]
     public ICurrentUserService UserService { get; private set; } = default!;
 
     [Inject]
     public IBoardsService BoardsService { get; private set; } = default!;
+
+    [Inject]
+    public ITasksService TasksService { get; private set; } = default!;
+
+    [Inject]
+    public IBoardMembersService BoardMembersService {  get; private set; } = default!;
+
+    [Inject]
+    public ISnackbar Snackbar { get; private set; } = default!;
 
     [Inject]
     public IDialogService DialogService { get; private set; } = default!;
@@ -91,7 +94,7 @@ public partial class TaskDialog
             return;
         }
 
-        var boardResult = await BoardsService.GetMembersAsync(BoardId);
+        var boardResult = await BoardMembersService.GetAllAsync(BoardId);
         if (!boardResult.IsSuccess)
         {
             Snackbar.Add($"Error fetching board members: {result.ErrorMessage}", Severity.Error);

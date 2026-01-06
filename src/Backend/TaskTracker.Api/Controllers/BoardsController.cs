@@ -85,50 +85,6 @@ public class BoardsController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("{boardId}/members")]
-    public async Task<IActionResult> GetMembersAsync(int boardId)
-    {
-        var query = new GetBoardMembersQuery(boardId);
-
-        var result = await _mediator.Send(query);
-
-        return result is null 
-            ? NotFound()
-            : Ok(result);
-    }
-
-    [HttpPut("{boardId}/members/{memberId}")]
-    public async Task<IActionResult> UpdateMemberRoleAsync(int boardId, int memberId, [FromBody] UpdateBoardMemberRoleRequest request)
-    {
-        var command = new UpdateBoardMemberRoleCommand
-        {
-            BoardId = boardId,
-            UserId = memberId,
-            NewRole = request.NewRole,
-        };
-
-        var isSuccessful = await _mediator.Send(command);
-
-        return isSuccessful
-            ? NoContent()
-            : NotFound();
-    }
-
-    [HttpPost("{boardId}/members")]
-    public async Task<IActionResult> AddMemberAsync(int boardId, [FromBody] AddBoardMemberRequest request)
-    {
-        var command = new AddNewMemberCommand
-        {
-            UserId = request.UserId,
-            BoardId = boardId,
-            Role = request.Role
-        };
-
-        var result = await _mediator.Send(command);
-
-        return Ok(result);
-    }
-
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateBoardRequest request)
     {
@@ -174,69 +130,6 @@ public class BoardsController : ControllerBase
         var isSuccess = await _mediator.Send(command);
 
         return isSuccess
-            ? NoContent()
-            : NotFound();
-    }
-
-    [HttpPost("{boardId}/invites")]
-    public async Task<IActionResult> SendInvitationsAsync(int boardId, [FromBody] SendInvitationsRequest request)
-    {
-        var command = new SendInvitationsCommand
-        {
-            InviteeIds = request.InviteeIds,
-            InviterId = request.InviterId,
-            BoardId = boardId,
-            Role = request.Role
-        };
-
-        var result = await _mediator.Send(command);
-
-        if (result.IsSuccess)
-        {
-            return NoContent();
-        }
-        else
-        {
-            return result.ErrorType switch
-            {
-                ErrorType.NotFound => NotFound(result.ErrorMessage),
-                ErrorType.Conflict => Conflict(result.ErrorMessage),
-                _ => StatusCode(500, result.ErrorMessage)
-            };
-        }
-    }
-
-    [HttpPost("{boardId}/invites/accept")]
-    public async Task<IActionResult> AcceptInvitationAsync(int boardId, [FromBody] AcceptInvitationRequest request)
-    {
-        var command = new AcceptInvitationCommand
-        {
-            BoardId = boardId,
-            InvitationId = request.InvitationId,
-            InviteeId = request.InviteeId,
-            NotificationId = request.NotificationId,
-            Role = request.Role
-        };
-
-        var result = await _mediator.Send(command);
-
-        return result.IsSuccess
-            ? NoContent()
-            : NotFound();
-    }
-
-    [HttpPost("{boardId}/invites/reject")]
-    public async Task<IActionResult> RejectInvitationAsync(int boardId, [FromBody] RejectInvitationRequest request)
-    {
-        var command = new RejectInvitationCommand
-        {
-            InvitationId = request.InvitationId,
-            NotificationId = request.NotificationId
-        };
-
-        var isSuccessful = await _mediator.Send(command);
-
-        return isSuccessful
             ? NoContent()
             : NotFound();
     }

@@ -37,6 +37,10 @@ builder.Services.AddRefitClient<IUsersApi>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]))
     .AddHttpMessageHandler<AuthHeaderHandler>();
 
+builder.Services.AddRefitClient<IBoardMembersApi>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]))
+    .AddHttpMessageHandler<AuthHeaderHandler>();
+
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddScoped<UiStateService>();

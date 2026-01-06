@@ -1,0 +1,62 @@
+﻿using TaskTracker.Domain.DTOs.Users;
+using TaskTracker.Domain;
+using TaskTracker.Services.Abstraction.Interfaces.APIs;
+using TaskTracker.Services.Abstraction.Interfaces.Services;
+using TaskTracker.Domain.DTOs.Boards;
+
+namespace TaskTracker.Services;
+
+public class BoardMembersService : IBoardMembersService
+{
+    private readonly IBoardMembersApi _boardMembersApi;
+
+    public BoardMembersService(IBoardMembersApi boardMembersApi)
+    {
+        _boardMembersApi = boardMembersApi;
+    }
+
+    public async Task<Result<IEnumerable<MemberSummaryDto>>> GetAllAsync(int id)
+    {
+        var result = await _boardMembersApi.GetAllAsync(id);
+
+        return result.IsSuccessful
+            ? Result<IEnumerable<MemberSummaryDto>>.Success(result.Content)
+            : Result<IEnumerable<MemberSummaryDto>>.Failure(result.Error.Content!);
+    }
+
+    public async Task<Result> UpdateRoleAsync(int boardId, int userId, UpdateBoardMemberRoleRequest request)
+    {
+        var result = await _boardMembersApi.UpdateRoleAsync(boardId, userId, request);
+
+        return result.IsSuccessful
+            ? Result.Success()
+            : Result.Failure(result.Error.Content!);
+    }
+
+    public async Task<Result> AcceptInvitationAsync(int boardId, AcceptInvitationRequest request)
+    {
+        var result = await _boardMembersApi.AcceptInvitationAsync(boardId, request);
+
+        return result.IsSuccessful
+            ? Result.Success()
+            : Result.Failure(result.Error.Content!);
+    }
+
+    public async Task<Result> SendInvitationsAsync(int boardId, SendInvitationsRequest request)
+    {
+        var result = await _boardMembersApi.SendInvitationsAsync(boardId, request);
+
+        return result.IsSuccessful
+            ? Result.Success()
+            : Result.Failure(result.Error.Content!);
+    }
+
+    public async Task<Result> RejectInvitationAsync(int boardId, RejectInvitationRequest request)
+    {
+        var result = await _boardMembersApi.RejectInvitationAsync(boardId, request);
+
+        return result.IsSuccessful
+            ? Result.Success()
+            : Result.Failure(result.Error.Content!);
+    }
+}

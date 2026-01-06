@@ -4,6 +4,7 @@ using System.Security.Cryptography.Xml;
 using TaskTracker.Domain.DTOs.Boards;
 using TaskTracker.Domain.DTOs.Users;
 using TaskTracker.Domain.Enums;
+using TaskTracker.Services;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
 using TaskTracker.WebApp.Components.Shared;
 using TaskTracker.WebApp.Models;
@@ -20,19 +21,22 @@ public partial class MemberManagementDialog
     public IMudDialogInstance Dialog { get; private set; } = default!;
 
     [Inject]
-    public IDialogService DialogService { get; private set; } = default!;
-
-    [Inject]
     public IBoardsService BoardsService { get; private set; } = default!;
 
     [Inject]
-    public ISnackbar Snackbar { get; private set; } = default!;
+    public IUsersService UsersService { get; private set; } = default!;
+
+    [Inject]
+    public IBoardMembersService BoardMembersService {  get; private set; } = default!;
 
     [Inject]
     public ICurrentUserService CurrentUserService { get; private set; } = default!;
 
     [Inject]
-    public IUsersService UsersService { get; private set; } = default!;
+    public IDialogService DialogService { get; private set; } = default!;
+
+    [Inject]
+    public ISnackbar Snackbar { get; private set; } = default!;
 
     private int _membersCount => _members.Count;
 
@@ -52,7 +56,7 @@ public partial class MemberManagementDialog
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await BoardsService.GetMembersAsync(BoardId);
+        var result = await BoardMembersService.GetAllAsync(BoardId);
 
         if (!result.IsSuccess)
         {
@@ -110,7 +114,7 @@ public partial class MemberManagementDialog
             Role = _inviteRole
         };
 
-        var result = await BoardsService.SendInvitationsAsync(BoardId, request);
+        var result = await BoardMembersService.SendInvitationsAsync(BoardId, request);
 
         if (!result.IsSuccess)
         {
@@ -182,7 +186,7 @@ public partial class MemberManagementDialog
             NewRole = newRole
         };
 
-        var result = await BoardsService.UpdateUserRoleAsync(BoardId, member.Id, request);
+        var result = await BoardMembersService.UpdateRoleAsync(BoardId, member.Id, request);
 
         if (!result.IsSuccess)
         {

@@ -56,15 +56,6 @@ public class BoardsService : IBoardsService
             : Result<BoardDetailsDto>.Failure(result.Error.Message);
     }
 
-    public async Task<Result<IEnumerable<MemberSummaryDto>>> GetMembersAsync(int id)
-    {
-        var result = await _boardsApi.GetMembersAsync(id);
-
-        return result.IsSuccessful
-            ? Result<IEnumerable<MemberSummaryDto>>.Success(result.Content)
-            : Result<IEnumerable<MemberSummaryDto>>.Failure(result.Error.Message);
-    }
-
     public async Task<Result> ReorderColumnsAsync(int id, ReorderBoardColumnsRequest request)
     {
         var result = await _boardsApi.ReorderColumnsAsync(id, request); 
@@ -72,41 +63,5 @@ public class BoardsService : IBoardsService
         return result.IsSuccessful
             ? Result.Success()
             : Result.Failure(result.Error.Message);
-    }
-
-    public async Task<Result> UpdateUserRoleAsync(int boardId, int userId, UpdateBoardMemberRoleRequest request)
-    {
-        var result = await _boardsApi.UpdateBoardMemberRoleAsync(boardId, userId, request);
-
-        return result.IsSuccessful
-            ? Result.Success()
-            : Result.Failure(result.Error.Message);
-    }
-
-    public async Task<Result> SendInvitationsAsync(int boardId, SendInvitationsRequest request)
-    {
-        var result = await _boardsApi.SendInvitationsAsync(boardId, request);
-
-        return result.IsSuccessful
-            ? Result.Success()
-            : Result.Failure(result.Error.Content);
-    }
-
-    public async Task<Result> AcceptInvitationAsync(int boardId, AcceptInvitationRequest request)
-    {
-        var result = await _boardsApi.AcceptInvitationAsync(boardId, request);
-
-        return result.IsSuccessful
-            ? Result.Success()
-            : Result.Failure(result.Error.Content);
-    }
-
-    public async Task<Result> RejectInvitationAsync(int boardId, RejectInvitationRequest request)
-    {
-        var result = await _boardsApi.RejectInvitationAsync(boardId, request);
-
-        return result.IsSuccessful
-            ? Result.Success()
-            : Result.Failure(result.Error.Content);
     }
 }
