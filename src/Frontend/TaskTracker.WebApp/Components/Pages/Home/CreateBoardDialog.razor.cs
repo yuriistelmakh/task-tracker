@@ -20,6 +20,8 @@ public partial class CreateBoardDialog : IComponent
 
     private string _title = string.Empty;
 
+    private MudForm _form;
+
     private readonly List<string> _backgroundColorOptions = [
         "#5A7863",
         "#90AB8B",
@@ -56,6 +58,13 @@ public partial class CreateBoardDialog : IComponent
 
     private async Task OnCreateClicked()
     {
+        await _form.Validate();
+
+        if (string.IsNullOrEmpty(_title))
+        {
+            return;
+        }
+
         var request = new CreateBoardRequest
         {
             Title = _title,

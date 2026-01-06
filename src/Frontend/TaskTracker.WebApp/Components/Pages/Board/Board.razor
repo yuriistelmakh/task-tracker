@@ -1,7 +1,8 @@
 ﻿@page "/boards/{BoardId:int}"
+@using TaskTracker.WebApp.Models
+@using TaskTracker.WebApp.Models.Tasks
 @using TaskTracker.WebApp.Components.Layout.Headers
 @using TaskTracker.WebApp.Components.Pages.Auth
-@using TaskTracker.WebApp.Models
 @rendermode InteractiveServer
 
 <AuthGuard>
@@ -15,7 +16,9 @@
                            Href="/" />
         </LeftContent>
         <RightContent>
-            <MudAvatarGroup Max=3 Spacing=3>
+            <MudAvatarGroup Max=3
+                            Spacing=3
+                            @onclick=@OnMembersClicked>
                 @foreach (var member in _boardMembers)
                 {
                     <MudAvatar Class="cursor-pointer">
@@ -190,7 +193,7 @@
                                                FullWidth=true
                                                @onclick=@(() => OnAddTaskClick(column))>
                                         <MudIcon Icon=@Icons.Material.Filled.Add Class="mr-2" />
-                                        <MudText>Add another task</MudText>
+                                        <MudText>Add a task</MudText>
                                     </MudButton>
                                 </MudPaper>
                             </div>
@@ -246,7 +249,7 @@
 
                                         <MudText Typo=@Typo.h6
                                                  Style="color: white">
-                                            Add another column
+                                            Add a column
                                         </MudText>
                                     </MudStack>
                                 </MudPaper>

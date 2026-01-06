@@ -1,4 +1,5 @@
-﻿<MudAppBar Elevation=4
+﻿@using TaskTracker.Domain.Enums
+<MudAppBar Elevation=4
            Color=@Color.Primary>
     @LeftContent
 
@@ -7,7 +8,7 @@
     </MudText>
 
     <MudTextField @bind-Value=@search
-                  Placeholder="Search..."
+                  Placeholder=@SearchPlaceholder
                   Variant=@Variant.Outlined
                   Style="width: 250px"
                   Class="search-bar white-adornment ml-8"
@@ -15,13 +16,115 @@
                   AdornmentIcon=@Icons.Material.Filled.Search
                   Adornment=@Adornment.Start />
 
-    
-    <MudSpacer/>
+
+    <MudSpacer />
     @RightContent
-    
-    <MudButton Color=@Color.Inherit>
-        <MudIcon Icon=@Icons.Material.Filled.AccountCircle
-                 Size=@Size.Large />
-        <MudText Class="ml-2">@username</MudText>
-    </MudButton>
+
+    <MudStack Row=true
+              Spacing=0>
+        
+        <MudBadge Content=@_notifications.Count
+                  Color=@Color.Error
+                  Overlap=true
+                  Visible=@(_notifications.Count > 0)
+                  Class="ma-0"
+                  BadgeClass="tight-badge">
+
+            <MudIconButton Icon=@Icons.Material.Filled.Notifications
+                           Color=@Color.Inherit
+                           Size=@Size.Large
+                           OnClick=@OnNotificationsClicked
+                           Class="pa-1 mr-2"/>
+        </MudBadge>
+
+        <MudPopover Open=@_isNotificationsOpen
+                    AnchorOrigin=@Origin.BottomCenter
+                    TransformOrigin=@Origin.TopCenter
+                    Class="d-flex pa-0"
+                    Style="width: 275px; min-height: 75px; max-height: 300px; overflow-y: auto">
+
+            <MudCard Class="pa-2 flex-grow-1">
+                <MudStack Spacing=0>
+                    <MudText Align=@Align.Center>
+                        <b>Notifications</b>
+                    </MudText>
+                    <MudDivider Class="my-2" />
+                    
+                    @if (_notifications.Count == 0)
+                    {
+                        <MudText Align=@Align.Center>
+                            <i>No notifications yet</i>
+                        </MudText>
+                    }
+
+                    @foreach (var notification in _notifications)
+                    {
+                        <MudCard Class="pa-2">
+
+                            <MudStack Spacing=0>
+                                <MudText><b>@notification.Title</b></MudText>
+                                <MudText>@notification.Message</MudText>
+                                @if (notification.Type == NotificationType.BoardInvitation)
+                                {
+                                    <MudStack Row=true
+                                              Spacing=1
+                                              Justify=@Justify.Center
+                                              Class="my-1 d-flex">
+                                        <MudButton Variant=@Variant.Filled
+                                                   Color=@Color.Error
+                                                   Class="flex-grow-1"
+                                                   @onclick=@(() => OnInivtationRejectClicked(notification))>
+                                            Reject
+                                        </MudButton>
+                                        <MudButton Variant=@Variant.Filled
+                                                   Color=@Color.Primary
+                                                   Class="flex-grow-1"
+                                                   @onclick=@(() => OnInvitationAcceptClicked(notification))>
+                                            Accept
+                                        </MudButton>
+                                    </MudStack>
+                                }
+                            </MudStack>
+                        </MudCard>
+                    }
+                </MudStack>
+            </MudCard>
+        </MudPopover>
+
+        @if (_isNotificationsOpen)
+        {
+            <MudOverlay Visible=true
+                        DarkBackground=false
+                        AutoClose=true
+                        OnClick=@(() => _isNotificationsOpen = false)/>
+        }
+    </MudStack>
+
+    <MudStack>
+        <MudButton Color=@Color.Inherit
+                   @onclick=OnProfileClicked>
+            <MudIcon Icon=@Icons.Material.Filled.AccountCircle
+                     Size=@Size.Large />
+            <MudText Class="ml-2">@username</MudText>
+        </MudButton>
+
+        <MudPopover Open=@_isProfileOpen
+                    AnchorOrigin=@Origin.BottomCenter
+                    TransformOrigin=@Origin.TopCenter
+                    Class="d-flex pa-4"
+                    Style="background-color: white;">
+
+            <MudButton @onclick=OnLogoutClicked>
+                Logout
+            </MudButton>
+        </MudPopover>
+
+        @if (_isProfileOpen)
+        {
+            <MudOverlay Visible=true
+                        DarkBackground=false
+                        AutoClose=true
+                        OnClick=@(() => _isProfileOpen = false) />
+        }
+    </MudStack>
 </MudAppBar>

@@ -65,9 +65,9 @@ public class DatabaseInitializer
             INSERT INTO BoardMembers (UserId, BoardId, Role, JoinedAt) 
             VALUES 
                 (1, @bid, 'Owner', GETDATE()),
-                (2, @bid, 'Editor', GETDATE()),
-                (3, @bid, 'Editor', GETDATE()),
-                (4, @bid, 'Owner', GETDATE())", new { bid = boardId });
+                (2, @bid, 'Member', GETDATE()),
+                (3, @bid, 'Member', GETDATE()),
+                (4, @bid, 'Admin', GETDATE())", new { bid = boardId });
 
             var columnId = await db.QuerySingleAsync<int>(@"
             INSERT INTO [Columns] (BoardId, Title, [Order], CreatedBy, CreatedAt) 

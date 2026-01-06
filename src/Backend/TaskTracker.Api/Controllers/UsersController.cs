@@ -1,15 +1,19 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TaskTracker.Application.Features.Users.Commands.CreateUser;
 using TaskTracker.Application.Features.Users.Commands.DeleteUser;
 using TaskTracker.Application.Features.Users.Commands.UpdateUser;
+using TaskTracker.Application.Features.Users.Queries.GetNotifications;
+using TaskTracker.Application.Features.Users.Queries.SearchUsers;
 using TaskTracker.Domain.DTOs.Users;
 
 namespace TaskTracker.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class UsersController : Controller
 {
     private readonly IMediator _mediator;
@@ -17,6 +21,20 @@ public class UsersController : Controller
     public UsersController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> SearchAsync(string? prompt, int pageSize)
+    {
+        var command = new SearchUsersCommand
+        {
+            SearchPrompt = prompt,
+            PageSize = pageSize
+        };
+
+        var result = await _mediator.Send(command);
+
+        return Ok(result);
     }
 
     [HttpPost]
@@ -67,5 +85,18 @@ public class UsersController : Controller
         return isSuccess
             ? NoContent()
             : NotFound();
+    }
+
+    [HttpGet("{id}/notifications")]
+    public async Task<IActionResult> GetUnreadNotificationsAsync(int id)
+    {
+        var query = new GetUserNotificationsQuery
+        {
+            UserId = id
+        };
+
+        var result = await _mediator.Send(query);
+
+        return Ok(result);
     }
 }

@@ -26,5 +26,5 @@ public class TaskDetailsDto
 
     public required string ColumnTitle { get; set; }
 
-    public UserSummaryDto? AssigneeDto { get; set; }
+    public MemberSummaryDto? AssigneeDto { get; set; }
 }

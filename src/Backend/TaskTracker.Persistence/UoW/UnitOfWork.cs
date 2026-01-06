@@ -17,6 +17,9 @@ public class UnitOfWork : IUnitOfWork
     private IBoardTaskRepository? _taskRepository;
     private IUserRepository? _userRepository;
     private IRefreshTokenRepository? _refreshTokenRepository;
+    private IMemberRepository? _memberRepository;
+    private IInvitationRepository? _invitationRepository;
+    private INotificationRepository? _notificationRepository;
 
     public IBoardRepository BoardRepository =>
         _boardRepository ??= new BoardRepository(_transaction);
@@ -30,8 +33,18 @@ public class UnitOfWork : IUnitOfWork
     public IUserRepository UserRepository =>
         _userRepository ??= new UserRepository(_transaction);
 
+    public IMemberRepository MemberRepository =>
+        _memberRepository ??= new MemberRepository(_transaction);
+
     public IRefreshTokenRepository RefreshTokenRepository =>
         _refreshTokenRepository ??= new RefreshTokenRepository(_transaction);
+
+    public IInvitationRepository InvitationRepository =>
+        _invitationRepository ??= new InvitationRepository(_transaction);
+
+    public INotificationRepository NotificationRepository =>
+        _notificationRepository ??= new NotificationRepository(_transaction);
+
 
     public UnitOfWork(IConfiguration configuration)
     {

@@ -1,4 +1,6 @@
-﻿namespace TaskTracker.Domain.DTOs.Users;
+﻿using TaskTracker.Domain.Enums;
+
+namespace TaskTracker.Domain.DTOs.Users;
 
 public class UserSummaryDto
 {

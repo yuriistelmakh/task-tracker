@@ -1,0 +1,14 @@
+﻿CREATE TABLE Invitations
+(
+	Id INT PRIMARY KEY IDENTITY(1,1),
+	InviterId INT NOT NULL,
+	InviteeId INT NOT NULL,
+	BoardId INT NOT NULL,
+	CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+	Role TINYINT NOT NULL,
+	IsAnswered BIT NOT NULL DEFAULT 0
+
+	CONSTRAINT FK_Invitations_InviterId FOREIGN KEY (InviterId) REFERENCES Users(Id),
+	CONSTRAINT FK_Invitations_InviteeId FOREIGN KEY (InviteeId) REFERENCES Users(Id),
+	CONSTRAINT FK_Invitations_BoardId FOREIGN KEY (BoardId) REFERENCES Boards(Id)
+);

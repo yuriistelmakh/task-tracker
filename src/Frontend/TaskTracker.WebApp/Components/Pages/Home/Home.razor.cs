@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
+using TaskTracker.WebApp.Components.Shared;
 using TaskTracker.WebApp.Models;
 using TaskTracker.WebApp.Models.Mapping;
 
@@ -26,21 +27,13 @@ public partial class Home
     [Inject]
     public IDialogService DialogService { private get; set; } = default!;
 
-    private string _search = "";
-
-    private string _username = "";
+    [Inject]
+    public UiStateService UiStateService { private get; set; } = default!;
 
     private List<BoardModel> _boards = [];
 
     protected override async Task OnInitializedAsync()
     {
-        if (!await UserService.IsUserAuthenticated())
-        {
-            return;
-        }
-
-        _username = await UserService.GetUserDisplayName() ?? "Anonymous";
-
         var result = await BoardsService.GetAllAsync();
 
         if (!result.IsSuccess)
@@ -52,6 +45,8 @@ public partial class Home
         var boardDtos = result.Value!;
 
         _boards = boardDtos.Select(bd => bd.ToBoardModel()).ToList();
+
+        UiStateService.OnBoardListChanged += HandleBoardListChanged;
     }
 
     private async Task OnCreateBoardClicked()
@@ -64,18 +59,25 @@ public partial class Home
 
         if (dialogResult!.Data is not null)
         {
-            var result = await BoardsService.GetAllAsync();
-
-            if (!result.IsSuccess)
-            {
-                Snackbar.Add($"Error while fetching boards: {result.ErrorMessage}", Severity.Error);
-                return;
-            }
-
-            var boardDtos = result.Value!;
-
-            _boards = boardDtos.Select(bd => bd.ToBoardModel()).ToList();
+            UiStateService.NotifyBoardListChanged();
         }
+    }
+
+    private async void HandleBoardListChanged()
+    {
+        var result = await BoardsService.GetAllAsync();
+
+        if (!result.IsSuccess)
+        {
+            Snackbar.Add($"Error while fetching boards: {result.ErrorMessage}", Severity.Error);
+            return;
+        }
+
+        var boardDtos = result.Value!;
+
+        _boards = boardDtos.Select(bd => bd.ToBoardModel()).ToList();
+
+        StateHasChanged();
     }
 
     private void OnBoardClicked(int boardId)

@@ -1,4 +1,5 @@
 ﻿using TaskTracker.Domain.DTOs.Tasks;
+using TaskTracker.WebApp.Models.Tasks;
 
 namespace TaskTracker.WebApp.Models.Mapping;
 

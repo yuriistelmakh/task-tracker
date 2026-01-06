@@ -10,6 +10,7 @@ using TaskTracker.WebApp.Components.Shared;
 using System.Security.Cryptography.Xml;
 using Microsoft.VisualBasic;
 using Microsoft.AspNetCore.Components.Web;
+using TaskTracker.WebApp.Models.Tasks;
 
 namespace TaskTracker.WebApp.Components.Pages.Board;
 
@@ -39,7 +40,7 @@ public partial class TaskDialog
     [Inject]
     public IDialogService DialogService { get; private set; } = default!;
 
-    private List<UserSummaryModel> _assigneeOptions = [];
+    private List<MemberModel> _assigneeOptions = [];
 
     private TaskDetailsModel task = new() { ColumnTitle = string.Empty, Title = string.Empty };
 
@@ -81,7 +82,7 @@ public partial class TaskDialog
 
         if (dto.AssigneeDto is not null)
         {
-            task.AssigneeModel = dto.AssigneeDto.ToUserSummaryModel();
+            task.AssigneeModel = dto.AssigneeDto.ToMemberModel();
             _assigneeOptions.Add(task.AssigneeModel);
         }
 
@@ -97,7 +98,7 @@ public partial class TaskDialog
             return;
         }
 
-        _assigneeOptions = boardResult.Value!.Select(u => u.ToUserSummaryModel()).ToList();
+        _assigneeOptions = boardResult.Value!.Select(u => u.ToMemberModel()).ToList();
         _isTaskLoaded = true;
     }
 

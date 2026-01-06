@@ -171,20 +171,21 @@
                 }
                 else
                 {
-                    <MudSelect T="UserSummaryModel"
+                    <MudSelect T=@MemberModel
                                @bind-Value=@task.AssigneeModel
                                Variant="Variant.Outlined"
                                Margin="Margin.Dense"
+                               ToStringFunc=@((m) => m.DisplayName)
                                Class="assignee-select right-bar-select">
 
-                        <MudSelectItem T=UserSummaryModel
+                        <MudSelectItem T=@MemberModel
                                        Value="@(null)">
                             <MudText Typo=@Typo.body2>Needs assignee</MudText>
                         </MudSelectItem>
 
                         @foreach (var user in _assigneeOptions)
                         {
-                            <MudSelectItem T=UserSummaryModel
+                            <MudSelectItem T=@MemberModel
                                            Value=@user
                                            Style="color: var(--mud-primary-text)">
                                 <MudStack Row=true

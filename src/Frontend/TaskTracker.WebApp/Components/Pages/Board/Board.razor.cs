@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using Microsoft.VisualBasic;
 using MudBlazor;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using TaskTracker.Services.Abstraction.Interfaces.Services;
 using TaskTracker.WebApp.Components.Shared;
 using TaskTracker.WebApp.Models;
 using TaskTracker.WebApp.Models.Mapping;
+using TaskTracker.WebApp.Models.Tasks;
 
 namespace TaskTracker.WebApp.Components.Pages.Board;
 
@@ -55,7 +57,7 @@ public partial class Board
 
     private List<ColumnModel> _columns = [];
 
-    private List<UserSummaryModel> _boardMembers = [];
+    private List<MemberModel> _boardMembers = [];
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -97,7 +99,7 @@ public partial class Board
             return;
         }
 
-        _boardMembers = membersResult.Value!.Select(m => m.ToUserSummaryModel()).ToList();
+        _boardMembers = membersResult.Value!.Select(m => m.ToMemberModel()).ToList();
     }
 
     private static void OnAddTaskClick(ColumnModel column)
@@ -500,5 +502,16 @@ public partial class Board
             await OnInitializedAsync();
             _columnDropContainer.Refresh();
         }
+    }
+
+    private async Task OnMembersClicked()
+    {
+        var parameters = new DialogParameters<MemberManagementDialog>
+        {
+            { x => x.BoardId, BoardId }
+        };
+
+        var options = new DialogOptions { FullWidth = true, MaxWidth = MaxWidth.Medium };
+        var dialog = await DialogService.ShowAsync<MemberManagementDialog>(string.Empty, parameters, options);
     }
 }

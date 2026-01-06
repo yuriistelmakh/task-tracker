@@ -31,16 +31,18 @@
             <MudItem xs=6>
                 <MudStack>
                     <MudText><b>Enter board title</b></MudText>
-                    <MudTextField @bind-Value=@_title
-                                  Variant=@Variant.Outlined
-                                  Margin=@Margin.Dense
-                                  Placeholder="For example: Marketing campaign"
-                                  Counter=50
-                                  MaxLength=50
-                                  Immediate=true
-                                  Required=true>
+                    <MudForm @ref=@_form>
+                        <MudTextField @bind-Value=@_title
+                                      Variant=@Variant.Outlined
+                                      Margin=@Margin.Dense
+                                      Placeholder="For example: Marketing campaign"
+                                      Counter=50
+                                      MaxLength=50
+                                      Immediate=true
+                                      Required=true>
 
-                    </MudTextField>
+                        </MudTextField>
+                    </MudForm>
                 </MudStack>
             </MudItem>
         </MudGrid>

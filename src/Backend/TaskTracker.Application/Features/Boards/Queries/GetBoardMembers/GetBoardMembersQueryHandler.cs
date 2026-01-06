@@ -10,7 +10,7 @@ using TaskTracker.Domain.Mapping;
 
 namespace TaskTracker.Application.Features.Boards.Queries.GetAllMembers;
 
-public class GetBoardMembersQueryHandler : IRequestHandler<GetBoardMembersQuery, IEnumerable<UserSummaryDto>>
+public class GetBoardMembersQueryHandler : IRequestHandler<GetBoardMembersQuery, IEnumerable<MemberSummaryDto>>
 {
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
 
@@ -19,7 +19,7 @@ public class GetBoardMembersQueryHandler : IRequestHandler<GetBoardMembersQuery,
         _unitOfWorkFactory = unitOfWorkFactory;
     }
 
-    public async Task<IEnumerable<UserSummaryDto>> Handle(GetBoardMembersQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<MemberSummaryDto>> Handle(GetBoardMembersQuery request, CancellationToken cancellationToken)
     {
         using var uow = _unitOfWorkFactory.Create();
 
@@ -27,7 +27,7 @@ public class GetBoardMembersQueryHandler : IRequestHandler<GetBoardMembersQuery,
 
         uow.Commit();
 
-        var dtos = members.Select(m => m.User.ToUserSummaryDto());
+        var dtos = members.Select(m => m.User.ToMemberSummaryDto(m.Role));
 
         return dtos;
     }
