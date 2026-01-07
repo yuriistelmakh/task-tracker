@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TaskTracker.Application.Interfaces.UoW;
 
-namespace TaskTracker.Application.Features.Boards.Commands.RejectInvitation;
+namespace TaskTracker.Application.Features.BoardMembers.Commands.RejectInvitation;
 
 public class RejectInvitationCommandHandler : IRequestHandler<RejectInvitationCommand, bool>
 {

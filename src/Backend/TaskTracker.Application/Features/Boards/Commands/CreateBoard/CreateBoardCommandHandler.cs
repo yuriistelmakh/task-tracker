@@ -40,7 +40,7 @@ public class CreateBoardCommandHandler : IRequestHandler<CreateBoardCommand, int
             Role = BoardRole.Owner,
         };
 
-        await uow.BoardRepository.AddMemberAsync(boardMember);
+        await uow.MemberRepository.AddAsync(boardMember);
 
         uow.Commit();
 

@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using TaskTracker.Domain.Enums;
 
-namespace TaskTracker.Application.Features.Boards.Commands.AddNewMember;
+namespace TaskTracker.Application.Features.BoardMembers.Commands.AddNewMember;
 
 public class AddNewMemberCommand : IRequest<int>
 {

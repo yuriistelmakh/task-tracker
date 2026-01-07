@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TaskTracker.Application.Interfaces.UoW;
 
-namespace TaskTracker.Application.Features.Boards.Commands.UpdateBoardMemberRole;
+namespace TaskTracker.Application.Features.BoardMembers.Commands.UpdateBoardMemberRole;
 
 public class UpdateBoardMemberRoleCommandHandler : IRequestHandler<UpdateBoardMemberRoleCommand, bool>
 {

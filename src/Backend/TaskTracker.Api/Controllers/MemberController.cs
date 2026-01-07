@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TaskTracker.Application;
-using TaskTracker.Application.Features.Boards.Commands.AcceptInvitation;
-using TaskTracker.Application.Features.Boards.Commands.AddNewMember;
-using TaskTracker.Application.Features.Boards.Commands.RejectInvitation;
-using TaskTracker.Application.Features.Boards.Commands.SendInvitations;
-using TaskTracker.Application.Features.Boards.Commands.UpdateBoardMemberRole;
-using TaskTracker.Application.Features.Boards.Queries.GetAllMembers;
+using TaskTracker.Application.Features.BoardMembers.Commands.AcceptInvitation;
+using TaskTracker.Application.Features.BoardMembers.Commands.AddNewMember;
+using TaskTracker.Application.Features.BoardMembers.Commands.RejectInvitation;
+using TaskTracker.Application.Features.BoardMembers.Commands.SendInvitations;
+using TaskTracker.Application.Features.BoardMembers.Commands.UpdateBoardMemberRole;
+using TaskTracker.Application.Features.BoardMembers.Queries.GetBoardMemberById;
+using TaskTracker.Application.Features.BoardMembers.Queries.GetBoardMembers;
 using TaskTracker.Domain.DTOs.BoardMember;
 using TaskTracker.Domain.DTOs.Boards;
 using TaskTracker.Domain.DTOs.Users;
@@ -39,8 +40,24 @@ public class BoardMembersController : Controller
             : Ok(result);
     }
 
+    [HttpGet("{userid:int}")]
+    public async Task<IActionResult> GetByIdAsync([FromRoute] int boardId, [FromRoute] int userId)
+    {
+        var query = new GetBoardMemberByIdQuery
+        {
+            BoardId = boardId,
+            UserId = userId
+        };
+
+        var result = await _mediator.Send(query);
+
+        return result.IsSuccess
+            ? Ok(result.Value)
+            : NotFound();
+    }
+
     [HttpPost]
-    public async Task<IActionResult> AddMemberAsync([FromRoute] int boardId, [FromBody] AddBoardMemberRequest request)
+    public async Task<IActionResult> AddAsync([FromRoute] int boardId, [FromBody] AddBoardMemberRequest request)
     {
         var command = new AddNewMemberCommand
         {

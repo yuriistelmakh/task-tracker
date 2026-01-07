@@ -81,17 +81,25 @@ public partial class Board
             return;
         }
 
-        // TODO: Fetching of user's role
+        var currentUserResult = await BoardMembersService.GetByIdAsync(BoardId, userId.Value);
 
-        var result = await BoardsService.GetAsync(BoardId);
-
-        if (!result.IsSuccess)
+        if (!currentUserResult.IsSuccess)
         {
-            Snackbar.Add($"Error while fetching the board: {result.ErrorMessage}", Severity.Error);
+            Snackbar.Add($"Error while fetching the current user as a member: {currentUserResult.ErrorMessage}", Severity.Error);
             return;
         }
 
-        var boardDto = result.Value!;
+        _currentUserRole = currentUserResult.Value!.Role;
+
+        var boardResult = await BoardsService.GetAsync(BoardId);
+
+        if (!boardResult.IsSuccess)
+        {
+            Snackbar.Add($"Error while fetching the board: {boardResult.ErrorMessage}", Severity.Error);
+            return;
+        }
+
+        var boardDto = boardResult.Value!;
 
         _backgroundColor = boardDto.DisplayColor;
 

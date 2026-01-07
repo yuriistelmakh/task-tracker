@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TaskTracker.Application.Interfaces.UoW;
 using TaskTracker.Domain.Entities;
 
-namespace TaskTracker.Application.Features.Boards.Commands.AcceptInvitation;
+namespace TaskTracker.Application.Features.BoardMembers.Commands.AcceptInvitation;
 
 public class AcceptInvitationCommandHandler : IRequestHandler<AcceptInvitationCommand, Result>
 {

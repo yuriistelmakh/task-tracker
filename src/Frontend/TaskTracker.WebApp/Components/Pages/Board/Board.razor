@@ -1,4 +1,5 @@
 ﻿@page "/boards/{BoardId:int}"
+@using TaskTracker.Domain.Enums
 @using TaskTracker.WebApp.Models
 @using TaskTracker.WebApp.Models.Tasks
 @using TaskTracker.WebApp.Components.Layout.Headers
@@ -189,71 +190,77 @@
                                         }
                                     </MudContainer>
 
-                                    <MudButton Class="pa-4 justify-start flex-shrink-0"
-                                               FullWidth=true
-                                               @onclick=@(() => OnAddTaskClick(column))>
-                                        <MudIcon Icon=@Icons.Material.Filled.Add Class="mr-2" />
-                                        <MudText>Add a task</MudText>
-                                    </MudButton>
+                                    @if (_currentUserRole >= BoardRole.Member)
+                                    {
+                                        <MudButton Class="pa-4 justify-start flex-shrink-0"
+                                                   FullWidth=true
+                                                   @onclick=@(() => OnAddTaskClick(column))>
+                                            <MudIcon Icon=@Icons.Material.Filled.Add Class="mr-2" />
+                                            <MudText>Add a task</MudText>
+                                        </MudButton>
+                                    }
                                 </MudPaper>
                             </div>
                         }
 
-                        @if (_isAddColumnOpen)
+                        @if (_currentUserRole >= BoardRole.Member)
                         {
-                            <div class="d-flex flex-column flex-shrink-0" style="width: 375px;">
-                                <MudPaper Class="d-flex flex-column justify-center mud-width-full"
-                                          MinHeight="100px"
-                                          MinWidth="375px">
+                            @if (_isAddColumnOpen)
+                            {
+                                <div class="d-flex flex-column flex-shrink-0" style="width: 375px;">
+                                    <MudPaper Class="d-flex flex-column justify-center mud-width-full"
+                                              MinHeight="100px"
+                                              MinWidth="375px">
 
-                                    <MudTextField @bind-Value=@_addColumnTitle
-                                                  Immediate=true
-                                                  Variant=@Variant.Outlined
-                                                  FullWidth=true
-                                                  Class="px-4 pt-4"
-                                                  AutoFocus=true
-                                                  MaxLength=50
-                                                  Placeholder="Enter column title"
-                                                  @onkeydown=@((e) => HandleAddColumnEnter(e))>
-                                    </MudTextField>
+                                        <MudTextField @bind-Value=@_addColumnTitle
+                                                      Immediate=true
+                                                      Variant=@Variant.Outlined
+                                                      FullWidth=true
+                                                      Class="px-4 pt-4"
+                                                      AutoFocus=true
+                                                      MaxLength=50
+                                                      Placeholder="Enter column title"
+                                                      @onkeydown=@((e) => HandleAddColumnEnter(e))>
+                                        </MudTextField>
 
-                                    <MudStack Row=true Class="align-self-end px-2 py-1">
-                                        <MudIconButton Class="pa-2"
-                                                       Icon=@Icons.Material.Filled.Check
-                                                       @onclick=@(() => AddNewColumn())>
-                                        </MudIconButton>
+                                        <MudStack Row=true Class="align-self-end px-2 py-1">
+                                            <MudIconButton Class="pa-2"
+                                                           Icon=@Icons.Material.Filled.Check
+                                                           @onclick=@(() => AddNewColumn())>
+                                            </MudIconButton>
 
-                                        <MudIconButton Class="pa-2"
-                                                       Icon=@Icons.Material.Filled.Close
-                                                       Color=@Color.Error
-                                                       @onclick=@(() => AddNewColumnClose())>
-                                        </MudIconButton>
-                                    </MudStack>
-                                </MudPaper>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="d-flex flex-column flex-shrink-0" style="width: 375px;">
-                                <MudPaper Class="d-flex align-center justify-center mud-width-full cursor-pointer mr-4"
-                                          Height="525px"
-                                          Width="375px"
-                                          Style="border: 2px dashed white; background-color: transparent;"
-                                          @onclick=OnAddColumnClick>
-                                    <MudStack AlignItems=@AlignItems.Center
-                                              Spacing=2>
+                                            <MudIconButton Class="pa-2"
+                                                           Icon=@Icons.Material.Filled.Close
+                                                           Color=@Color.Error
+                                                           @onclick=@(() => AddNewColumnClose())>
+                                            </MudIconButton>
+                                        </MudStack>
+                                    </MudPaper>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="d-flex flex-column flex-shrink-0" style="width: 375px;">
+                                    <MudPaper Class="d-flex align-center justify-center mud-width-full cursor-pointer mr-4"
+                                              Height="525px"
+                                              Width="375px"
+                                              Style="border: 2px dashed white; background-color: transparent;"
+                                              @onclick=OnAddColumnClick>
+                                        <MudStack AlignItems=@AlignItems.Center
+                                                  Spacing=2>
 
-                                        <MudIcon Icon=@Icons.Material.Filled.Add
-                                                 Size=@Size.Large
-                                                 Style="color: white" />
+                                            <MudIcon Icon=@Icons.Material.Filled.Add
+                                                     Size=@Size.Large
+                                                     Style="color: white" />
 
-                                        <MudText Typo=@Typo.h6
-                                                 Style="color: white">
-                                            Add a column
-                                        </MudText>
-                                    </MudStack>
-                                </MudPaper>
-                            </div>
+                                            <MudText Typo=@Typo.h6
+                                                     Style="color: white">
+                                                Add a column
+                                            </MudText>
+                                        </MudStack>
+                                    </MudPaper>
+                                </div>
+                            }
                         }
                     </ChildContent>
                     <ItemRenderer Context="task">

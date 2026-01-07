@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace TaskTracker.Application.Features.Boards.Commands.RejectInvitation;
+namespace TaskTracker.Application.Features.BoardMembers.Commands.RejectInvitation;
 
 public class RejectInvitationCommand : IRequest<bool>
 {

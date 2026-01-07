@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using TaskTracker.Domain.DTOs.Users;
 
-namespace TaskTracker.Application.Features.Boards.Queries.GetAllMembers;
+namespace TaskTracker.Application.Features.BoardMembers.Queries.GetBoardMembers;
 
 public class GetBoardMembersQuery : IRequest<IEnumerable<MemberSummaryDto>>
 {

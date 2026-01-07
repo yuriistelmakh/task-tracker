@@ -22,8 +22,8 @@ public class BoardsService : IBoardsService
         var result = await _boardsApi.GetAllAsync();
 
         return result.IsSuccessful
-            ? Result<IEnumerable<BoardSummaryDto>>.Success(result.Content)
-            : Result<IEnumerable<BoardSummaryDto>>.Failure(result.Error.Message);
+            ? Result<IEnumerable<BoardSummaryDto>>.Success(result.Content!)
+            : Result<IEnumerable<BoardSummaryDto>>.Failure(result.Error.Content!);
     }
 
     public async Task<Result<int>> CreateAsync(CreateBoardRequest request)

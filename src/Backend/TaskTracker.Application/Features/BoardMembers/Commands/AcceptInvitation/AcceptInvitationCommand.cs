@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using TaskTracker.Domain.Enums;
 
-namespace TaskTracker.Application.Features.Boards.Commands.AcceptInvitation;
+namespace TaskTracker.Application.Features.BoardMembers.Commands.AcceptInvitation;
 
 public class AcceptInvitationCommand : IRequest<Result>
 {

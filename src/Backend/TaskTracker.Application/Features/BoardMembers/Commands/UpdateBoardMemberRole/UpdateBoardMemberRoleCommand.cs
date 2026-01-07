@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using TaskTracker.Domain.Enums;
 
-namespace TaskTracker.Application.Features.Boards.Commands.UpdateBoardMemberRole;
+namespace TaskTracker.Application.Features.BoardMembers.Commands.UpdateBoardMemberRole;
 
 public class UpdateBoardMemberRoleCommand : IRequest<bool>
 {

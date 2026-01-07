@@ -24,6 +24,15 @@ public class BoardMembersService : IBoardMembersService
             : Result<IEnumerable<MemberSummaryDto>>.Failure(result.Error.Content!);
     }
 
+    public async Task<Result<MemberSummaryDto>> GetByIdAsync(int boardId, int userId)
+    {
+        var result = await _boardMembersApi.GetByIdAsync(boardId, userId);
+
+        return result.IsSuccessful
+            ? Result<MemberSummaryDto>.Success(result.Content)
+            : Result<MemberSummaryDto>.Failure(result.Error.Message);
+    }
+
     public async Task<Result> UpdateRoleAsync(int boardId, int userId, UpdateBoardMemberRoleRequest request)
     {
         var result = await _boardMembersApi.UpdateRoleAsync(boardId, userId, request);

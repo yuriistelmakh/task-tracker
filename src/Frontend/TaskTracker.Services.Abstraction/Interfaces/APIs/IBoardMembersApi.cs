@@ -9,6 +9,9 @@ public interface IBoardMembersApi
     [Get("/api/boards/{boardId}/members")]
     public Task<IApiResponse<IEnumerable<MemberSummaryDto>>> GetAllAsync(int boardId);
 
+    [Get("/api/boards/{boardId}/members/{userId}")]
+    public Task<IApiResponse<MemberSummaryDto>> GetByIdAsync(int boardId, int userId);
+
     [Put("/api/boards/{boardId}/members/{userId}")]
     public Task<IApiResponse> UpdateRoleAsync(int boardId, int userId, [Body] UpdateBoardMemberRoleRequest request);
 

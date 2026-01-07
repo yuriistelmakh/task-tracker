@@ -8,7 +8,7 @@ using TaskTracker.Application.Interfaces.UoW;
 using TaskTracker.Domain.DTOs.Users;
 using TaskTracker.Domain.Mapping;
 
-namespace TaskTracker.Application.Features.Boards.Queries.GetAllMembers;
+namespace TaskTracker.Application.Features.BoardMembers.Queries.GetBoardMembers;
 
 public class GetBoardMembersQueryHandler : IRequestHandler<GetBoardMembersQuery, IEnumerable<MemberSummaryDto>>
 {
@@ -23,7 +23,7 @@ public class GetBoardMembersQueryHandler : IRequestHandler<GetBoardMembersQuery,
     {
         using var uow = _unitOfWorkFactory.Create();
 
-        var members = await uow.BoardRepository.GetMembersAsync(request.BoardId);
+        var members = await uow.MemberRepository.GetAllAsync(request.BoardId);
 
         uow.Commit();
 

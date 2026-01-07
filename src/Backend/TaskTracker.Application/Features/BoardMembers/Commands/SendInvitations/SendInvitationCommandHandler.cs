@@ -7,7 +7,7 @@ using TaskTracker.Application.Interfaces.UoW;
 using TaskTracker.Domain.Entities;
 using TaskTracker.Domain.Enums;
 
-namespace TaskTracker.Application.Features.Boards.Commands.SendInvitations;
+namespace TaskTracker.Application.Features.BoardMembers.Commands.SendInvitations;
 
 public class SendInvitationsCommandHandler : IRequestHandler<SendInvitationsCommand, Result>
 {
@@ -39,7 +39,7 @@ public class SendInvitationsCommandHandler : IRequestHandler<SendInvitationsComm
             {
                 return Result.Conflict("User was already invited to this board.");
             }
-            
+
             invitation.Id = invitationId;
 
             var board = await uow.BoardRepository.GetAsync(request.BoardId);
@@ -69,7 +69,7 @@ public class SendInvitationsCommandHandler : IRequestHandler<SendInvitationsComm
 
             await uow.NotificationRepository.AddAsync(notification);
         }
-        
+
         uow.Commit();
 
         return Result.Success();

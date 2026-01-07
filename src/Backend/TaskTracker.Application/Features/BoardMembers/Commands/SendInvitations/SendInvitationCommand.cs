@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using TaskTracker.Domain.Enums;
 
-namespace TaskTracker.Application.Features.Boards.Commands.SendInvitations;
+namespace TaskTracker.Application.Features.BoardMembers.Commands.SendInvitations;
 
 public class SendInvitationsCommand : IRequest<Result>
 {

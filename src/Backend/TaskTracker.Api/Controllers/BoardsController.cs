@@ -4,23 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using TaskTracker.Application;
-using TaskTracker.Application.Features.Boards.Commands.AcceptInvitation;
-using TaskTracker.Application.Features.Boards.Commands.AddNewMember;
 using TaskTracker.Application.Features.Boards.Commands.CreateBoard;
 using TaskTracker.Application.Features.Boards.Commands.DeleteBoard;
-using TaskTracker.Application.Features.Boards.Commands.RejectInvitation;
 using TaskTracker.Application.Features.Boards.Commands.ReorderBoardColumns;
-using TaskTracker.Application.Features.Boards.Commands.SendInvitations;
 using TaskTracker.Application.Features.Boards.Commands.UpdateBoard;
-using TaskTracker.Application.Features.Boards.Commands.UpdateBoardMemberRole;
 using TaskTracker.Application.Features.Boards.Queries.GetAllBoards;
-using TaskTracker.Application.Features.Boards.Queries.GetAllMembers;
 using TaskTracker.Application.Features.Boards.Queries.GetBoardById;
-using TaskTracker.Domain.DTOs.BoardMember;
 using TaskTracker.Domain.DTOs.Boards;
-using TaskTracker.Domain.DTOs.Users;
-using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Api.Controllers;
 
