@@ -92,11 +92,11 @@ public class BoardMembersController : Controller
     }
 
     [HttpPost("invitations")]
-    public async Task<IActionResult> SendInvitationsAsync(int boardId, [FromBody] SendInvitationsRequest request)
+    public async Task<IActionResult> SendInvitationAsync(int boardId, [FromBody] SendInvitationRequest request)
     {
-        var command = new SendInvitationsCommand
+        var command = new SendInvitationCommand
         {
-            InviteeIds = request.InviteeIds,
+            InviteeId = request.InviteeId,
             InviterId = request.InviterId,
             BoardId = boardId,
             Role = request.Role

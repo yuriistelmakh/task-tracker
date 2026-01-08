@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using TaskTracker.Domain.Enums;
+﻿using TaskTracker.Domain.Enums;
 
-namespace TaskTracker.Domain.DTOs.Boards;
+namespace TaskTracker.Domain.DTOs.BoardMembers;
 
 public class SendInvitationRequest
 {

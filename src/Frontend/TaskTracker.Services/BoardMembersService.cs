@@ -2,7 +2,7 @@
 using TaskTracker.Domain;
 using TaskTracker.Services.Abstraction.Interfaces.APIs;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
-using TaskTracker.Domain.DTOs.Boards;
+using TaskTracker.Domain.DTOs.BoardMembers;
 
 namespace TaskTracker.Services;
 
@@ -15,9 +15,9 @@ public class BoardMembersService : IBoardMembersService
         _boardMembersApi = boardMembersApi;
     }
 
-    public async Task<Result<IEnumerable<MemberSummaryDto>>> GetAllAsync(int id)
+    public async Task<Result<IEnumerable<MemberSummaryDto>>> GetAllAsync(int boardId)
     {
-        var result = await _boardMembersApi.GetAllAsync(id);
+        var result = await _boardMembersApi.GetAllAsync(boardId);
 
         return result.IsSuccessful
             ? Result<IEnumerable<MemberSummaryDto>>.Success(result.Content)
@@ -51,9 +51,9 @@ public class BoardMembersService : IBoardMembersService
             : Result.Failure(result.Error.Content!);
     }
 
-    public async Task<Result> SendInvitationsAsync(int boardId, SendInvitationsRequest request)
+    public async Task<Result> SendInvitationAsync(int boardId, SendInvitationRequest request)
     {
-        var result = await _boardMembersApi.SendInvitationsAsync(boardId, request);
+        var result = await _boardMembersApi.SendInvitationAsync(boardId, request);
 
         return result.IsSuccessful
             ? Result.Success()

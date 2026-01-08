@@ -41,7 +41,7 @@ public partial class CreateBoardDialog : IComponent
 
     private BoardVisibility _selectedVisibility = BoardVisibility.Private;
 
-    private void OnColorClick(string newColor)
+    private void OnColorClicked(string newColor)
     {
         _selectedColor = newColor;
     }
@@ -51,7 +51,7 @@ public partial class CreateBoardDialog : IComponent
         _selectedVisibility = option;
     }
 
-    private void OnCloseClick()
+    private void OnCloseClicked()
     {
         Dialog.Close();
     }
@@ -68,7 +68,7 @@ public partial class CreateBoardDialog : IComponent
         var request = new CreateBoardRequest
         {
             Title = _title,
-            DisplayColor = _selectedColor,
+            BackgroundColor = _selectedColor,
             Visibility = _selectedVisibility
         };
 

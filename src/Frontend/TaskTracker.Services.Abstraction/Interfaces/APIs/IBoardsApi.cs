@@ -10,10 +10,13 @@ public interface IBoardsApi
     Task<IApiResponse<IEnumerable<BoardSummaryDto?>>> GetAllAsync();
 
     [Post("/api/boards")]
-    Task<IApiResponse<int>> CreateAsync(CreateBoardRequest request);
+    Task<IApiResponse<int>> CreateAsync([Body] CreateBoardRequest request);
 
     [Get("/api/boards/{id}")]
     public Task<IApiResponse<BoardDetailsDto?>> GetByIdAsync(int id);
+
+    [Put("/api/boards/{id}")]
+    public Task<IApiResponse> UpdateAsync(int id, [Body] UpdateBoardRequest request);
 
     [Post("/api/boards/{id}/reorder")]
     public Task<IApiResponse> ReorderColumnsAsync(int id, [Body] ReorderBoardColumnsRequest request);

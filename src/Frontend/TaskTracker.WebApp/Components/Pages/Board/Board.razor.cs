@@ -20,30 +20,35 @@ public partial class Board
     public int BoardId { get; set; }
 
     [Inject]
-    public IBoardsService BoardsService { get; set; } = default!;
+    public IBoardsService BoardsService { get; private set; } = default!;
 
     [Inject]
-    public IColumnsService ColumnsService { get; set; } = default!;
+    public IColumnsService ColumnsService { get; private set; } = default!;
 
     [Inject]
-    public ITasksService TasksService { get; set; } = default!;
+    public ITasksService TasksService { get; private set; } = default!;
 
     [Inject]
-    public IBoardMembersService BoardMembersService { get; set; } = default!;
+    public IBoardMembersService BoardMembersService { get; private set; } = default!;
 
     [Inject]
-    public ICurrentUserService CurrentUserService { get; set; } = default!;
+    public ICurrentUserService CurrentUserService { get; private set; } = default!;
 
     [Inject]
-    public ISnackbar Snackbar { get; set; } = default!;
+    public UiStateService UiStateService { get; private set; } = default!;
 
     [Inject]
-    public IDialogService DialogService { get; set; } = default!;
+    public ISnackbar Snackbar { get; private set; } = default!;
+
+    [Inject]
+    public IDialogService DialogService { get; private set; } = default!;
 
     [Inject]
     public IJSRuntime JS { get; set; } = default!;
 
     private string _backgroundColor = string.Empty;
+
+    private string _boardTitle = string.Empty;
 
     private MudDropContainer<TaskSummaryModel> _taskDropContainer = default!;
 
@@ -73,6 +78,8 @@ public partial class Board
 
     protected override async Task OnInitializedAsync()
     {
+        UiStateService.OnBoardSettingsChanged += HandleBoardSettingsChanged;
+
         var userId = await CurrentUserService.GetUserId();
 
         if (userId is null)
@@ -101,7 +108,8 @@ public partial class Board
 
         var boardDto = boardResult.Value!;
 
-        _backgroundColor = boardDto.DisplayColor;
+        _backgroundColor = boardDto.BackgroundColor;
+        _boardTitle = boardDto.Title;
 
         _columns = boardDto.Columns.Select(c => c.ToColumModel())
             .OrderBy(c => c.Order)
@@ -124,7 +132,7 @@ public partial class Board
         _boardMembers = membersResult.Value!.Select(m => m.ToMemberModel()).ToList();
     }
 
-    private static void OnAddTaskClick(ColumnModel column)
+    private static void OnAddTaskClicked(ColumnModel column)
     {
         column.IsAddTaskOpen = true;
     }
@@ -224,7 +232,7 @@ public partial class Board
         }
     }
 
-    private void OnAddColumnClick()
+    private void OnAddColumnClicked()
     {
         _isAddColumnOpen = true;
     }
@@ -489,7 +497,7 @@ public partial class Board
         _isReorderingColumns = !_isReorderingColumns;
     }
 
-    private async Task ColumnDropped(MudItemDropInfo<ColumnModel> dropItem)
+    private async Task OnColumnDropped(MudItemDropInfo<ColumnModel> dropItem)
     {
         var newIndex = dropItem.IndexInZone;
         
@@ -526,14 +534,32 @@ public partial class Board
         }
     }
 
-    private async Task OnMembersClicked()
+    private async void OnBoardSettingsClicked()
     {
-        var parameters = new DialogParameters<MemberManagementDialog>
+        var parameters = new DialogParameters<BoardSettingsDialog>
         {
             { x => x.BoardId, BoardId }
         };
 
         var options = new DialogOptions { FullWidth = true, MaxWidth = MaxWidth.Medium };
-        var dialog = await DialogService.ShowAsync<MemberManagementDialog>(string.Empty, parameters, options);
+        var dialog = await DialogService.ShowAsync<BoardSettingsDialog>(string.Empty, parameters, options);
+    }
+
+    private async void HandleBoardSettingsChanged()
+    {
+        var boardResult = await BoardsService.GetAsync(BoardId);
+
+        if (!boardResult.IsSuccess)
+        {
+            Snackbar.Add($"Error while fetching the board: {boardResult.ErrorMessage}", Severity.Error);
+            return;
+        }
+
+        var boardDto = boardResult.Value!;
+
+        _backgroundColor = boardDto.BackgroundColor;
+        _boardTitle = boardDto.Title;
+
+        StateHasChanged();
     }
 }

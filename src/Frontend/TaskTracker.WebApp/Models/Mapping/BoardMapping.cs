@@ -9,7 +9,7 @@ public static class BoardMapping
         {
             Id = dto.Id,
             Title = dto.Title,
-            DisplayColor = dto.DisplayColor,
+            BackgroundColor = dto.BackgroundColor,
             MembersCount = dto.MembersCount,
             TasksCount = dto.TasksCount,
             IsArchived = dto.IsArchived,

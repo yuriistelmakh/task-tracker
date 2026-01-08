@@ -18,7 +18,7 @@ public class Board
 
     public bool IsArchived { get; set; }
 
-    public required string DisplayColor { get; set; }
+    public required string BackgroundColor { get; set; }
 
     public BoardVisibility Visibility { get; set; } = BoardVisibility.Private;
 

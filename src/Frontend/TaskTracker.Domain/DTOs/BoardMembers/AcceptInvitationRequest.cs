@@ -1,6 +1,6 @@
 ﻿using TaskTracker.Domain.Enums;
 
-namespace TaskTracker.Domain.DTOs.Boards;
+namespace TaskTracker.Domain.DTOs.BoardMembers;
 public class AcceptInvitationRequest
 {
     public int NotificationId { get; set; }

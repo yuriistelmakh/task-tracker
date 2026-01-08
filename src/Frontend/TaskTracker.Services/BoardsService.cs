@@ -56,6 +56,42 @@ public class BoardsService : IBoardsService
             : Result<BoardDetailsDto>.Failure(result.Error.Message);
     }
 
+    public async Task<Result> UpdateAsync(int id, string? title = null, string? description = null, string? color = null)
+    {
+        var boardResult = await _boardsApi.GetByIdAsync(id);
+
+        if (!boardResult.IsSuccessful)
+        {
+            return Result.Failure("Board was not found");
+        }
+
+        var boardDto = boardResult.Content;
+
+        var userId = await _userService.GetUserId();
+
+        if (userId is null)
+        {
+            return Result.Failure("User id was not found");
+        }
+
+        var request = new UpdateBoardRequest
+        {
+            Title = title ?? boardDto.Title,
+            BackgroundColor = color ?? boardDto.BackgroundColor,
+            Description = description ?? boardDto.Description,
+            IsArchived = boardDto.IsArchived,
+            UpdatedBy = userId.Value,
+        };
+
+        request.UpdatedBy = userId.Value;
+
+        var result = await _boardsApi.UpdateAsync(id, request);
+
+        return result.IsSuccessful
+            ? Result.Success()
+            : Result.Failure(result.Error.Message);
+    }
+
     public async Task<Result> ReorderColumnsAsync(int id, ReorderBoardColumnsRequest request)
     {
         var result = await _boardsApi.ReorderColumnsAsync(id, request); 

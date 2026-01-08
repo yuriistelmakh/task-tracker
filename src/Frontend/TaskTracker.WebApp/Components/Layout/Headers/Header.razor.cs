@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.IdentityModel.Tokens;
 using MudBlazor;
-using System.Security.Claims;
 using System.Text.Json;
-using TaskTracker.Domain.DTOs.Boards;
-using TaskTracker.Domain.Enums;
+using TaskTracker.Domain.DTOs.BoardMembers;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
 using TaskTracker.WebApp.Components.Shared;
 using TaskTracker.WebApp.Models.Mapping;
@@ -20,6 +16,9 @@ public partial class Header
 
     [Parameter]
     public RenderFragment? RightContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? MiddleContent { get; set; }
 
     [Parameter]
     public string SearchPlaceholder { get; set; } = "Search...";

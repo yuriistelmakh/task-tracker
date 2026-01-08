@@ -1,5 +1,5 @@
 ﻿using Refit;
-using TaskTracker.Domain.DTOs.Boards;
+using TaskTracker.Domain.DTOs.BoardMembers;
 using TaskTracker.Domain.DTOs.Users;
 
 namespace TaskTracker.Services.Abstraction.Interfaces.APIs;
@@ -16,7 +16,7 @@ public interface IBoardMembersApi
     public Task<IApiResponse> UpdateRoleAsync(int boardId, int userId, [Body] UpdateBoardMemberRoleRequest request);
 
     [Post("/api/boards/{boardId}/members/invitations")]
-    public Task<IApiResponse> SendInvitationsAsync(int boardId, [Body] SendInvitationsRequest request);
+    public Task<IApiResponse> SendInvitationAsync(int boardId, [Body] SendInvitationRequest request);
 
     [Post("/api/boards/{boardId}/members/invitations/accept")]
     public Task<IApiResponse> AcceptInvitationAsync(int boardId, [Body] AcceptInvitationRequest request);

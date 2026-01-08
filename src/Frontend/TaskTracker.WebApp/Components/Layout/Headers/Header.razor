@@ -3,9 +3,13 @@
            Color=@Color.Primary>
     @LeftContent
 
-    <MudText Typo=@Typo.h6>
-        TaskTracker
+    <MudText Typo=@Typo.h5>
+        <strong>
+            TaskTracker
+        </strong>
     </MudText>
+
+    @MiddleContent
 
     <MudTextField @bind-Value=@search
                   Placeholder=@SearchPlaceholder
@@ -15,7 +19,6 @@
                   Margin=@Margin.Dense
                   AdornmentIcon=@Icons.Material.Filled.Search
                   Adornment=@Adornment.Start />
-
 
     <MudSpacer />
     @RightContent

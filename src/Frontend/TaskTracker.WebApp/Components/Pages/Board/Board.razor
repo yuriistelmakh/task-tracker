@@ -16,10 +16,20 @@
                            Class="pa-1 mr-1"
                            Href="/" />
         </LeftContent>
+
+        <MiddleContent>
+            <MudDivider Vertical=true 
+                        Class="ma-4"
+                        Style="height: 70%"/>
+                        
+            <MudText Typo=@Typo.h6>
+                @_boardTitle
+            </MudText>
+        </MiddleContent>
+        
         <RightContent>
             <MudAvatarGroup Max=3
-                            Spacing=3
-                            @onclick=@OnMembersClicked>
+                            Spacing=3>
                 @foreach (var member in _boardMembers)
                 {
                     <MudAvatar Class="cursor-pointer">
@@ -28,11 +38,32 @@
                 }
             </MudAvatarGroup>
 
-            <MudTooltip Text=@(_isReorderingColumns ? "Done reordering" : "Reorder columns")>
-                <MudIconButton Icon=@(_isReorderingColumns ? Icons.Material.Filled.Check : Icons.Material.Filled.SwapHoriz)
-                               Color=@Color.Inherit
-                               OnClick=@ToggleReorderMode />
-            </MudTooltip>
+            @if(_isReorderingColumns == false)
+            {
+                <MudMenu Icon=@Icons.Material.Filled.MoreVert
+                         Color=@Color.Inherit
+                         AnchorOrigin=@Origin.BottomCenter
+                         TransformOrigin=@Origin.TopCenter>
+                    <MudMenuItem Icon=@Icons.Material.Filled.SwapHoriz
+                                 OnClick=@ToggleReorderMode>
+                        Reorder columns
+                    </MudMenuItem>
+                    <MudMenuItem Icon=@Icons.Material.Filled.Settings
+                                 Onclick=@OnBoardSettingsClicked>
+                        Board settings
+                    </MudMenuItem>
+                </MudMenu>
+            }
+            else
+            {
+                <MudTooltip Text="Done reordering">
+                    <MudIconButton Icon=@(_isReorderingColumns ? Icons.Material.Filled.Check : Icons.Material.Filled.SwapHoriz)
+                                   Color=@Color.Inherit
+                                   OnClick=@ToggleReorderMode />
+                </MudTooltip>
+            }
+
+            
         </RightContent>
     </Header>
 
@@ -45,7 +76,7 @@
                 <MudDropContainer T=@ColumnModel
                                   Items=@_columns
                                   ItemsSelector=@((item, dropzone) => true)
-                                  ItemDropped=@ColumnDropped
+                                  ItemDropped=@OnColumnDropped
                                   Class="d-flex flex-nowrap gap-4"
                                   @ref=@_columnDropContainer>
                     <ChildContent>
@@ -194,7 +225,7 @@
                                     {
                                         <MudButton Class="pa-4 justify-start flex-shrink-0"
                                                    FullWidth=true
-                                                   @onclick=@(() => OnAddTaskClick(column))>
+                                                   @onclick=@(() => OnAddTaskClicked(column))>
                                             <MudIcon Icon=@Icons.Material.Filled.Add Class="mr-2" />
                                             <MudText>Add a task</MudText>
                                         </MudButton>
@@ -245,7 +276,7 @@
                                               Height="525px"
                                               Width="375px"
                                               Style="border: 2px dashed white; background-color: transparent;"
-                                              @onclick=OnAddColumnClick>
+                                              @onclick=OnAddColumnClicked>
                                         <MudStack AlignItems=@AlignItems.Center
                                                   Spacing=2>
 

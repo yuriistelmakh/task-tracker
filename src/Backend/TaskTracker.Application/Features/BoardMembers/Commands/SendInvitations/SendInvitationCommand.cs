@@ -4,11 +4,11 @@ using TaskTracker.Domain.Enums;
 
 namespace TaskTracker.Application.Features.BoardMembers.Commands.SendInvitations;
 
-public class SendInvitationsCommand : IRequest<Result>
+public class SendInvitationCommand : IRequest<Result>
 {
     public int InviterId { get; set; }
 
-    public List<int> InviteeIds { get; set; } = [];
+    public int InviteeId { get; set; }
 
     public int BoardId { get; set; }
 

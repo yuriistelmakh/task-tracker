@@ -1,70 +1,115 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using System.Security.Cryptography.Xml;
+using TaskTracker.Domain;
+using TaskTracker.Domain.DTOs.BoardMembers;
 using TaskTracker.Domain.DTOs.Boards;
-using TaskTracker.Domain.DTOs.Users;
 using TaskTracker.Domain.Enums;
-using TaskTracker.Services;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
+using TaskTracker.Services.Auth;
 using TaskTracker.WebApp.Components.Shared;
 using TaskTracker.WebApp.Models;
 using TaskTracker.WebApp.Models.Mapping;
 
 namespace TaskTracker.WebApp.Components.Pages.Board;
 
-public partial class MemberManagementDialog
+public partial class BoardSettingsDialog
 {
-    [Parameter]
-    public int BoardId { get; set; }
-
     [CascadingParameter]
     public IMudDialogInstance Dialog { get; private set; } = default!;
+
+    [Parameter]
+    public int BoardId { get; set; }
 
     [Inject]
     public IBoardsService BoardsService { get; private set; } = default!;
 
     [Inject]
-    public IUsersService UsersService { get; private set; } = default!;
-
-    [Inject]
-    public IBoardMembersService BoardMembersService {  get; private set; } = default!;
+    public IBoardMembersService BoardMembersService { get; private set; } = default!;
 
     [Inject]
     public ICurrentUserService CurrentUserService { get; private set; } = default!;
 
     [Inject]
-    public IDialogService DialogService { get; private set; } = default!;
+    public IUsersService UsersService { get; private set; } = default!;
 
     [Inject]
-    public ISnackbar Snackbar { get; private set; } = default!;
+    public UiStateService UiStateService { get; private set; } = default!;
 
-    private int _membersCount => _members.Count;
+    [Inject]
+    public ISnackbar Snackbar { get; set; } = default!;
+
+    [Inject]
+    public IDialogService DialogService { get; private set; } = default!;
+
+    private string? _title;
+
+    private string? _description;
+
+    private int _totalMembersCount => _members.Count;
+
+    private List<MemberModel> _members = [];
 
     private int? _currentUserId;
 
     private BoardRole _currentUserRole;
 
-    private List<MemberModel> _members = [];
-    
-    private List<UserSummaryModel> _usersToInvite = [];
+    private int _userSearchPageSize = 5;
 
-    private UserSummaryModel _invitationUserSearch;
+    private BoardRole _selectedInviteRole = BoardRole.Member;
 
-    private BoardRole _inviteRole = BoardRole.Member;
+    private string? _ownersCount;
+    private string? _adminsCount;
+    private string? _membersCount;
+    private string? _visitorsCount;
 
-    private int _userSearchPageSize = 10;
+    private readonly List<string> _backgroundColorOptions = [
+        "#5A7863",
+        "#90AB8B",
+        "#3B4953",
+        "#4E868E",
+        "#6D8EA0",
+        "#7986CB",
+        "#9E8FB2",
+        "#C27BA0",
+        "#D0887A",
+        "#D4A353",
+        "#8D6E63",
+        "#546E7A"
+    ];
+
+    private string _selectedColor = "#5A7863";
+
+    private UserSummaryModel? _invitationUserSearch;
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await BoardMembersService.GetAllAsync(BoardId);
-
-        if (!result.IsSuccess)
+        var boardResult = await BoardsService.GetAsync(BoardId);
+        
+        if (!boardResult.IsSuccess)
         {
-            Snackbar.Add($"Error fetching members: {result.ErrorMessage}");
+            Snackbar.Add($"Error getting board: {boardResult.ErrorMessage}", Severity.Error);
             return;
         }
 
-        _members = result.Value!.Select(m => m.ToMemberModel()).ToList();
+        var boardDto = boardResult.Value!;
+
+        _title = boardDto.Title;
+        _description = boardDto.Description;
+
+        var boardMembersResult = await BoardMembersService.GetAllAsync(BoardId);
+
+        if (!boardMembersResult.IsSuccess)
+        {
+            Snackbar.Add($"Error getting board members: {boardResult.ErrorMessage}", Severity.Error);
+            return;
+        }
+
+        _members = boardMembersResult.Value!.Select(m => m.ToMemberModel()).ToList();
+
+        _ownersCount = _members.Count(m => m.Role == BoardRole.Owner).ToString();
+        _adminsCount = _members.Count(m => m.Role == BoardRole.Admin).ToString();
+        _membersCount = _members.Count(m => m.Role == BoardRole.Member).ToString();
+        _visitorsCount = _members.Count(m => m.Role == BoardRole.Visitor).ToString();
 
         _currentUserId = await CurrentUserService.GetUserId();
         var currentUser = _members.FirstOrDefault(m => m.Id == _currentUserId);
@@ -83,52 +128,44 @@ public partial class MemberManagementDialog
         Dialog.Close();
     }
 
-    private void OnUserSelected(UserSummaryModel user)
+    //========================= GENERAL SETTINGS ==============================
+
+    private async void SaveGeneralChanges()
     {
-        if (user is not null && !_usersToInvite.Any(u => u.Id == user.Id))
-        {
-            _usersToInvite.Add(user);
-        }
-        
-        _invitationUserSearch = null;
-
-        StateHasChanged();
-    }
-
-    private void RemoveUserFromInvite(UserSummaryModel user)
-    {
-        _usersToInvite.Remove(user);
-    }
-
-    private async Task SendInvitations()
-    {
-        if (_usersToInvite.Count == 0)
-        {
-            return;
-        }
-
-        var request = new SendInvitationsRequest
-        {
-            InviterId = _currentUserId.Value,
-            InviteeIds = _usersToInvite.Select(u => u.Id).ToList(),
-            Role = _inviteRole
-        };
-
-        var result = await BoardMembersService.SendInvitationsAsync(BoardId, request);
+        var result = await BoardsService.UpdateAsync(BoardId, title: _title, description: _description);
 
         if (!result.IsSuccess)
         {
-            Snackbar.Add(result.ErrorMessage, Severity.Error);
+            Snackbar.Add($"Error updating board's general settings: {result.ErrorMessage}");
             return;
         }
-        else
+
+        Snackbar.Add("Board was successfully updated", Severity.Success);
+        UiStateService.NotifyBoardSettingsChanged();
+    }
+
+    //========================= APPEARANCE SETTINGS ==============================
+
+    private void OnColorClicked(string newColor)
+    {
+        _selectedColor = newColor;
+    }
+
+    private async Task SaveAppearanceChanges()
+    {
+        var result = await BoardsService.UpdateAsync(BoardId, color: _selectedColor);
+
+        if (!result.IsSuccess)
         {
-            Snackbar.Add($"Invitations were sent", Severity.Success);
+            Snackbar.Add($"Error updating board's appearance settings: {result.ErrorMessage}");
+            return;
         }
 
-        _usersToInvite.Clear();
-        _inviteRole = BoardRole.Member;
+        Snackbar.Add("Board was successfully updated", Severity.Success);
+        UiStateService.NotifyBoardSettingsChanged();
     }
+
+    //========================= MEMBERS SETTINGS ==============================
 
     private async Task OnRoleChange(MemberModel member, BoardRole newRole)
     {
@@ -217,11 +254,40 @@ public partial class MemberManagementDialog
         }
 
         var existingMemberIds = _members.Select(m => m.Id).ToHashSet();
-        var selectedInviteIds = _usersToInvite.Select(u => u.Id).ToHashSet();
 
         return result.Value!
-            .Where(u => !existingMemberIds.Contains(u.Id) && !selectedInviteIds.Contains(u.Id))
+            .Where(u => !existingMemberIds.Contains(u.Id))
             .Select(u => u.ToUserSummaryModel())
             .ToList();
+    }
+
+    private async Task SendInvitations()
+    {
+        if (_invitationUserSearch is null)
+        {
+            return;
+        }
+
+        var request = new SendInvitationRequest
+        {
+            InviterId = _currentUserId.Value,
+            InviteeId = _invitationUserSearch.Id,
+            Role = _selectedInviteRole
+        };
+
+        var result = await BoardMembersService.SendInvitationAsync(BoardId, request);
+
+        if (!result.IsSuccess)
+        {
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+            return;
+        }
+        else
+        {
+            Snackbar.Add($"Invitation was sent", Severity.Success);
+        }
+
+        _invitationUserSearch = null;
+        _selectedInviteRole = BoardRole.Member;
     }
 }

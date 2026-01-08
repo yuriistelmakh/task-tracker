@@ -9,7 +9,7 @@ public class BoardDetailsDto
 
     public required string Title { get; set; }
 
-    public required string DisplayColor { get; set; }
+    public required string BackgroundColor { get; set; }
 
     public string? Description { get; set; }
 

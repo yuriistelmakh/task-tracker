@@ -84,7 +84,8 @@ public class BoardsController : ControllerBase
             Title = request.Title,
             Description = request.Description,
             UpdatedBy = request.UpdatedBy,
-            IsArchived = request.IsArchived
+            IsArchived = request.IsArchived,
+            BackgroundColor = request.BackgroundColor
         };
 
         var isSuccess = await _mediator.Send(command);
