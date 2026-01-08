@@ -12,6 +12,6 @@ public static class ColumnMapping
             Title = dto.Title,
             NewTaskTitle = string.Empty,
             IsAddTaskOpen = false,
-            Tasks = dto.Tasks.Select(t => t.ToTaskModel()).OrderBy(t => t.Order).ToList()
+            Tasks = dto.Tasks.Select(t => t.ToTaskSummaryModel()).OrderBy(t => t.Order).ToList()
         };
 }

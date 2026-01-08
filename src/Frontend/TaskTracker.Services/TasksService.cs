@@ -45,7 +45,43 @@ public class TasksService : ITasksService
 
         request.UpdatedBy = userId.Value;
 
-        var response = await _tasksApi.ChangeStatus(id, request);
+        var response = await _tasksApi.ChangeStatusAsync(id, request);
+
+        return response.IsSuccessful
+            ? Result.Success()
+            : Result.Failure(response.Error.Message);
+    }
+
+    public async Task<Result<TaskDetailsDto>> GetByIdAsync(int id)
+    {
+        var response = await _tasksApi.GetByIdAsync(id);
+
+        return response.IsSuccessful
+            ? Result<TaskDetailsDto>.Success(response.Content)
+            : Result<TaskDetailsDto>.Failure(response.Error.Message);
+    }
+
+    public async Task<Result> UpdateAsync(int id, UpdateTaskRequest request)
+    {
+        var userId = await _userService.GetUserId();
+
+        if (userId is null)
+        {
+            return Result.Failure("User id was not found");
+        }
+
+        request.UpdatedBy = userId.Value;
+
+        var response = await _tasksApi.UpdateAsync(id, request);
+
+        return response.IsSuccessful
+            ? Result.Success()
+            : Result.Failure(response.Error.Message);
+    }
+
+    public async Task<Result> DeleteAsync(int id)
+    {
+        var response = await _tasksApi.DeleteAsync(id);
 
         return response.IsSuccessful
             ? Result.Success()

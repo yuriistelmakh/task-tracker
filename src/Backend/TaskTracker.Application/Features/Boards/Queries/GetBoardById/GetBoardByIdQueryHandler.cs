@@ -26,13 +26,8 @@ public class GetBoardByIdQueryHandler : IRequestHandler<GetBoardByIdQuery, Board
         using var uow = _unitOfWorkFactory.Create();
         var board = await uow.BoardRepository.GetDetailsAsync(request.Id);
 
-        if (board is null)
-        {
-            return null;
-        }
-
         uow.Commit();
 
-        return board.ToBoardDetailsDto();
+        return board?.ToBoardDetailsDto();
     }
 }

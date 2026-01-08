@@ -1,0 +1,23 @@
+﻿<MudDialog>
+    <TitleContent>
+        <MudText Typo=@Typo.h6>@Title</MudText>
+    </TitleContent>
+
+    <DialogContent>
+        <MudText>@Description</MudText>
+    </DialogContent>
+    
+    <DialogActions>
+        <MudContainer Class="d-flex justify-end pa-1 pb-2 gap-3">
+            <MudButton @onclick=@OnCancel>
+                Cancel
+            </MudButton>
+
+            <MudButton Variant=@MainButtonVariant
+                       Color=@MainButtonColor
+                       @onclick=@OnConfirm>
+                @MainButtonText 
+            </MudButton>
+        </MudContainer>
+    </DialogActions>
+</MudDialog>

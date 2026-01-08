@@ -16,4 +16,19 @@ public static class TaskMapping
             AssigneeId = task.AssigneeId,
             IsComplete = task.IsComplete
         };
+
+    public static TaskDetailsDto ToTaskDetailsDto(this BoardTask task) =>
+        new()
+        {
+            Id = task.Id,
+            Title = task.Title,
+            CreatedAt = task.CreatedAt,
+            CreatedBy = task.CreatedBy,
+            Description = task.Description,
+            DueDate = task.DueDate,
+            Priority = task.Priority,
+            UpdatedAt = task.UpdatedAt,
+            UpdatedBy = task.UpdatedBy,
+            IsComplete = task.IsComplete
+        };
 }

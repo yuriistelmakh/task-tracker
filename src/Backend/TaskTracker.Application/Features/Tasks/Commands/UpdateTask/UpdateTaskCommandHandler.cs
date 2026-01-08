@@ -26,19 +26,19 @@ public class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommand, bool>
             return false;
         }
 
-        task.ColumnId = request.ColumnId;
         task.Title = request.Title;
         task.Description = request.Description;
         task.Priority = request.Priority;
         task.DueDate = request.DueDate;
-        task.Order = request.Order;
         task.AssigneeId = request.AssigneeId;
         task.IsComplete = request.IsComplete;
         task.UpdatedBy = request.UpdatedBy;
         task.UpdatedAt = DateTime.UtcNow;
 
+        var rowsAffected = await uow.TaskRepository.UpdateAsync(task);
+
         uow.Commit();
 
-        return true;
+        return rowsAffected > 0;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace TaskTracker.WebApp.Models;
 
-public class TaskModel
+public class TaskSummaryModel
 {
     public int Id { get; set; }
 

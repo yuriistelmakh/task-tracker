@@ -24,11 +24,11 @@ public partial class Home
     [Inject]
     public IAuthService AuthService { private get; set; } = default!;
 
-    string _search = "";
+    private string _search = "";
 
-    string _username = "";
+    private string _username = "";
 
-    List<BoardModel> _boards = [];
+    private List<BoardModel> _boards = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -43,7 +43,7 @@ public partial class Home
 
         if (!result.IsSuccess)
         {
-            Snackbar.Add($"Error while fetching boards: {result.ErrorMessage}", Severity.Error);
+            Snackbar.Add($"Eroor while fetching boards: {result.ErrorMessage}", Severity.Error);
             return;
         }
 

@@ -1,11 +1,13 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TaskTracker.Application.Features.Boards.Commands.AddNewMember;
 using TaskTracker.Application.Features.Boards.Commands.CreateBoard;
 using TaskTracker.Application.Features.Boards.Commands.DeleteBoard;
+using TaskTracker.Application.Features.Boards.Commands.ReorderBoardColumns;
 using TaskTracker.Application.Features.Boards.Commands.UpdateBoard;
 using TaskTracker.Application.Features.Boards.Queries.GetAllBoards;
 using TaskTracker.Application.Features.Boards.Queries.GetAllMembers;
@@ -127,6 +129,21 @@ public class BoardsController : ControllerBase
         var command = new DeleteBoardCommand
         {
             Id = id
+        };
+
+        var isSuccess = await _mediator.Send(command);
+
+        return isSuccess
+            ? NoContent()
+            : NotFound();
+    }
+
+    [HttpPost("{id}/reorder")]
+    public async Task<IActionResult> ReorderColumnsAsync(int id, ReorderBoardColumnsRequest request)
+    {
+        var command = new ReorderBoardColumnsCommand
+        {
+            IdToOrder = request.MoveColumnRequests.ToDictionary(r => r.ColumnId, r => r.NewOrder),
         };
 
         var isSuccess = await _mediator.Send(command);

@@ -8,8 +8,6 @@ public class UpdateTaskCommand : IRequest<bool>
 {
     public int Id { get; set; }
 
-    public int ColumnId { get; set; }
-
     public required string Title { get; set; }
 
     public string? Description { get; set; }
@@ -17,8 +15,6 @@ public class UpdateTaskCommand : IRequest<bool>
     public Priority Priority { get; set; } = Priority.Medium;
 
     public DateTime? DueDate { get; set; }
-
-    public int Order { get; set; }
 
     public int? AssigneeId { get; set; }
 

@@ -4,7 +4,7 @@ namespace TaskTracker.WebApp.Models.Mapping;
 
 public static class TaskMapping
 {
-    public static TaskModel ToTaskModel(this TaskSummaryDto dto) =>
+    public static TaskSummaryModel ToTaskSummaryModel(this TaskSummaryDto dto) =>
         new()
         { 
             Id = dto.Id,
@@ -13,5 +13,21 @@ public static class TaskMapping
             Order = dto.Order,
             Priority = dto.Priority,
             ColumnId = dto.ColumndId
+        };
+
+    public static TaskDetailsModel ToTaskDetailsModel(this TaskDetailsDto dto) =>
+        new()
+        { 
+            Id = dto.Id,
+            Title = dto.Title,
+            ColumnTitle = dto.ColumnTitle,
+            CreatedAt = dto.CreatedAt,
+            CreatedBy = dto.CreatedBy,
+            Description = dto.Description,
+            DueDate = dto.DueDate,
+            Priority = dto.Priority,
+            UpdatedAt = dto.UpdatedAt,
+            UpdatedBy = dto.UpdatedBy,
+            IsComplete = dto.IsComplete,
         };
 }

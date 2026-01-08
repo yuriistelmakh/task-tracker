@@ -3,3 +3,86 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+@keyframes wiggle {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-1deg);
+    }
+
+    50% {
+        transform: rotate(1deg);
+    }
+
+    75% {
+        transform: rotate(-1deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+.shake-on-hover:hover {
+    animation: wiggle 0.3s ease-in-out infinite;
+    cursor: grab;
+}
+
+.shake-on-hover:active {
+    cursor: grabbing;
+}
+
+/* Task view dialog (since dialog boxes cannot be modified through .razor.css) */
+
+.add-attachment-container {
+    cursor: pointer;
+    transition: background-color 0.5s;
+}
+
+.add-attachment-container:hover {
+    background-color: var(--mud-palette-action-default-hover) !important;
+}
+
+.completed-checkbox-container {
+    border: 1px solid var(--mud-palette-lines-inputs);
+}
+
+.right-bar-select div.mud-input-slot.mud-input-root-outlined.mud-input-root-margin-dense {
+    min-height: 22px;
+}
+
+.completed-checkbox .mud-icon-button {
+    padding: 3px;
+}
+
+.date-picker-adornment .mud-icon-button {
+    padding: 0px !important;
+    font-size: 14px;
+}
+
+.date-picker-adornment .mud-input.mud-input-outlined.mud-input-adorned-end {
+    padding-right: 16px !important;
+}
+
+.date-picker-adornment .mud-input-control.mud-input-control-margin-dense.mud-input-outlined-with-label {
+    margin-top: 4px;
+}
+
+.title-input .mud-input {
+    font-weight: 500 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    height: auto !important;
+}
+
+.edit-icon-hover {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.title-hover-container:hover {
+    background-color: var(--mud-palette-action-default-hover);
+}
