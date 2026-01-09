@@ -25,16 +25,18 @@
                 <MudStack Spacing=0
                           Style="width: 50%">
                     <MudText>Board title</MudText>
-                    <MudTextField @bind-Value=@_title
-                                  Variant=@Variant.Outlined
-                                  Margin=@Margin.Dense
-                                  Placeholder="For example: Marketing campaign"
-                                  Counter=50
-                                  MaxLength=50
-                                  Immediate=true
-                                  Required=true>
+                    <MudForm @ref=@_titleForm>
+                        <MudTextField @bind-Value=@_title
+                                      Variant=@Variant.Outlined
+                                      Margin=@Margin.Dense
+                                      Placeholder="For example: Marketing campaign"
+                                      Counter=50
+                                      MaxLength=50
+                                      Immediate=true
+                                      Required=true>
 
-                    </MudTextField>
+                        </MudTextField>
+                    </MudForm>
                 </MudStack>
 
                 <MudText>Board description</MudText>
@@ -198,8 +200,10 @@
                         </MudStack>
                     </MudItem>
 
-                    <MudItem xs=4>
-                        <MudCard Class="pa-2">
+                    <MudItem xs=4
+                             Class="pr-1">
+                        <MudCard Class="pa-2"
+                                 Elevation=3>
                             <MudStack Row=true
                                       Spacing=1>
                                 <MudIcon Icon=@Icons.Material.Filled.PersonAdd />
@@ -261,7 +265,8 @@
                             </MudButton>
                         </MudCard>
 
-                        <MudCard Class="pa-3 mt-2">
+                        <MudCard Class="pa-3 mt-2"
+                                 Elevation=3>
                             <MudStack Row=true
                                       Spacing=1>
                                 <MudIcon Icon=@Icons.Material.Filled.ShowChart/>

@@ -41,6 +41,8 @@ public partial class BoardSettingsDialog
     [Inject]
     public IDialogService DialogService { get; private set; } = default!;
 
+    private MudForm _titleForm;
+
     private string? _title;
 
     private string? _description;
@@ -132,6 +134,13 @@ public partial class BoardSettingsDialog
 
     private async void SaveGeneralChanges()
     {
+        await _titleForm.Validate();
+
+        if (!_titleForm.IsValid)
+        {
+            return;
+        }
+
         var result = await BoardsService.UpdateAsync(BoardId, title: _title, description: _description);
 
         if (!result.IsSuccess)
