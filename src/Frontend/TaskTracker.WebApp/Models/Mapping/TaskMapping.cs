@@ -30,5 +30,6 @@ public static class TaskMapping
             UpdatedAt = dto.UpdatedAt,
             UpdatedBy = dto.UpdatedBy,
             IsComplete = dto.IsComplete,
+            AssigneeModel = dto.AssigneeDto?.ToMemberModel() ?? null
         };
 }

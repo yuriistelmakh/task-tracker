@@ -1,0 +1,33 @@
+﻿using MediatR;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using TaskTracker.Application.Interfaces.UoW;
+using TaskTracker.Domain.DTOs.Users;
+using TaskTracker.Domain.Mapping;
+
+namespace TaskTracker.Application.Features.BoardMembers.Queries.SearchBoardMembers;
+
+public class SearchBoardMembersQueryHandler : IRequestHandler<SearchBoardMembersQuery, Result<IEnumerable<MemberSummaryDto>>>
+{
+    private readonly IUnitOfWorkFactory _unitOfWorkFactory;
+
+    public SearchBoardMembersQueryHandler(IUnitOfWorkFactory unitOfWorkFactory)
+    {
+        _unitOfWorkFactory = unitOfWorkFactory;
+    }
+
+    public async Task<Result<IEnumerable<MemberSummaryDto>>> Handle(SearchBoardMembersQuery request, CancellationToken cancellationToken)
+    {
+        var uow = _unitOfWorkFactory.Create();
+
+        var users = await uow.MemberRepository.SearchByNameOrTag(request.BoardId, request.Prompt, request.PageSize);
+
+        uow.Commit();
+
+        var dtos = users.Select(m => m.User.ToMemberSummaryDto(m.Role));
+
+        return Result<IEnumerable<MemberSummaryDto>>.Success(dtos ?? []);
+    }
+}

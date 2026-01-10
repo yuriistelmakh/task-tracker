@@ -5,12 +5,11 @@ using TaskTracker.WebApp.Models.Mapping;
 using TaskTracker.WebApp.Models;
 using TaskTracker.Domain.DTOs.Tasks;
 using TaskTracker.Domain.Enums;
-using System.Security.Cryptography.X509Certificates;
 using TaskTracker.WebApp.Components.Shared;
-using System.Security.Cryptography.Xml;
-using Microsoft.VisualBasic;
 using Microsoft.AspNetCore.Components.Web;
 using TaskTracker.WebApp.Models.Tasks;
+using TaskTracker.Services.Auth;
+using TaskTracker.Domain.DTOs.Users;
 
 namespace TaskTracker.WebApp.Components.Pages.Board;
 
@@ -46,8 +45,6 @@ public partial class TaskDialog
     [Inject]
     public IDialogService DialogService { get; private set; } = default!;
 
-    private List<MemberModel> _assigneeOptions = [];
-
     private TaskDetailsModel task = new() { ColumnTitle = string.Empty, Title = string.Empty };
 
     private bool _isTaskLoaded = false;
@@ -57,6 +54,8 @@ public partial class TaskDialog
     private bool _isDescriptionExpanded = false;
 
     private string _titleBeforeEditing = string.Empty;
+
+    private int _pageSize = 4;
 
     private TimeSpan? TaskTime
     {
@@ -85,26 +84,8 @@ public partial class TaskDialog
 
         var dto = result.Value!;
         task = dto.ToTaskDetailsModel();
+        
 
-        if (dto.AssigneeDto is not null)
-        {
-            task.AssigneeModel = dto.AssigneeDto.ToMemberModel();
-            _assigneeOptions.Add(task.AssigneeModel);
-        }
-
-        if (_assigneeOptions.Count > 1)
-        {
-            return;
-        }
-
-        var boardResult = await BoardMembersService.GetAllAsync(BoardId);
-        if (!boardResult.IsSuccess)
-        {
-            Snackbar.Add($"Error fetching board members: {result.ErrorMessage}", Severity.Error);
-            return;
-        }
-
-        _assigneeOptions = boardResult.Value!.Select(u => u.ToMemberModel()).ToList();
         _isTaskLoaded = true;
     }
 
@@ -175,6 +156,21 @@ public partial class TaskDialog
         }
     }
 
+    private async Task<IEnumerable<MemberModel>> PerformSearch(string prompt, CancellationToken token)
+    {
+        var result = await BoardMembersService.SearchAsync(BoardId, prompt, 1, _pageSize);
+
+        if (!result.IsSuccess)
+        {
+            Snackbar.Add($"Error getting members: {result.ErrorMessage}", Severity.Error);
+            return [];
+        }
+
+        var members = result.Value!.Select(m => m.ToMemberModel()).ToList();
+
+        return members;
+    }
+
     private void EnableEditTitle()
     {
         _titleBeforeEditing = task.Title;
@@ -205,7 +201,7 @@ public partial class TaskDialog
         _isDescriptionExpanded = !_isDescriptionExpanded;
     }
 
-    private void OnCloseClick()
+    private void OnCloseClicked()
     {
         MudDialog.Close();
     }

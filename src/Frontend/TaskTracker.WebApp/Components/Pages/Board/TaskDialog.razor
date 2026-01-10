@@ -51,7 +51,7 @@
             <MudSpacer />
 
             <MudIconButton Icon=@Icons.Material.Filled.Close
-                           @onclick=@OnCloseClick/>
+                           @onclick=@OnCloseClicked/>
         </MudStack>
 
         @if (!_isTaskLoaded)
@@ -172,35 +172,32 @@
                 }
                 else
                 {
-                    <MudSelect T=@MemberModel
-                               @bind-Value=@task.AssigneeModel
-                               Variant=@Variant.Outlined
-                               Margin=@Margin.Dense
-                               ReadOnly=@(CurrentUserRole == BoardRole.Visitor)
-                               Adornment=@(CurrentUserRole == BoardRole.Visitor ? Adornment.None : Adornment.End)
-                               ToStringFunc=@((m) => m.DisplayName)
-                               Class="assignee-select right-bar-select">
+                    <MudAutocomplete T=@MemberModel
+                                     @bind-Value=@task.AssigneeModel
+                                     DebounceInterval=500
+                                     SearchFunc=@PerformSearch
+                                     FullWidth=true
+                                     ReadOnly=@(CurrentUserRole == BoardRole.Visitor)
+                                     Variant=@Variant.Outlined
+                                     Margin=@Margin.Dense
+                                     Clearable=true
+                                     Adornment=@Adornment.None
+                                     ToStringFunc=@(p => p is null ? null : p.DisplayName)
+                                     Class="mt-2"
+                                     Placeholder="Find by name or tag...">
 
-                        <MudSelectItem T=@MemberModel
-                                       Value="@(null)">
-                            <MudText Typo=@Typo.body2>No assignee</MudText>
-                        </MudSelectItem>
-
-                        @foreach (var user in _assigneeOptions)
-                        {
-                            <MudSelectItem T=@MemberModel
-                                           Value=@user
-                                           Style="color: var(--mud-primary-text)">
-                                <MudStack Row=true
-                                          Spacing=2
-                                          AlignItems=@AlignItems.Center>
-                                    <MudIcon Icon=@Icons.Material.Filled.AccountCircle
-                                             Size=@Size.Small />
-                                    <MudText Typo=@Typo.body2>@user.DisplayName</MudText>
+                        <ItemTemplate Context="e">
+                            <MudStack Row=true
+                                      AlignItems=@AlignItems.Center
+                                      Spacing=2>
+                                <MudIcon Icon=@Icons.Material.Filled.AccountCircle />
+                                <MudStack Spacing=0>
+                                    <MudText>@e.DisplayName</MudText>
+                                    <MudText Typo=@Typo.caption>@($"@{e.Tag}")</MudText>
                                 </MudStack>
-                            </MudSelectItem>
-                        }
-                    </MudSelect>
+                            </MudStack>
+                        </ItemTemplate>
+                    </MudAutocomplete>
                 }
 
                 <MudStack Row=true
@@ -348,7 +345,7 @@
         <MudDivider Class="my-2"/>
 
         <MudContainer Class="d-flex justify-end pa-0 my-2">
-            <MudButton>Cancel</MudButton>
+            <MudButton @onclick=OnCloseClicked>Cancel</MudButton>
 
             <MudButton Variant=@Variant.Filled
                        Color=@Color.Primary

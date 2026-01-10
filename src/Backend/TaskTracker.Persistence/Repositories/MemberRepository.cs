@@ -78,4 +78,49 @@ public class MemberRepository : Repository<BoardMember, int>, IMemberRepository
 
         return result;
     }
+
+    public async Task<IEnumerable<BoardMember>> SearchByNameOrTag(int boardId, string? searchPrompt, int pageSize, int page = 1)
+    {
+        if (string.IsNullOrWhiteSpace(searchPrompt))
+        {
+            searchPrompt = null;
+        }
+
+        var sql = @"
+            SELECT bm.*, u.*
+            FROM BoardMembers bm    
+            JOIN Users u ON u.Id = bm.UserId 
+            WHERE
+                bm.BoardId = @boardId
+                AND (
+                    @SearchPrompt IS NULL 
+                    OR u.DisplayName LIKE @SearchPrompt + '%' 
+                    OR u.Tag LIKE @SearchPrompt + '%'
+                )
+            ORDER BY u.DisplayName
+            OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY
+        ";
+
+        int offset = (page - 1) * pageSize;
+
+        var result = await Connection.QueryAsync<BoardMember, User, BoardMember>(
+            sql,
+            (member, user) =>
+            {
+                member.User = user;
+                return member;
+            },
+            new
+            {
+                boardId,
+                searchPrompt,
+                Offset = offset,
+                PageSize = pageSize
+            },
+            splitOn: "Id",
+            transaction: Transaction
+        );
+
+        return result;
+    }
 }

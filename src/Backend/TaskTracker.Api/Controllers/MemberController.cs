@@ -10,6 +10,7 @@ using TaskTracker.Application.Features.BoardMembers.Commands.SendInvitations;
 using TaskTracker.Application.Features.BoardMembers.Commands.UpdateBoardMemberRole;
 using TaskTracker.Application.Features.BoardMembers.Queries.GetBoardMemberById;
 using TaskTracker.Application.Features.BoardMembers.Queries.GetBoardMembers;
+using TaskTracker.Application.Features.BoardMembers.Queries.SearchBoardMembers;
 using TaskTracker.Domain.DTOs.BoardMember;
 using TaskTracker.Domain.DTOs.Boards;
 using TaskTracker.Domain.DTOs.Users;
@@ -46,6 +47,29 @@ public class BoardMembersController : Controller
         return result is null
             ? NotFound()
             : Ok(result);
+    }
+
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchAsync(
+        [FromRoute] int boardId,
+        [FromQuery] string? prompt,
+        [FromQuery] int page,
+        [FromQuery] int pageSize
+        )
+    {
+        var query = new SearchBoardMembersQuery
+        {
+            BoardId = boardId,
+            Prompt = prompt,
+            Page = page,
+            PageSize = pageSize
+        };
+
+        var result = await _mediator.Send(query);
+
+        return result.IsSuccess
+            ? Ok(result.Value)
+            : NotFound();
     }
 
     [HttpGet("{userid:int}")]

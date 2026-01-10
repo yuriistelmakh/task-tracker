@@ -56,17 +56,17 @@ public class UserRepository : Repository<User, int>, IUserRepository
         return users.FirstOrDefault();
     }
 
-    public async Task<IEnumerable<User>> SearchByNameOrTag(string? searchPrompt, int limit)
+    public async Task<IEnumerable<User>> SearchByNameOrTag(string? searchPrompt, int pageSize)
     {
         var sql = @"
-            SELECT TOP (@Limit) u.*
+            SELECT TOP (@PageSize) u.*
             FROM Users u
             WHERE
                 DisplayName LIKE @SearchPrompt + '%' OR
                 Tag LIKE @SearchPrompt + '%'
         ";
 
-        var users = await Connection.QueryAsync<User>(sql, transaction: Transaction, param: new { searchPrompt, limit });
+        var users = await Connection.QueryAsync<User>(sql, transaction: Transaction, param: new { searchPrompt, pageSize });
 
         return users;
     }
