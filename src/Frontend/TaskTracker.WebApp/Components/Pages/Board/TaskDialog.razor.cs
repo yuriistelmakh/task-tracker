@@ -22,6 +22,9 @@ public partial class TaskDialog
     [Parameter]
     public int BoardId { get; set; }
 
+    [Parameter]
+    public BoardRole CurrentUserRole { get; set; }
+
     [CascadingParameter]
     IMudDialogInstance MudDialog { get; set; } = default!;
 

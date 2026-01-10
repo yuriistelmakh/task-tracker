@@ -370,7 +370,8 @@ public partial class Board
         var parameters = new DialogParameters<TaskDialog>
         {
             { x => x.TaskId, taskId },
-            { x => x.BoardId, BoardId }
+            { x => x.BoardId, BoardId },
+            { x => x.CurrentUserRole, _currentUserRole }
         };
 
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true, };

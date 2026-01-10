@@ -18,18 +18,19 @@
         </LeftContent>
 
         <MiddleContent>
-            <MudDivider Vertical=true 
+            <MudDivider Vertical=true
                         Class="ma-4"
-                        Style="height: 70%"/>
-                        
+                        Style="height: 70%" />
+
             <MudText Typo=@Typo.h6>
                 @_boardTitle
             </MudText>
         </MiddleContent>
-        
+
         <RightContent>
             <MudAvatarGroup Max=3
-                            Spacing=3>
+                            Spacing=3
+                            Class="pr-1">
                 @foreach (var member in _boardMembers)
                 {
                     <MudAvatar Class="cursor-pointer">
@@ -38,32 +39,34 @@
                 }
             </MudAvatarGroup>
 
-            @if(_isReorderingColumns == false)
+            @if (_currentUserRole >= BoardRole.Member)
             {
-                <MudMenu Icon=@Icons.Material.Filled.MoreVert
-                         Color=@Color.Inherit
-                         AnchorOrigin=@Origin.BottomCenter
-                         TransformOrigin=@Origin.TopCenter>
-                    <MudMenuItem Icon=@Icons.Material.Filled.SwapHoriz
-                                 OnClick=@ToggleReorderMode>
-                        Reorder columns
-                    </MudMenuItem>
-                    <MudMenuItem Icon=@Icons.Material.Filled.Settings
-                                 Onclick=@OnBoardSettingsClicked>
-                        Board settings
-                    </MudMenuItem>
-                </MudMenu>
-            }
-            else
-            {
-                <MudTooltip Text="Done reordering">
-                    <MudIconButton Icon=@(_isReorderingColumns ? Icons.Material.Filled.Check : Icons.Material.Filled.SwapHoriz)
-                                   Color=@Color.Inherit
-                                   OnClick=@ToggleReorderMode />
-                </MudTooltip>
+                @if (_isReorderingColumns == false)
+                {
+                    <MudMenu Icon=@Icons.Material.Filled.MoreVert
+                             Color=@Color.Inherit
+                             AnchorOrigin=@Origin.BottomCenter
+                             TransformOrigin=@Origin.TopCenter>
+                        <MudMenuItem Icon=@Icons.Material.Filled.SwapHoriz
+                                     OnClick=@ToggleReorderMode>
+                            Reorder columns
+                        </MudMenuItem>
+                        <MudMenuItem Icon=@Icons.Material.Filled.Settings
+                                     Onclick=@OnBoardSettingsClicked>
+                            Board settings
+                        </MudMenuItem>
+                    </MudMenu>
+                }
+                else
+                {
+                    <MudTooltip Text="Done reordering">
+                        <MudIconButton Icon=@Icons.Material.Filled.Check
+                                       Color=@Color.Inherit
+                                       OnClick=@ToggleReorderMode />
+                    </MudTooltip>
+                }
             }
 
-            
         </RightContent>
     </Header>
 
@@ -156,25 +159,28 @@
                                                 @column.Title
                                             </MudText>
 
-                                            <MudMenu Icon=@Icons.Material.Filled.MoreVert
-                                                     Color=@Color.Primary
-                                                     Size=@Size.Small
-                                                     AnchorOrigin=@Origin.BottomCenter
-                                                     TransformOrigin=@Origin.TopLeft>
-                                                <MudMenuItem Icon=@Icons.Material.Filled.Edit
-                                                             Class="px-2 py-1"
-                                                             Style="white-space: nowrap;"
-                                                             OnClick=@(() => OnEditColumnClick(column))>
-                                                    Change title
-                                                </MudMenuItem>
-                                                <MudMenuItem IconColor=@Color.Error
-                                                             Icon=@Icons.Material.Filled.Delete
-                                                             Style="color: var(--mud-palette-error)"
-                                                             Class="px-2 py-1"
-                                                             OnClick=@(() => OnDeleteColumnClick(column))>
-                                                    Delete
-                                                </MudMenuItem>
-                                            </MudMenu>
+                                            @if (_currentUserRole >= BoardRole.Member)
+                                            {
+                                                <MudMenu Icon=@Icons.Material.Filled.MoreVert
+                                                         Color=@Color.Primary
+                                                         Size=@Size.Small
+                                                         AnchorOrigin=@Origin.BottomCenter
+                                                         TransformOrigin=@Origin.TopLeft>
+                                                    <MudMenuItem Icon=@Icons.Material.Filled.Edit
+                                                                 Class="px-2 py-1"
+                                                                 Style="white-space: nowrap;"
+                                                                 OnClick=@(() => OnEditColumnClick(column))>
+                                                        Change title
+                                                    </MudMenuItem>
+                                                    <MudMenuItem IconColor=@Color.Error
+                                                                 Icon=@Icons.Material.Filled.Delete
+                                                                 Style="color: var(--mud-palette-error)"
+                                                                 Class="px-2 py-1"
+                                                                 OnClick=@(() => OnDeleteColumnClick(column))>
+                                                        Delete
+                                                    </MudMenuItem>
+                                                </MudMenu>
+                                            }
                                         }
                                     </MudContainer>
 
@@ -298,19 +304,26 @@
                         <div>
                             <MudPaper Class="task d-flex flex-column my-1 mud-theme-secondary cursor-pointer overflow-hidden"
                                       Elevation=1
+                                      Style="min-height: 70px"
                                       @onclick=@(() => OnTaskClicked(task.Id))>
                                 <div style="height: 4px; width: 100%; background-color: @GetColorForPriority(task.Priority);"></div>
 
-                                <div class="d-flex align-center py-2">
-                                    <MudText Class="px-4 flex-grow-1"
+                                <div class="d-flex pl-3 pr-1 flex-grow-1 align-center py-2">
+                                    <MudText Class="flex-grow-1"
                                              Style=@((task.IsComplete ? "text-decoration: line-through;" : "") + " word-break: break-word; white-space: pre-wrap;")>
                                         @task.Title
                                     </MudText>
 
-                                    <MudCheckBox T=bool
-                                                 ValueChanged=@(() => OnCheckedChange(task))
-                                                 Value=@task.IsComplete
-                                                 Class="flex-shrink-0" />
+                                    <MudTooltip Text="@(_currentUserRole == BoardRole.Visitor ? "Visitors cannot change task status" : null)"
+                                                Placement=@Placement.Bottom
+                                                Arrow=true>
+                                        <MudCheckBox T=bool
+                                                     Disabled=@(_currentUserRole == BoardRole.Visitor)
+                                                     ValueChanged=@(() => OnCheckedChange(task))
+                                                     Value=@task.IsComplete
+                                                     Dense=true
+                                                     Class="flex-shrink-0 pl-1" />
+                                    </MudTooltip>
                                 </div>
                             </MudPaper>
                         </div>
