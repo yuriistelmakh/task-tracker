@@ -8,8 +8,7 @@ public class GetBoardMembersQuery : IRequest<IEnumerable<MemberSummaryDto>>
 {
     public int BoardId { get; set; }
 
-    public GetBoardMembersQuery(int boardId)
-    {
-        BoardId = boardId;
-    }
+    public int? Page { get; set; }
+
+    public int? PageSize { get; set; }
 }

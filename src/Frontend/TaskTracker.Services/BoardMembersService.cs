@@ -15,9 +15,9 @@ public class BoardMembersService : IBoardMembersService
         _boardMembersApi = boardMembersApi;
     }
 
-    public async Task<Result<IEnumerable<MemberSummaryDto>>> GetAllAsync(int boardId)
+    public async Task<Result<IEnumerable<MemberSummaryDto>>> GetAllAsync(int boardId, int? page = null, int? pageSize = null)
     {
-        var result = await _boardMembersApi.GetAllAsync(boardId);
+        var result = await _boardMembersApi.GetAllAsync(boardId, page, pageSize);
 
         return result.IsSuccessful
             ? Result<IEnumerable<MemberSummaryDto>>.Success(result.Content)

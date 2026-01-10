@@ -107,7 +107,8 @@
                                   Style="width: 100%"
                                   Placeholder="Search members..." />
 
-                        <MudStack Class="pt-2">
+                        <MudStack Class="pt-2"
+                                  Style="min-height: 250px">
                             @foreach (var member in _members)
                             {
                                 <MudPaper Class="pa-2"
@@ -116,7 +117,7 @@
 
                                     <MudGrid Spacing=2>
 
-                                        <MudItem xs=8>
+                                        <MudItem xs=6>
                                             <MudStack Row=true
                                                       AlignItems=@AlignItems.Center>
                                                 <MudIcon Icon=@Icons.Material.Filled.AccountCircle
@@ -142,7 +143,7 @@
                                             </MudStack>
                                         </MudItem>
 
-                                        <MudItem xs=4>
+                                        <MudItem xs=6>
                                             @if (_currentUserRole > BoardRole.Member)
                                             {
                                                 <MudSelect T=@BoardRole
@@ -197,6 +198,15 @@
                                     </MudGrid>
                                 </MudPaper>
                             }
+
+                            @if (_totalMembersPages > 1)
+                            {
+                                <MudContainer Class="pa-0 d-flex justify-end">
+                                    <MudPagination Count=@_totalMembersPages
+                                                   Selected=@_currentMembersPage
+                                                   SelectedChanged=@OnPageChanged />
+                                </MudContainer>
+                            }
                         </MudStack>
                     </MudItem>
 
@@ -220,7 +230,7 @@
                                              Adornment=@Adornment.None
                                              ToStringFunc=@(p => p is null ? null : p.DisplayName)
                                              Class="mt-2"
-                                             Placeholder="Type to search...">
+                                             Placeholder="Find by name or tag...">
 
                                 <ItemTemplate Context="e">
                                     <MudStack Row=true

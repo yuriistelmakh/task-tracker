@@ -66,7 +66,7 @@ public class BoardsController : ControllerBase
         {
             Title = request.Title,
             CreatedBy = request.CreatedBy,
-            DisplayColor = request.DisplayColor,
+            BackgroundColor = request.BackgroundColor,
             Visibility = request.Visibility
         };
 

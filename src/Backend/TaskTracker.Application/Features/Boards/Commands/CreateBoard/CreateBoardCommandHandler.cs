@@ -25,7 +25,7 @@ public class CreateBoardCommandHandler : IRequestHandler<CreateBoardCommand, int
         {
             Title = request.Title,
             IsArchived = false,
-            BackgroundColor = request.DisplayColor,
+            BackgroundColor = request.BackgroundColor,
             CreatedAt = DateTime.UtcNow,
             CreatedBy = request.CreatedBy,
         };

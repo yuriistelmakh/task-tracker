@@ -47,15 +47,19 @@ public partial class BoardSettingsDialog
 
     private string? _description;
 
-    private int _totalMembersCount => _members.Count;
+    private int _pageSize = 4;
+
+    private int _totalMembersCount;
+
+    private int _totalMembersPages => _totalMembersCount / _pageSize + 1;
+
+    private int _currentMembersPage = 1;
 
     private List<MemberModel> _members = [];
 
     private int? _currentUserId;
 
     private BoardRole _currentUserRole;
-
-    private int _userSearchPageSize = 5;
 
     private BoardRole _selectedInviteRole = BoardRole.Member;
 
@@ -97,21 +101,22 @@ public partial class BoardSettingsDialog
 
         _title = boardDto.Title;
         _description = boardDto.Description;
+        _totalMembersCount = boardDto.MemberStatistics.TotalMembers;
 
-        var boardMembersResult = await BoardMembersService.GetAllAsync(BoardId);
+        _ownersCount = boardDto.MemberStatistics.OwnersCount.ToString();
+        _adminsCount = boardDto.MemberStatistics.AdministratorsCount.ToString();
+        _membersCount = boardDto.MemberStatistics.MembersCount.ToString();
+        _visitorsCount = boardDto.MemberStatistics.VisitorsCount.ToString();
+
+        var boardMembersResult = await BoardMembersService.GetAllAsync(BoardId, _currentMembersPage, _pageSize);
 
         if (!boardMembersResult.IsSuccess)
         {
-            Snackbar.Add($"Error getting board members: {boardResult.ErrorMessage}", Severity.Error);
+            Snackbar.Add($"Error getting board members: {boardMembersResult.ErrorMessage}", Severity.Error);
             return;
         }
 
         _members = boardMembersResult.Value!.Select(m => m.ToMemberModel()).ToList();
-
-        _ownersCount = _members.Count(m => m.Role == BoardRole.Owner).ToString();
-        _adminsCount = _members.Count(m => m.Role == BoardRole.Admin).ToString();
-        _membersCount = _members.Count(m => m.Role == BoardRole.Member).ToString();
-        _visitorsCount = _members.Count(m => m.Role == BoardRole.Visitor).ToString();
 
         _currentUserId = await CurrentUserService.GetUserId();
         var currentUser = _members.FirstOrDefault(m => m.Id == _currentUserId);
@@ -254,7 +259,7 @@ public partial class BoardSettingsDialog
 
     private async Task<IEnumerable<UserSummaryModel>> PerformSearch(string prompt, CancellationToken token)
     {
-        var result = await UsersService.SearchAsync(prompt ?? string.Empty, _userSearchPageSize);
+        var result = await UsersService.SearchAsync(prompt ?? string.Empty, _pageSize);
 
         if (!result.IsSuccess)
         {
@@ -298,5 +303,22 @@ public partial class BoardSettingsDialog
 
         _invitationUserSearch = null;
         _selectedInviteRole = BoardRole.Member;
+    }
+
+    private async Task OnPageChanged(int page)
+    {
+        _currentMembersPage = page;
+
+        var boardMembersResult = await BoardMembersService.GetAllAsync(BoardId, _currentMembersPage, _pageSize);
+
+        if (!boardMembersResult.IsSuccess)
+        {
+            Snackbar.Add($"Error getting board members: {boardMembersResult.ErrorMessage}", Severity.Error);
+            return;
+        }
+
+        _members = boardMembersResult.Value!.Select(m => m.ToMemberModel()).ToList();
+
+        StateHasChanged();
     }
 }

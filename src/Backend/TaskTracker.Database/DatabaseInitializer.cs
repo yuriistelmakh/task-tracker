@@ -48,12 +48,14 @@ public class DatabaseInitializer
             var passHash = "$2a$11$0OhwqhM/OTH0qYCyomUSoeKe0S4iQBHRDp.0L88TuM/PzMBlhVN96";
 
             await db.ExecuteAsync(@"
-            INSERT INTO Users (Email, PasswordHash, Tag, DisplayName, Role, CreatedAt, IsDeleted)
-            VALUES 
-                ('admin@task.com', @h, 'admin', N'Адміністратор', 'Admin', GETDATE(), 0),
-                ('dev@task.com', @h, 'developer', N'Розробник', 'User', GETDATE(), 0),
-                ('qa@task.com', @h, 'tester', N'Тестувальник', 'User', GETDATE(), 0),
-                ('manager@task.com', @h, 'manager', N'Менеджер', 'User', GETDATE(), 0)",
+                INSERT INTO Users (Email, PasswordHash, Tag, DisplayName, Role, CreatedAt, IsDeleted)
+                VALUES 
+                    ('admin@task.com', @h, 'admin', N'Адміністратор', 'Admin', GETDATE(), 0),
+                    ('dev@task.com', @h, 'developer', N'Розробник', 'User', GETDATE(), 0),
+                    ('qa@task.com', @h, 'tester', N'Тестувальник', 'User', GETDATE(), 0),
+                    ('manager@task.com', @h, 'manager', N'Менеджер', 'User', GETDATE(), 0),
+                    ('design@task.com', @h, 'designer', N'Дизайнер', 'User', GETDATE(), 0),
+                    ('analyst@task.com', @h, 'analyst', N'Аналітик', 'User', GETDATE(), 0)",
                 new { h = passHash });
 
             var boardId = await db.QuerySingleAsync<int>(@"
@@ -67,7 +69,8 @@ public class DatabaseInitializer
                 (1, @bid, 'Owner', GETDATE()),
                 (2, @bid, 'Member', GETDATE()),
                 (3, @bid, 'Member', GETDATE()),
-                (4, @bid, 'Admin', GETDATE())", new { bid = boardId });
+                (4, @bid, 'Admin', GETDATE()),
+                (6, @bid, 'Member', GETDATE())", new { bid = boardId });
 
             var columnId = await db.QuerySingleAsync<int>(@"
             INSERT INTO [Columns] (BoardId, Title, [Order], CreatedBy, CreatedAt) 

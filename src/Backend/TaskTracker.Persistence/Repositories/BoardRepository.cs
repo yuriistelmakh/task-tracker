@@ -150,4 +150,17 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
             board.Members = membersByBoard[board.Id].ToList();
         }
     }
+
+    public async Task<int> GetMembersCountAsync(int id)
+    {
+        var sql = @"
+            SELECT COUNT(*)
+            FROM BoardMembers
+            WHERE BoardId = @BoardId
+        ";
+
+        var count = await Connection.ExecuteScalarAsync<int>(sql, new { BoardId = id }, transaction: Transaction);
+
+        return count;
+    }
 }

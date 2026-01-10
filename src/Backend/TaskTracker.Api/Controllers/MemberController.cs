@@ -29,9 +29,17 @@ public class BoardMembersController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllAsync([FromRoute] int boardId)
+    public async Task<IActionResult> GetAllAsync(
+        [FromRoute] int boardId, 
+        [FromQuery] int? page = null, 
+        [FromQuery] int? pageSize = null)
     {
-        var query = new GetBoardMembersQuery(boardId);
+        var query = new GetBoardMembersQuery
+        {
+            BoardId = boardId,
+            Page = page,
+            PageSize = pageSize
+        };
 
         var result = await _mediator.Send(query);
 
@@ -92,7 +100,7 @@ public class BoardMembersController : Controller
     }
 
     [HttpPost("invitations")]
-    public async Task<IActionResult> SendInvitationAsync(int boardId, [FromBody] SendInvitationRequest request)
+    public async Task<IActionResult> SendInvitationAsync([FromRoute] int boardId, [FromBody] SendInvitationRequest request)
     {
         var command = new SendInvitationCommand
         {
@@ -139,7 +147,7 @@ public class BoardMembersController : Controller
     }
 
     [HttpPost("invitations/reject")]
-    public async Task<IActionResult> RejectInvitationAsync(int boardId, [FromBody] RejectInvitationRequest request)
+    public async Task<IActionResult> RejectInvitationAsync([FromRoute] int boardId, [FromBody] RejectInvitationRequest request)
     {
         var command = new RejectInvitationCommand
         {

@@ -6,7 +6,7 @@ namespace TaskTracker.Domain.Mapping;
 
 public static class BoardMapping
 {
-    public static BoardDetailsDto ToBoardDetailsDto(this Board board) =>
+    public static BoardDetailsDto ToBoardDetailsDto(this Board board, BoardMemberStatisticsDto memberStatistics) =>
         new()
         {
             Id = board.Id,
@@ -16,7 +16,8 @@ public static class BoardMapping
             CreatedAt = board.CreatedAt,
             Description= board.Description,
             IsArchived = board.IsArchived,
-            Columns = board.Columns.Select(c => c.ToColumnSummaryDto()).ToList()
+            Columns = board.Columns.Select(c => c.ToColumnSummaryDto()).ToList(),
+            MemberStatistics = memberStatistics
         };
 
     public static BoardSummaryDto ToBoardSummaryDto(this Board board) =>

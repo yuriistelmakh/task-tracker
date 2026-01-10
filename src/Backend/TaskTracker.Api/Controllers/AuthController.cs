@@ -5,8 +5,6 @@ using TaskTracker.Application.Features.Auth.Commands.Login;
 using TaskTracker.Application.Features.Auth.Commands.TokenRefresh;
 using TaskTracker.Application.Features.Auth.Commands.Signup;
 using TaskTracker.Domain.DTOs.Auth;
-using TaskTracker.Domain.Enums;
-using Microsoft.AspNetCore.Http;
 
 namespace TaskTracker.Api.Controllers;
 [Route("api/[controller]")]

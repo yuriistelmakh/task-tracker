@@ -23,7 +23,7 @@ public class GetBoardMembersQueryHandler : IRequestHandler<GetBoardMembersQuery,
     {
         using var uow = _unitOfWorkFactory.Create();
 
-        var members = await uow.MemberRepository.GetAllAsync(request.BoardId);
+        var members = await uow.MemberRepository.GetAllAsync(request.BoardId, request.Page, request.PageSize);
 
         uow.Commit();
 

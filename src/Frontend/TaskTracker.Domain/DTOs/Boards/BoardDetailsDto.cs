@@ -20,4 +20,6 @@ public class BoardDetailsDto
     public DateTime CreatedAt { get; set; }
 
     public List<ColumnSummaryDto> Columns { get; set; } = [];
+
+    public required BoardMemberStatisticsDto MemberStatistics { get; set; }
 }

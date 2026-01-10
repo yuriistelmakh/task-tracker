@@ -6,8 +6,8 @@ namespace TaskTracker.Services.Abstraction.Interfaces.APIs;
 
 public interface IBoardMembersApi
 {
-    [Get("/api/boards/{boardId}/members")]
-    public Task<IApiResponse<IEnumerable<MemberSummaryDto>>> GetAllAsync(int boardId);
+    [Get("/api/boards/{boardId}/members?page={page}&pageSize={pageSize}")]
+    public Task<IApiResponse<IEnumerable<MemberSummaryDto>>> GetAllAsync(int boardId, int? page, int? pageSize);
 
     [Get("/api/boards/{boardId}/members/{userId}")]
     public Task<IApiResponse<MemberSummaryDto>> GetByIdAsync(int boardId, int userId);
