@@ -1,4 +1,5 @@
 ﻿using Refit;
+using TaskTracker.Domain;
 using TaskTracker.Domain.DTOs.Boards;
 using TaskTracker.Domain.DTOs.Users;
 
@@ -7,7 +8,7 @@ namespace TaskTracker.Services.Abstraction.Interfaces.APIs;
 public interface IBoardsApi
 {
     [Get("/api/boards/my-boards")]
-    Task<IApiResponse<IEnumerable<BoardSummaryDto?>>> GetAllAsync();
+    Task<IApiResponse<PagedResponse<BoardSummaryDto?>>> GetAllAsync(int page, int pageSize);
 
     [Post("/api/boards")]
     Task<IApiResponse<int>> CreateAsync([Body] CreateBoardRequest request);

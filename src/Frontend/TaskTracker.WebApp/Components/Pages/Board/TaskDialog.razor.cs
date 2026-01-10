@@ -85,7 +85,6 @@ public partial class TaskDialog
         var dto = result.Value!;
         task = dto.ToTaskDetailsModel();
         
-
         _isTaskLoaded = true;
     }
 

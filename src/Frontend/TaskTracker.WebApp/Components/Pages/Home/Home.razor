@@ -53,7 +53,7 @@
                             </MudButton>
                         </MudStack>
 
-                        <MudStack>
+                        <MudStack Style="min-height">
                             @foreach (var board in _boards)
                             {
                                 <div>
@@ -94,6 +94,17 @@
                                 </div>
                             }
                         </MudStack>
+
+                        @if (_boardsPagesCount > 1)
+                        {
+                            <MudContainer Class="bg-opacity-10 d-flex justify-end">
+                                <MudPagination Count=@_boardsPagesCount
+                                               Selected=@_selectedBoardsPage
+                                               SelectedChanged=@OnPageChanged>
+
+                                </MudPagination>
+                            </MudContainer>
+                        }
                     }
                 </MudStack>
 
