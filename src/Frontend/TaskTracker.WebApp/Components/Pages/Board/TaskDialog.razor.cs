@@ -75,7 +75,7 @@ public partial class TaskDialog
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await TasksService.GetByIdAsync(TaskId);
+        var result = await TasksService.GetByIdAsync(BoardId, TaskId);
         if (!result.IsSuccess)
         {
             Snackbar.Add($"Error while fetching data about task: {result.ErrorMessage}", Severity.Error);
@@ -107,7 +107,7 @@ public partial class TaskDialog
             Title = task.Title,
         };
 
-        var result = await TasksService.UpdateAsync(TaskId, request);
+        var result = await TasksService.UpdateAsync(BoardId, TaskId, request);
 
         if (!result.IsSuccess)
         {
@@ -144,7 +144,7 @@ public partial class TaskDialog
         
         if (isConfirmed == true)
         {
-            var response = await TasksService.DeleteAsync(task.Id);
+            var response = await TasksService.DeleteAsync(BoardId, task.Id);
 
             if (!response.IsSuccess)
             {

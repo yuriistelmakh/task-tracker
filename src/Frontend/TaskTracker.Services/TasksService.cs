@@ -17,7 +17,7 @@ public class TasksService : ITasksService
         _userService = userService;
     }
 
-    public async Task<Result<int>> CreateAsync(CreateTaskRequest request)
+    public async Task<Result<int>> CreateAsync(int boardId, CreateTaskRequest request)
     {
         var userId = await _userService.GetUserId();
 
@@ -28,14 +28,14 @@ public class TasksService : ITasksService
 
         request.CreatedBy = userId.Value;
 
-        var response = await _tasksApi.CreateAsync(request);
+        var response = await _tasksApi.CreateAsync(boardId, request);
 
         return response.IsSuccessful
             ? Result<int>.Success(response.Content)
             : Result<int>.Failure(response.Error.Message);
     }
 
-    public async Task<Result> ChangeStatusAsync(int id, ChangeTaskStatusRequest request)
+    public async Task<Result> ChangeStatusAsync(int boardId, int id, ChangeTaskStatusRequest request)
     {
         var userId = await _userService.GetUserId();
 
@@ -46,23 +46,32 @@ public class TasksService : ITasksService
 
         request.UpdatedBy = userId.Value;
 
-        var response = await _tasksApi.ChangeStatusAsync(id, request);
+        var response = await _tasksApi.ChangeStatusAsync(boardId, id, request);
 
         return response.IsSuccessful
             ? Result.Success()
             : Result.Failure(response.Error.Message);
     }
 
-    public async Task<Result<TaskDetailsDto>> GetByIdAsync(int id)
+    public async Task<Result<TaskDetailsDto>> GetByIdAsync(int boardId, int id)
     {
-        var response = await _tasksApi.GetByIdAsync(id);
+        var response = await _tasksApi.GetByIdAsync(boardId, id);
 
         return response.IsSuccessful
             ? Result<TaskDetailsDto>.Success(response.Content)
             : Result<TaskDetailsDto>.Failure(response.Error.Message);
     }
+    
+    public async Task<Result<IEnumerable<TaskSummaryDto>>> SearchAsync(int boardId, string? prompt, int page, int pageSize)
+    {
+        var response = await _tasksApi.SearchAsync(boardId, prompt, page, pageSize);
 
-    public async Task<Result> UpdateAsync(int id, UpdateTaskRequest request)
+        return response.IsSuccessful
+            ? Result<IEnumerable<TaskSummaryDto>>.Success(response.Content)
+            : Result<IEnumerable<TaskSummaryDto>>.Failure(response.Error.Message);
+    }
+
+    public async Task<Result> UpdateAsync(int boardId, int id, UpdateTaskRequest request)
     {
         var userId = await _userService.GetUserId();
 
@@ -73,16 +82,16 @@ public class TasksService : ITasksService
 
         request.UpdatedBy = userId.Value;
 
-        var response = await _tasksApi.UpdateAsync(id, request);
+        var response = await _tasksApi.UpdateAsync(boardId, id, request);
 
         return response.IsSuccessful
             ? Result.Success()
             : Result.Failure(response.Error.Message);
     }
 
-    public async Task<Result> DeleteAsync(int id)
+    public async Task<Result> DeleteAsync(int boardId, int id)
     {
-        var response = await _tasksApi.DeleteAsync(id);
+        var response = await _tasksApi.DeleteAsync(boardId, id);
 
         return response.IsSuccessful
             ? Result.Success()
