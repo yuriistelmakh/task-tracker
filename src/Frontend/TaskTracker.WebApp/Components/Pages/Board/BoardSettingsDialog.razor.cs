@@ -33,7 +33,10 @@ public partial class BoardSettingsDialog
     public UiStateService UiStateService { get; private set; } = default!;
 
     [Inject]
-    public ISnackbar Snackbar { get; set; } = default!;
+    public ISnackbar Snackbar { get; private set; } = default!;
+
+    [Inject]
+    public NavigationManager Nav { get; private set; } = default!;
 
     [Inject]
     public IDialogService DialogService { get; private set; } = default!;
@@ -153,6 +156,37 @@ public partial class BoardSettingsDialog
 
         Snackbar.Add("Board was successfully updated", Severity.Success);
         UiStateService.NotifyBoardSettingsChanged();
+    }
+
+    private async Task OnDeleteBoardClicked()
+    {
+        var parameters = new DialogParameters<CustomDialog>
+        {
+            { x => x.Title, "Warning" },
+            { x => x.Description, @"Are you sure you want to delete this board with it's tasks? This is permanent."},
+            { x => x.MainButtonText, "Delete" },
+            { x => x.MainButtonColor, Color.Error },
+            { x => x.MainButtonVariant, Variant.Filled }
+        };
+
+        var dialog = await DialogService.ShowAsync<CustomDialog>(string.Empty, parameters);
+
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult.Data is null || !(bool)dialogResult.Data)
+        {
+            return;
+        }
+
+        var result = await BoardsService.DeleteAsync(BoardId);
+
+        if (!result.IsSuccess)
+        {
+            Snackbar.Add($"Error deleting board: {result.ErrorMessage}", Severity.Error);
+            return;
+        }
+
+        Nav.NavigateTo("/");
     }
 
     //========================= APPEARANCE SETTINGS ==============================
