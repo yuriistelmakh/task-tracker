@@ -94,15 +94,17 @@
                 </MudContainer>
             </MudTabPanel>
 
-            <MudTabPanel Text=@($"Members ({_totalMembersCount})")
+            <MudTabPanel Text="Members"
                          Style="text-transform: none !important;"
                          Class="py-2">
                 <MudGrid Spacing=3>
                     <MudItem xs=8>
-                        <MudInput T=string
+                        <MudTextField T=string
                                   Adornment=@Adornment.Start
                                   AdornmentIcon=@Icons.Material.Filled.Search
                                   Variant=@Variant.Outlined
+                                  DebounceInterval=500
+                                  ValueChanged=PerformGlobalSearch
                                   Margin=@Margin.Dense
                                   Style="width: 100%"
                                   Placeholder="Search members..." />
@@ -223,7 +225,7 @@
                             <MudAutocomplete T=@UserSummaryModel
                                              @bind-Value=@_invitationUserSearch
                                              DebounceInterval=500
-                                             SearchFunc=@PerformSearch
+                                             SearchFunc=@PerformAutocompleteSearch
                                              FullWidth=true
                                              Variant=@Variant.Outlined
                                              Margin=@Margin.Dense

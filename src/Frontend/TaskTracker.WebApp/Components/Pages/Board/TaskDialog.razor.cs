@@ -165,7 +165,7 @@ public partial class TaskDialog
             return [];
         }
 
-        var members = result.Value!.Select(m => m.ToMemberModel()).ToList();
+        var members = result.Value!.Items.Select(m => m.ToMemberModel()).ToList();
 
         return members;
     }

@@ -38,6 +38,8 @@ public partial class Home
 
     private int _selectedBoardsPage = 1;
 
+    private bool _isLoading = false;
+
     protected override async Task OnInitializedAsync()
     {
         await FetchBoards();
@@ -47,6 +49,7 @@ public partial class Home
 
     private async Task FetchBoards()
     {
+        _isLoading = true;
         var result = await BoardsService.GetAllAsync(_selectedBoardsPage, _pageSize);
 
         if (!result.IsSuccess)
@@ -59,6 +62,8 @@ public partial class Home
 
         _boards = boardDtos.Items.Select(bd => bd.ToBoardModel()).ToList();
         _boardsPagesCount = boardDtos.TotalCount / _pageSize + 1;
+
+        _isLoading = false;
     }
 
     private async Task OnCreateBoardClicked()

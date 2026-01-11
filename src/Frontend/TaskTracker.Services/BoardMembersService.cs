@@ -24,13 +24,13 @@ public class BoardMembersService : IBoardMembersService
             : Result<IEnumerable<MemberSummaryDto>>.Failure(result.Error.Content!);
     }
 
-    public async Task<Result<IEnumerable<MemberSummaryDto>>> SearchAsync(int boardId, string prompt, int page, int pageSize)
+    public async Task<Result<PagedResponse<MemberSummaryDto>>> SearchAsync(int boardId, string prompt, int page, int pageSize)
     {
         var result = await _boardMembersApi.SearchAsync(boardId, prompt, page, pageSize);
 
         return result.IsSuccessful
-            ? Result<IEnumerable<MemberSummaryDto>>.Success(result.Content)
-            : Result<IEnumerable<MemberSummaryDto>>.Failure(result.Error.Content!);
+            ? Result<PagedResponse<MemberSummaryDto>>.Success(result.Content)
+            : Result<PagedResponse<MemberSummaryDto>>.Failure(result.Error.Content!);
     }
 
     public async Task<Result<MemberSummaryDto>> GetByIdAsync(int boardId, int userId)

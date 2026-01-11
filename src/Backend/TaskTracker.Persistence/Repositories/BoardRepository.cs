@@ -173,7 +173,7 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
         return count;
     }
 
-    public async Task<int> GetBoardsCountAsync(int userId)
+    public async Task<int> GetCountAsync(int userId)
     {
         var sql = @"
             SELECT COUNT(*)

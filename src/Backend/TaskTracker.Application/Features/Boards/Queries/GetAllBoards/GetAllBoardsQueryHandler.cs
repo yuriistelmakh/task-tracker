@@ -24,7 +24,7 @@ public class GetAllBoardsQueryHandler : IRequestHandler<GetAllBoardsQuery, Paged
         using var uow = _unitOfWorkFactory.Create();
 
         var boards = await uow.BoardRepository.GetAllWithDetailsAsync(request.UserId, request.Page, request.PageSize);
-        var totalBoardsCount = await uow.BoardRepository.GetBoardsCountAsync(request.UserId);
+        var totalBoardsCount = await uow.BoardRepository.GetCountAsync(request.UserId);
 
         var boardsDto = boards.Select(b => b.ToBoardSummaryDto());
         
