@@ -26,6 +26,6 @@ public class GetBoardMemberByIdQueryHandler : IRequestHandler<GetBoardMemberById
 
         return member is null
             ? Result<MemberSummaryDto>.NotFound("Member was not found")
-            : Result<MemberSummaryDto>.Success(member.User.ToMemberSummaryDto(member.Role));
+            : Result<MemberSummaryDto>.Success(member.ToMemberSummaryDto(member.Role));
     }
 }

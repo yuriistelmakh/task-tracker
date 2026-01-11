@@ -68,16 +68,49 @@
         </MiddleContent>
 
         <RightContent>
-            <MudAvatarGroup Max=3
-                            Spacing=3
-                            Class="pr-1">
-                @foreach (var member in _boardMembers)
+            <div class="d-flex align-center pr-1">
+                @for (int i = 0; i < _visibleHeaderMembers.Count; i++)
                 {
-                    <MudAvatar Class="cursor-pointer">
-                        <MudIcon Icon=@Icons.Material.Filled.AccountCircle />
+                    var member = _visibleHeaderMembers[i];
+                    var isLast = i == _visibleHeaderMembers.Count - 1;
+
+                    <div style="@(isLast ? "" : "margin-right: -12px;")">
+                        <MudAvatar Class="cursor-pointer"
+                                   Style="border: 2px solid var(--mud-palette-background);"
+                                   @onmouseenter=@(() => _hoveredMemberId = member.Id)
+                                   @onmouseleave=@(() => _hoveredMemberId = null)>
+                            <MudIcon Icon=@Icons.Material.Filled.AccountCircle />
+                        </MudAvatar>
+
+                        <MudPopover Open=@(_hoveredMemberId == member.Id)
+                                    Style="min-height: 50px; min-width: 100px"
+                                    Elevation=1
+                                    AnchorOrigin=@Origin.BottomLeft
+                                    Class="pa-2">
+                            <MudStack Row=true
+                                      Spacing=1
+                                      AlignItems=@AlignItems.Center>
+                                <MudIcon Icon=@Icons.Material.Filled.AccountCircle
+                                         Size=@Size.Large />
+                                <MudStack Spacing=1>
+                                    <MudText>@member.DisplayName</MudText>
+                                    <MudText Typo=@Typo.caption>@($"@{member.Tag}")</MudText>
+                                    <MudText Typo=@Typo.caption>@($"Joined at: {@member.JoinedAt.ToShortDateString()}")</MudText>
+                                </MudStack>
+                            </MudStack>
+                        </MudPopover>
+                    </div>
+                }
+
+                @if (_hiddenHeaderMembersCount > 0)
+                {
+                    <MudAvatar Class="cursor-pointer"
+                               Style="border: 2px solid var(--mud-palette-background); margin-left: -12px;"
+                               @onclick=@OnShowAllMembersClicked>
+                        +@_hiddenHeaderMembersCount
                     </MudAvatar>
                 }
-            </MudAvatarGroup>
+            </div>
 
             @if (_currentUserRole >= BoardRole.Member)
             {

@@ -23,10 +23,10 @@ public class SearchBoardMembersQueryHandler : IRequestHandler<SearchBoardMembers
     {
         var uow = _unitOfWorkFactory.Create();
 
-        var result = await uow.MemberRepository.SearchByNameOrTag(request.BoardId, request.Prompt, request.PageSize);
+        var result = await uow.MemberRepository.SearchByNameOrTag(request.BoardId, request.Prompt, request.PageSize, request.Page);
         uow.Commit();
 
-        var dtos = result.Items.Select(m => m.User.ToMemberSummaryDto(m.Role));
+        var dtos = result.Items.Select(m => m.ToMemberSummaryDto(m.Role));
 
         var response = new PagedResponse<MemberSummaryDto>
         {

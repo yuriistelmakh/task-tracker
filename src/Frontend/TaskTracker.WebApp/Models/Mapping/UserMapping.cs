@@ -21,5 +21,6 @@ public static class UserMapping
             Id = memberSummaryDto.Id,
             Role = memberSummaryDto.Role,
             Tag = memberSummaryDto.Tag,
+            JoinedAt = memberSummaryDto.JoinedAt
         };
 }

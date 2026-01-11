@@ -70,6 +70,12 @@ public partial class Board
 
     private TaskSummaryModel _taskSearchInput;
 
+    private int? _hoveredMemberId = null;
+
+    private List<MemberModel> _visibleHeaderMembers = [];
+
+    private int _hiddenHeaderMembersCount;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -132,6 +138,20 @@ public partial class Board
         }
 
         _boardMembers = membersResult.Value!.Select(m => m.ToMemberModel()).ToList();
+
+        _visibleHeaderMembers = _boardMembers.Take(3).ToList();
+        _hiddenHeaderMembersCount = Math.Max(0, _boardMembers.Count - 3);
+    }
+    private async Task OnShowAllMembersClicked()
+    {
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var parameters = new DialogParameters<AllMembersDialog>
+        {
+            { x => x.BoardId, BoardId }
+        };
+
+        var dialog = await DialogService.ShowAsync<AllMembersDialog>(string.Empty, parameters, options);
     }
 
     private static void OnAddTaskClicked(ColumnModel column)

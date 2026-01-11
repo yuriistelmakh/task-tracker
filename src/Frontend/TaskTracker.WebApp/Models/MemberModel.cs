@@ -13,4 +13,6 @@ public class MemberModel
     public BoardRole Role { get; set; }
 
     public string? AvatarUrl { get; set; }
+
+    public DateTime JoinedAt { get; set; }
 }
