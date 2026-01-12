@@ -111,6 +111,8 @@ public partial class Board
         _backgroundColor = boardDto.BackgroundColor;
         _boardTitle = boardDto.Title;
 
+        _backgroundColor = boardDto.DisplayColor;
+
         _columns = boardDto.Columns.Select(c => c.ToColumModel())
             .OrderBy(c => c.Order)
             .ToList();
