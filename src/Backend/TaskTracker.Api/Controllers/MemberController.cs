@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TaskTracker.Application;
 using TaskTracker.Application.Features.BoardMembers.Commands.AcceptInvitation;
 using TaskTracker.Application.Features.BoardMembers.Commands.AddNewMember;
+using TaskTracker.Application.Features.BoardMembers.Commands.KickMember;
 using TaskTracker.Application.Features.BoardMembers.Commands.RejectInvitation;
 using TaskTracker.Application.Features.BoardMembers.Commands.SendInvitations;
 using TaskTracker.Application.Features.BoardMembers.Commands.UpdateBoardMemberRole;
@@ -72,7 +73,7 @@ public class BoardMembersController : Controller
             : NotFound();
     }
 
-    [HttpGet("{userid:int}")]
+    [HttpGet("{userId:int}")]
     public async Task<IActionResult> GetByIdAsync([FromRoute] int boardId, [FromRoute] int userId)
     {
         var query = new GetBoardMemberByIdQuery
@@ -85,6 +86,22 @@ public class BoardMembersController : Controller
 
         return result.IsSuccess
             ? Ok(result.Value)
+            : NotFound();
+    }
+
+    [HttpDelete("{userid:int}")]
+    public async Task<IActionResult> KickAsync([FromRoute] int boardId, [FromRoute] int userId)
+    {
+        var command = new KickMemberCommand
+        {
+            BoardId = boardId,
+            UserId = userId
+        };
+
+        var result = await _mediator.Send(command);
+
+        return result.IsSuccess
+            ? NoContent()
             : NotFound();
     }
 

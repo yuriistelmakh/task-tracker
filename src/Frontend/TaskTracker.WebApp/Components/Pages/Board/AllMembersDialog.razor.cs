@@ -25,7 +25,7 @@ public partial class AllMembersDialog
 
     private int _totalMembersCount;
 
-    private int _totalMembersPages => _totalMembersCount / _pageSize + 1;
+    private int _totalMembersPages => (int)Math.Ceiling((double)_totalMembersCount / _pageSize);
 
     private int _currentMembersPage = 1;
 

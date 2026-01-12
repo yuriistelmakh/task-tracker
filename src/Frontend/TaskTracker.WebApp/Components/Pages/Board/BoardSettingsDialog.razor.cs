@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using TaskTracker.Domain.DTOs.BoardMembers;
 using TaskTracker.Domain.Enums;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
@@ -50,7 +52,7 @@ public partial class BoardSettingsDialog
     private int _pageSize = 4;
 
     private int _totalMembersCount;
-    private int _totalMembersPages => _totalMembersCount / _pageSize + 1;
+    private int _totalMembersPages => (int)Math.Ceiling((double)_totalMembersCount / _pageSize);
 
     private int _currentMembersPage = 1;
 
@@ -61,6 +63,8 @@ public partial class BoardSettingsDialog
     private BoardRole _currentUserRole;
 
     private BoardRole _selectedInviteRole = BoardRole.Member;
+
+    private string _globalSearchPrompt;
 
     private string? _ownersCount;
     private string? _adminsCount;
@@ -89,7 +93,7 @@ public partial class BoardSettingsDialog
     protected override async Task OnInitializedAsync()
     {
         var boardResult = await BoardsService.GetAsync(BoardId);
-        
+
         if (!boardResult.IsSuccess)
         {
             Snackbar.Add($"Error getting board: {boardResult.ErrorMessage}", Severity.Error);
@@ -307,18 +311,8 @@ public partial class BoardSettingsDialog
 
     private async Task PerformGlobalSearch(string prompt)
     {
-        var result = await BoardMembersService.SearchAsync(BoardId, prompt, _currentMembersPage, _pageSize);
-
-        if (!result.IsSuccess)
-        {
-            Snackbar.Add($"Error getting members: {result.ErrorMessage}");
-            return;
-        }
-
-        _members = result.Value!.Items.Select(m => m.ToMemberModel()).ToList();
-        _totalMembersCount = result.Value!.TotalCount;
-
-        StateHasChanged();
+        _globalSearchPrompt = prompt;
+        await FetchMembers();
     }
 
     private async Task SendInvitations()
@@ -366,5 +360,60 @@ public partial class BoardSettingsDialog
         _members = boardMembersResult.Value!.Select(m => m.ToMemberModel()).ToList();
 
         StateHasChanged();
+    }
+
+    private async Task FetchMembers()
+    {
+        var result = await BoardMembersService.SearchAsync(BoardId, _globalSearchPrompt, _currentMembersPage, _pageSize);
+
+        if (!result.IsSuccess)
+        {
+            Snackbar.Add($"Error getting members: {result.ErrorMessage}");
+            return;
+        }
+
+        _members = result.Value!.Items.Select(m => m.ToMemberModel()).ToList();
+        _totalMembersCount = result.Value!.TotalCount;
+
+        StateHasChanged();
+    }
+
+    private async Task OnMemberKickClicked(MemberModel member)
+    {
+        var parameters = new DialogParameters<CustomDialog>
+            {
+                { x => x.Title, "Warning" },
+                { x => x.MainButtonText, "Delete" },
+                { x => x.MainButtonColor, Color.Error },
+                { x => x.MainButtonVariant, Variant.Filled }
+            };
+
+        if (member.Id == _currentUserId)
+        {
+            parameters.Add(x => x.Description, @"Are you sure you want to leave this board?");
+        }
+        else
+        {
+            parameters.Add(x => x.Description, @"Are you sure you want to kick this member from this board?");
+        }
+
+        var dialog = await DialogService.ShowAsync<CustomDialog>(string.Empty, parameters);
+
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult.Data is null || !(bool)dialogResult.Data)
+        {
+            return;
+        }
+
+        var result = await BoardMembersService.KickAsync(BoardId, member.Id);
+
+        if (!result.IsSuccess)
+        {
+            Snackbar.Add($"Error removing member: {result.ErrorMessage}", Severity.Error);
+            return;
+        }
+
+        await FetchMembers();
     }
 }

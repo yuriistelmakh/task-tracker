@@ -9,6 +9,7 @@ public interface IBoardMembersService
     Task<Result> AcceptInvitationAsync(int boardId, AcceptInvitationRequest request);
     Task<Result<IEnumerable<MemberSummaryDto>>> GetAllAsync(int boardId, int? page = null, int? pageSize = null);
     Task<Result<MemberSummaryDto>> GetByIdAsync(int boardId, int userId);
+    Task<Result> KickAsync(int boardId, int userId);
     Task<Result> RejectInvitationAsync(int boardId, RejectInvitationRequest request);
     Task<Result<PagedResponse<MemberSummaryDto>>> SearchAsync(int boardId, string prompt, int page, int pageSize);
     Task<Result> SendInvitationAsync(int boardId, SendInvitationRequest request);
