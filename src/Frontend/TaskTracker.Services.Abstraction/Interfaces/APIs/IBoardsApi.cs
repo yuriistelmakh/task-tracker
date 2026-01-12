@@ -1,6 +1,4 @@
 ﻿using Refit;
-using System.ComponentModel.DataAnnotations;
-using TaskTracker.Domain.DTOs.Auth;
 using TaskTracker.Domain.DTOs.Boards;
 using TaskTracker.Domain.DTOs.Users;
 
@@ -12,14 +10,14 @@ public interface IBoardsApi
     Task<IApiResponse<IEnumerable<BoardSummaryDto?>>> GetAllAsync();
 
     [Post("/api/boards")]
-    Task<IApiResponse<int>> CreateAsync(CreateBoardRequest request);
+    Task<IApiResponse<int>> CreateAsync([Body] CreateBoardRequest request);
 
     [Get("/api/boards/{id}")]
     public Task<IApiResponse<BoardDetailsDto?>> GetByIdAsync(int id);
 
-    [Get("/api/boards/{id}/members")]
-    public Task<IApiResponse<IEnumerable<UserSummaryDto>>> GetMembersAsync(int id);
+    [Put("/api/boards/{id}")]
+    public Task<IApiResponse> UpdateAsync(int id, [Body] UpdateBoardRequest request);
 
     [Post("/api/boards/{id}/reorder")]
-    public Task<IApiResponse> ReorderColumnsAsync(int id, ReorderBoardColumnsRequest request);
+    public Task<IApiResponse> ReorderColumnsAsync(int id, [Body] ReorderBoardColumnsRequest request);
 }

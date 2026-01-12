@@ -8,9 +8,9 @@ using TaskTracker.Application.Interfaces.UoW;
 using TaskTracker.Domain.DTOs.Users;
 using TaskTracker.Domain.Mapping;
 
-namespace TaskTracker.Application.Features.Boards.Queries.GetAllMembers;
+namespace TaskTracker.Application.Features.BoardMembers.Queries.GetBoardMembers;
 
-public class GetBoardMembersQueryHandler : IRequestHandler<GetBoardMembersQuery, IEnumerable<UserSummaryDto>>
+public class GetBoardMembersQueryHandler : IRequestHandler<GetBoardMembersQuery, IEnumerable<MemberSummaryDto>>
 {
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
 
@@ -19,15 +19,15 @@ public class GetBoardMembersQueryHandler : IRequestHandler<GetBoardMembersQuery,
         _unitOfWorkFactory = unitOfWorkFactory;
     }
 
-    public async Task<IEnumerable<UserSummaryDto>> Handle(GetBoardMembersQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<MemberSummaryDto>> Handle(GetBoardMembersQuery request, CancellationToken cancellationToken)
     {
         using var uow = _unitOfWorkFactory.Create();
 
-        var members = await uow.BoardRepository.GetMembersAsync(request.BoardId);
+        var members = await uow.MemberRepository.GetAllAsync(request.BoardId, request.Page, request.PageSize);
 
         uow.Commit();
 
-        var dtos = members.Select(m => m.User.ToUserSummaryDto());
+        var dtos = members.Select(m => m.User.ToMemberSummaryDto(m.Role));
 
         return dtos;
     }

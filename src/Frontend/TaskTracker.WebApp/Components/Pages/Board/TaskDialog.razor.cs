@@ -10,6 +10,7 @@ using TaskTracker.WebApp.Components.Shared;
 using System.Security.Cryptography.Xml;
 using Microsoft.VisualBasic;
 using Microsoft.AspNetCore.Components.Web;
+using TaskTracker.WebApp.Models.Tasks;
 
 namespace TaskTracker.WebApp.Components.Pages.Board;
 
@@ -21,14 +22,11 @@ public partial class TaskDialog
     [Parameter]
     public int BoardId { get; set; }
 
+    [Parameter]
+    public BoardRole CurrentUserRole { get; set; }
+
     [CascadingParameter]
     IMudDialogInstance MudDialog { get; set; } = default!;
-
-    [Inject]
-    public ITasksService TasksService { get; private set; } = default!;
-
-    [Inject]
-    public ISnackbar Snackbar { get; private set; } = default!;
 
     [Inject]
     public ICurrentUserService UserService { get; private set; } = default!;
@@ -37,9 +35,18 @@ public partial class TaskDialog
     public IBoardsService BoardsService { get; private set; } = default!;
 
     [Inject]
+    public ITasksService TasksService { get; private set; } = default!;
+
+    [Inject]
+    public IBoardMembersService BoardMembersService {  get; private set; } = default!;
+
+    [Inject]
+    public ISnackbar Snackbar { get; private set; } = default!;
+
+    [Inject]
     public IDialogService DialogService { get; private set; } = default!;
 
-    private List<UserSummaryModel> _assigneeOptions = [];
+    private List<MemberModel> _assigneeOptions = [];
 
     private TaskDetailsModel task = new() { ColumnTitle = string.Empty, Title = string.Empty };
 
@@ -81,7 +88,7 @@ public partial class TaskDialog
 
         if (dto.AssigneeDto is not null)
         {
-            task.AssigneeModel = dto.AssigneeDto.ToUserSummaryModel();
+            task.AssigneeModel = dto.AssigneeDto.ToMemberModel();
             _assigneeOptions.Add(task.AssigneeModel);
         }
 
@@ -90,14 +97,14 @@ public partial class TaskDialog
             return;
         }
 
-        var boardResult = await BoardsService.GetMembersAsync(BoardId);
+        var boardResult = await BoardMembersService.GetAllAsync(BoardId);
         if (!boardResult.IsSuccess)
         {
             Snackbar.Add($"Error fetching board members: {result.ErrorMessage}", Severity.Error);
             return;
         }
 
-        _assigneeOptions = boardResult.Value!.Select(u => u.ToUserSummaryModel()).ToList();
+        _assigneeOptions = boardResult.Value!.Select(u => u.ToMemberModel()).ToList();
         _isTaskLoaded = true;
     }
 

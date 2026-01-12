@@ -10,7 +10,16 @@ public static class UserMapping
             Id = dto.Id,
             AvatarUrl = dto.AvatarUrl,
             DisplayName = dto.DisplayName,
-            IsDeleted = dto.IsDeleted,
             Tag = dto.Tag
+        };
+
+    public static MemberModel ToMemberModel(this MemberSummaryDto memberSummaryDto) =>
+        new()
+        {
+            DisplayName = memberSummaryDto.DisplayName,
+            AvatarUrl = memberSummaryDto.AvatarUrl,
+            Id = memberSummaryDto.Id,
+            Role = memberSummaryDto.Role,
+            Tag = memberSummaryDto.Tag,
         };
 }

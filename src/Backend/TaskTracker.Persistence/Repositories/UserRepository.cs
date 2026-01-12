@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -53,5 +54,20 @@ public class UserRepository : Repository<User, int>, IUserRepository
         var users = await Connection.QueryAsync<User>(sql, transaction: Transaction, param: new { tag });
 
         return users.FirstOrDefault();
+    }
+
+    public async Task<IEnumerable<User>> SearchByNameOrTag(string? searchPrompt, int limit)
+    {
+        var sql = @"
+            SELECT TOP (@Limit) u.*
+            FROM Users u
+            WHERE
+                DisplayName LIKE @SearchPrompt + '%' OR
+                Tag LIKE @SearchPrompt + '%'
+        ";
+
+        var users = await Connection.QueryAsync<User>(sql, transaction: Transaction, param: new { searchPrompt, limit });
+
+        return users;
     }
 }

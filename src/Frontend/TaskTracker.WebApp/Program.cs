@@ -5,6 +5,7 @@ using TaskTracker.Services.Abstraction.Interfaces.APIs;
 using TaskTracker.Services;
 using TaskTracker.WebApp.Components;
 using TaskTracker.Services.Auth;
+using TaskTracker.WebApp.Components.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,8 +33,17 @@ builder.Services.AddRefitClient<IColumnsApi>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]))
     .AddHttpMessageHandler<AuthHeaderHandler>();
 
+builder.Services.AddRefitClient<IUsersApi>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]))
+    .AddHttpMessageHandler<AuthHeaderHandler>();
+
+builder.Services.AddRefitClient<IBoardMembersApi>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]))
+    .AddHttpMessageHandler<AuthHeaderHandler>();
+
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+builder.Services.AddScoped<UiStateService>();
 
 var app = builder.Build();
 

@@ -1,0 +1,11 @@
+﻿using TaskTracker.Domain;
+using TaskTracker.Domain.DTOs.Notifications;
+using TaskTracker.Domain.DTOs.Users;
+
+namespace TaskTracker.Services.Abstraction.Interfaces.Services;
+
+public interface IUsersService
+{
+    Task<Result<IEnumerable<NotificationDto>>> GetUnreadNotifications(int userId);
+    Task<Result<IEnumerable<UserSummaryDto>>> SearchAsync(string prompt, int pageSize);
+}

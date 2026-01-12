@@ -18,6 +18,8 @@ public static class DependencyInjection
         services.AddScoped<IBoardsService, BoardsService>();
         services.AddScoped<IColumnsService, ColumnsService>();
         services.AddScoped<ITasksService, TasksService>();
+        services.AddScoped<IUsersService, UsersService>();
+        services.AddScoped<IBoardMembersService, BoardMembersService>();
 
         services.AddScoped<ICurrentUserService, CurrentUserService>();
 

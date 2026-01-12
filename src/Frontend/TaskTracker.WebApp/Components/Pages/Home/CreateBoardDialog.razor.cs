@@ -20,6 +20,8 @@ public partial class CreateBoardDialog : IComponent
 
     private string _title = string.Empty;
 
+    private MudForm _form;
+
     private readonly List<string> _backgroundColorOptions = [
         "#5A7863",
         "#90AB8B",
@@ -39,7 +41,7 @@ public partial class CreateBoardDialog : IComponent
 
     private BoardVisibility _selectedVisibility = BoardVisibility.Private;
 
-    private void OnColorClick(string newColor)
+    private void OnColorClicked(string newColor)
     {
         _selectedColor = newColor;
     }
@@ -49,17 +51,24 @@ public partial class CreateBoardDialog : IComponent
         _selectedVisibility = option;
     }
 
-    private void OnCloseClick()
+    private void OnCloseClicked()
     {
         Dialog.Close();
     }
 
     private async Task OnCreateClicked()
     {
+        await _form.Validate();
+
+        if (string.IsNullOrEmpty(_title))
+        {
+            return;
+        }
+
         var request = new CreateBoardRequest
         {
             Title = _title,
-            DisplayColor = _selectedColor,
+            BackgroundColor = _selectedColor,
             Visibility = _selectedVisibility
         };
 

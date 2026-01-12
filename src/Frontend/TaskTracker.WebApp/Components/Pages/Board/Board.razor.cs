@@ -2,17 +2,15 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using MudBlazor;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using TaskTracker.Domain.DTOs.Boards;
 using TaskTracker.Domain.DTOs.Columns;
 using TaskTracker.Domain.DTOs.Tasks;
 using TaskTracker.Domain.Enums;
-using TaskTracker.Services.Abstraction.Interfaces.APIs;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
 using TaskTracker.WebApp.Components.Shared;
 using TaskTracker.WebApp.Models;
 using TaskTracker.WebApp.Models.Mapping;
+using TaskTracker.WebApp.Models.Tasks;
 
 namespace TaskTracker.WebApp.Components.Pages.Board;
 
@@ -22,24 +20,35 @@ public partial class Board
     public int BoardId { get; set; }
 
     [Inject]
-    public IBoardsService BoardsService { get; set; } = default!;
+    public IBoardsService BoardsService { get; private set; } = default!;
 
     [Inject]
-    public IColumnsService ColumnsService { get; set; } = default!;
+    public IColumnsService ColumnsService { get; private set; } = default!;
 
     [Inject]
-    public ITasksService TasksService { get; set; } = default!;
+    public ITasksService TasksService { get; private set; } = default!;
 
     [Inject]
-    public ISnackbar Snackbar { get; set; } = default!;
+    public IBoardMembersService BoardMembersService { get; private set; } = default!;
 
     [Inject]
-    public IDialogService DialogService { get; set; } = default!;
+    public ICurrentUserService CurrentUserService { get; private set; } = default!;
+
+    [Inject]
+    public UiStateService UiStateService { get; private set; } = default!;
+
+    [Inject]
+    public ISnackbar Snackbar { get; private set; } = default!;
+
+    [Inject]
+    public IDialogService DialogService { get; private set; } = default!;
 
     [Inject]
     public IJSRuntime JS { get; set; } = default!;
 
     private string _backgroundColor = string.Empty;
+
+    private string _boardTitle = string.Empty;
 
     private MudDropContainer<TaskSummaryModel> _taskDropContainer = default!;
 
@@ -49,13 +58,15 @@ public partial class Board
 
     private string _addColumnTitle = string.Empty;
 
+    private BoardRole _currentUserRole;
+
     private bool _isReorderingColumns = false;
 
     private List<TaskSummaryModel> _allTasks = [];
 
     private List<ColumnModel> _columns = [];
 
-    private List<UserSummaryModel> _boardMembers = [];
+    private List<MemberModel> _boardMembers = [];
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -67,15 +78,38 @@ public partial class Board
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await BoardsService.GetAsync(BoardId);
+        UiStateService.OnBoardSettingsChanged += HandleBoardSettingsChanged;
 
-        if (!result.IsSuccess)
+        var userId = await CurrentUserService.GetUserId();
+
+        if (userId is null)
         {
-            Snackbar.Add($"Error while fetching the board: {result.ErrorMessage}", Severity.Error);
+            Snackbar.Add($"User id was not found", Severity.Error);
             return;
         }
 
-        var boardDto = result.Value!;
+        var currentUserResult = await BoardMembersService.GetByIdAsync(BoardId, userId.Value);
+
+        if (!currentUserResult.IsSuccess)
+        {
+            Snackbar.Add($"Error while fetching the current user as a member: {currentUserResult.ErrorMessage}", Severity.Error);
+            return;
+        }
+
+        _currentUserRole = currentUserResult.Value!.Role;
+
+        var boardResult = await BoardsService.GetAsync(BoardId);
+
+        if (!boardResult.IsSuccess)
+        {
+            Snackbar.Add($"Error while fetching the board: {boardResult.ErrorMessage}", Severity.Error);
+            return;
+        }
+
+        var boardDto = boardResult.Value!;
+
+        _backgroundColor = boardDto.BackgroundColor;
+        _boardTitle = boardDto.Title;
 
         _backgroundColor = boardDto.DisplayColor;
 
@@ -89,7 +123,7 @@ public partial class Board
             .ThenBy(t => t.Order)
             .ToList();
 
-        var membersResult = await BoardsService.GetMembersAsync(BoardId);
+        var membersResult = await BoardMembersService.GetAllAsync(BoardId);
 
         if (!membersResult.IsSuccess)
         {
@@ -97,10 +131,10 @@ public partial class Board
             return;
         }
 
-        _boardMembers = membersResult.Value!.Select(m => m.ToUserSummaryModel()).ToList();
+        _boardMembers = membersResult.Value!.Select(m => m.ToMemberModel()).ToList();
     }
 
-    private static void OnAddTaskClick(ColumnModel column)
+    private static void OnAddTaskClicked(ColumnModel column)
     {
         column.IsAddTaskOpen = true;
     }
@@ -200,7 +234,7 @@ public partial class Board
         }
     }
 
-    private void OnAddColumnClick()
+    private void OnAddColumnClicked()
     {
         _isAddColumnOpen = true;
     }
@@ -338,7 +372,8 @@ public partial class Board
         var parameters = new DialogParameters<TaskDialog>
         {
             { x => x.TaskId, taskId },
-            { x => x.BoardId, BoardId }
+            { x => x.BoardId, BoardId },
+            { x => x.CurrentUserRole, _currentUserRole }
         };
 
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true, };
@@ -465,7 +500,7 @@ public partial class Board
         _isReorderingColumns = !_isReorderingColumns;
     }
 
-    private async Task ColumnDropped(MudItemDropInfo<ColumnModel> dropItem)
+    private async Task OnColumnDropped(MudItemDropInfo<ColumnModel> dropItem)
     {
         var newIndex = dropItem.IndexInZone;
         
@@ -500,5 +535,34 @@ public partial class Board
             await OnInitializedAsync();
             _columnDropContainer.Refresh();
         }
+    }
+
+    private async void OnBoardSettingsClicked()
+    {
+        var parameters = new DialogParameters<BoardSettingsDialog>
+        {
+            { x => x.BoardId, BoardId }
+        };
+
+        var options = new DialogOptions { FullWidth = true, MaxWidth = MaxWidth.Medium };
+        var dialog = await DialogService.ShowAsync<BoardSettingsDialog>(string.Empty, parameters, options);
+    }
+
+    private async void HandleBoardSettingsChanged()
+    {
+        var boardResult = await BoardsService.GetAsync(BoardId);
+
+        if (!boardResult.IsSuccess)
+        {
+            Snackbar.Add($"Error while fetching the board: {boardResult.ErrorMessage}", Severity.Error);
+            return;
+        }
+
+        var boardDto = boardResult.Value!;
+
+        _backgroundColor = boardDto.BackgroundColor;
+        _boardTitle = boardDto.Title;
+
+        StateHasChanged();
     }
 }

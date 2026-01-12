@@ -10,8 +10,6 @@ public class UserSummaryModel
 
     public string? AvatarUrl { get; set; }
 
-    public bool IsDeleted { get; set; }
-
     public override bool Equals(object? obj)
     {
         if (obj is UserSummaryModel other)

@@ -1,4 +1,4 @@
-﻿using TaskTracker.WebApp.Models;
+﻿using TaskTracker.WebApp.Models.Tasks;
 
 public enum TaskDialogAction { Update, Delete }
 

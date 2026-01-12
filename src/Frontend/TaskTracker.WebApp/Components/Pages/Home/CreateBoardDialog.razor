@@ -11,7 +11,7 @@
             <MudSpacer/>
 
             <MudIconButton Icon=@Icons.Material.Filled.Close
-                           @onclick=@OnCloseClick/>
+                           @onclick=@OnCloseClicked/>
         </MudStack>
         
         <MudDivider Class="py-2"/>
@@ -31,16 +31,18 @@
             <MudItem xs=6>
                 <MudStack>
                     <MudText><b>Enter board title</b></MudText>
-                    <MudTextField @bind-Value=@_title
-                                  Variant=@Variant.Outlined
-                                  Margin=@Margin.Dense
-                                  Placeholder="For example: Marketing campaign"
-                                  Counter=50
-                                  MaxLength=50
-                                  Immediate=true
-                                  Required=true>
+                    <MudForm @ref=@_form>
+                        <MudTextField @bind-Value=@_title
+                                      Variant=@Variant.Outlined
+                                      Margin=@Margin.Dense
+                                      Placeholder="For example: Marketing campaign"
+                                      Counter=50
+                                      MaxLength=50
+                                      Immediate=true
+                                      Required=true>
 
-                    </MudTextField>
+                        </MudTextField>
+                    </MudForm>
                 </MudStack>
             </MudItem>
         </MudGrid>
@@ -56,8 +58,8 @@
                     <MudPaper Class="d-flex align-center justify-center py-8 cursor-pointer" 
                               Elevation=2
                               Style="@($"background-color:{color}; box-sizing: border-box;" +
-                                    (color == _selectedColor ? "border: 3px solid var(--mud-palette-primary)" : "border: 3px solid transparent"))"
-                              @onclick=@(() => OnColorClick(color))>
+                                    (color == _selectedColor ? "border: 3px solid maroon" : "border: 3px solid transparent"))"
+                              @onclick=@(() => OnColorClicked(color))>
                     </MudPaper>
                 </MudItem>
             }

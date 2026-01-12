@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TaskTracker.Application.Interfaces.UoW;
 using TaskTracker.Domain.Entities;
 
-namespace TaskTracker.Application.Features.Boards.Commands.AddNewMember;
+namespace TaskTracker.Application.Features.BoardMembers.Commands.AddNewMember;
 
 public class AddNewMemberCommandHandler : IRequestHandler<AddNewMemberCommand, int>
 {
@@ -28,7 +28,7 @@ public class AddNewMemberCommandHandler : IRequestHandler<AddNewMemberCommand, i
             Role = request.Role
         };
 
-        var result = await uow.BoardRepository.AddMemberAsync(boardMember);
+        var result = await uow.MemberRepository.AddAsync(boardMember);
 
         uow.Commit();
 

@@ -1,11 +1,8 @@
 ﻿using MediatR;
 using System;
-using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskTracker.Application.Interfaces.Repositories;
 using TaskTracker.Application.Interfaces.UoW;
-using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Application.Features.Boards.Commands.UpdateBoard;
 
@@ -34,6 +31,7 @@ public class UpdateBoardCommandHandler : IRequestHandler<UpdateBoardCommand, boo
         board.UpdatedBy = request.UpdatedBy;
         board.UpdatedAt = DateTime.UtcNow;
         board.IsArchived = request.IsArchived;
+        board.BackgroundColor = request.BackgroundColor;
 
         await uow.BoardRepository.UpdateAsync(board);
 

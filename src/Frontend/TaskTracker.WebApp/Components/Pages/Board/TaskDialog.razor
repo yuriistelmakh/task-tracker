@@ -92,6 +92,7 @@
                 else
                 {
                     <MudTextField @bind-Value=@task.Description
+                                  ReadOnly=@(CurrentUserRole == BoardRole.Visitor)
                                   Variant=@Variant.Outlined
                                   Lines=2
                                   MaxLength=700
@@ -171,20 +172,23 @@
                 }
                 else
                 {
-                    <MudSelect T="UserSummaryModel"
+                    <MudSelect T=@MemberModel
                                @bind-Value=@task.AssigneeModel
-                               Variant="Variant.Outlined"
-                               Margin="Margin.Dense"
+                               Variant=@Variant.Outlined
+                               Margin=@Margin.Dense
+                               ReadOnly=@(CurrentUserRole == BoardRole.Visitor)
+                               Adornment=@(CurrentUserRole == BoardRole.Visitor ? Adornment.None : Adornment.End)
+                               ToStringFunc=@((m) => m.DisplayName)
                                Class="assignee-select right-bar-select">
 
-                        <MudSelectItem T=UserSummaryModel
+                        <MudSelectItem T=@MemberModel
                                        Value="@(null)">
-                            <MudText Typo=@Typo.body2>Needs assignee</MudText>
+                            <MudText Typo=@Typo.body2>No assignee</MudText>
                         </MudSelectItem>
 
                         @foreach (var user in _assigneeOptions)
                         {
-                            <MudSelectItem T=UserSummaryModel
+                            <MudSelectItem T=@MemberModel
                                            Value=@user
                                            Style="color: var(--mud-primary-text)">
                                 <MudStack Row=true
@@ -211,6 +215,8 @@
                            @bind-Value=@task.Priority
                            Variant=@Variant.Outlined
                            Margin=@Margin.Dense
+                           ReadOnly=@(CurrentUserRole == BoardRole.Visitor)
+                           Adornment=@(CurrentUserRole == BoardRole.Visitor ? Adornment.None : Adornment.End)
                            Class="right-bar-select">
                     <MudSelectItem T=@Priority
                                    Value=@Priority.High>
@@ -261,6 +267,7 @@
                     <MudDatePicker Label="Date"
                                    Variant=@Variant.Outlined
                                    Margin=@Margin.Dense
+                                   ReadOnly=@(CurrentUserRole == BoardRole.Visitor)
                                    @bind-Date=@task.DueDate
                                    Class="date-picker-adornment"/>
 
@@ -268,6 +275,7 @@
                                    Variant=@Variant.Outlined
                                    Margin=@Margin.Dense
                                    AmPm=true
+                                   ReadOnly=@(CurrentUserRole == BoardRole.Visitor)
                                    @bind-Time=@TaskTime
                                    Class="date-picker-adornment" />
                 </MudStack>
@@ -293,6 +301,7 @@
                         {
                             <MudCheckBox @bind-Value=@task.IsComplete
                                          Size=@Size.Small
+                                         Disabled=@(CurrentUserRole == BoardRole.Visitor)
                                          Class="completed-checkbox" />
                             <MudText>Complete</MudText>
                         }
@@ -321,15 +330,18 @@
                 
                 <MudSpacer/>
 
-                <MudButton Variant=@Variant.Text
-                           Color=@Color.Error
-                           StartIcon=@Icons.Material.Filled.Delete
-                           FullWidth=true
-                           Class="justify-start my-4"
-                           Style="text-transform:none;"
-                           @onclick=@OnDeleteClick>
-                    Delete task
-                </MudButton>
+                @if (CurrentUserRole >= BoardRole.Member)
+                {
+                    <MudButton Variant=@Variant.Text
+                               Color=@Color.Error
+                               StartIcon=@Icons.Material.Filled.Delete
+                               FullWidth=true
+                               Class="justify-start my-4"
+                               Style="text-transform:none;"
+                               @onclick=@OnDeleteClick>
+                        Delete task
+                    </MudButton>
+                }
             </MudItem>
         </MudGrid>
 

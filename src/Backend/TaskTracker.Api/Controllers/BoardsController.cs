@@ -4,15 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using TaskTracker.Application.Features.Boards.Commands.AddNewMember;
 using TaskTracker.Application.Features.Boards.Commands.CreateBoard;
 using TaskTracker.Application.Features.Boards.Commands.DeleteBoard;
 using TaskTracker.Application.Features.Boards.Commands.ReorderBoardColumns;
 using TaskTracker.Application.Features.Boards.Commands.UpdateBoard;
 using TaskTracker.Application.Features.Boards.Queries.GetAllBoards;
-using TaskTracker.Application.Features.Boards.Queries.GetAllMembers;
 using TaskTracker.Application.Features.Boards.Queries.GetBoardById;
-using TaskTracker.Domain.DTOs.BoardMember;
 using TaskTracker.Domain.DTOs.Boards;
 
 namespace TaskTracker.Api.Controllers;
@@ -69,35 +66,8 @@ public class BoardsController : ControllerBase
         {
             Title = request.Title,
             CreatedBy = request.CreatedBy,
-            DisplayColor = request.DisplayColor,
+            BackgroundColor = request.BackgroundColor,
             Visibility = request.Visibility
-        };
-
-        var result = await _mediator.Send(command);
-
-        return Ok(result);
-    }
-
-    [HttpGet("{boardId}/members")]
-    public async Task<IActionResult> GetMembersAsync(int boardId)
-    {
-        var query = new GetBoardMembersQuery(boardId);
-
-        var result = await _mediator.Send(query);
-
-        return result is null 
-            ? NotFound()
-            : Ok(result);
-    }
-
-    [HttpPost("{boardId}/members")]
-    public async Task<IActionResult> AddMemberAsync(int boardId, [FromBody] AddBoardMemberRequest request)
-    {
-        var command = new AddNewMemberCommand
-        {
-            UserId = request.UserId,
-            BoardId = boardId,
-            Role = request.Role
         };
 
         var result = await _mediator.Send(command);
@@ -114,7 +84,8 @@ public class BoardsController : ControllerBase
             Title = request.Title,
             Description = request.Description,
             UpdatedBy = request.UpdatedBy,
-            IsArchived = request.IsArchived
+            IsArchived = request.IsArchived,
+            BackgroundColor = request.BackgroundColor
         };
 
         var isSuccess = await _mediator.Send(command);
@@ -140,7 +111,7 @@ public class BoardsController : ControllerBase
     }
 
     [HttpPost("{id}/reorder")]
-    public async Task<IActionResult> ReorderColumnsAsync(int id, ReorderBoardColumnsRequest request)
+    public async Task<IActionResult> ReorderColumnsAsync(int id, [FromBody] ReorderBoardColumnsRequest request)
     {
         var command = new ReorderBoardColumnsCommand
         {

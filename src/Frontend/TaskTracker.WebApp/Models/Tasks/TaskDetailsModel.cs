@@ -1,7 +1,7 @@
 ﻿using TaskTracker.Domain.DTOs.Users;
 using TaskTracker.Domain.Enums;
 
-namespace TaskTracker.WebApp.Models;
+namespace TaskTracker.WebApp.Models.Tasks;
 
 public class TaskDetailsModel
 {
@@ -27,5 +27,5 @@ public class TaskDetailsModel
 
     public required string ColumnTitle { get; set; }
 
-    public UserSummaryModel? AssigneeModel { get; set; }
+    public MemberModel? AssigneeModel { get; set; }
 }

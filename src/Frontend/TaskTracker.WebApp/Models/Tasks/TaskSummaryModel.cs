@@ -1,6 +1,6 @@
 ﻿using TaskTracker.Domain.Enums;
 
-namespace TaskTracker.WebApp.Models;
+namespace TaskTracker.WebApp.Models.Tasks;
 
 public class TaskSummaryModel
 {

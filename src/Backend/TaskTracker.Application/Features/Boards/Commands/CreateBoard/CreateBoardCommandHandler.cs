@@ -25,7 +25,7 @@ public class CreateBoardCommandHandler : IRequestHandler<CreateBoardCommand, int
         {
             Title = request.Title,
             IsArchived = false,
-            DisplayColor = request.DisplayColor,
+            BackgroundColor = request.BackgroundColor,
             CreatedAt = DateTime.UtcNow,
             CreatedBy = request.CreatedBy,
         };
@@ -40,7 +40,7 @@ public class CreateBoardCommandHandler : IRequestHandler<CreateBoardCommand, int
             Role = BoardRole.Owner,
         };
 
-        await uow.BoardRepository.AddMemberAsync(boardMember);
+        await uow.MemberRepository.AddAsync(boardMember);
 
         uow.Commit();
 

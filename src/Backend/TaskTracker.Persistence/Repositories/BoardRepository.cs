@@ -151,31 +151,16 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
         }
     }
 
-    public async Task<int> AddMemberAsync(BoardMember boardMember)
-    {
-        return await Connection.InsertAsync<int, BoardMember>(boardMember, transaction: Transaction);
-    }
-
-    public async Task<IEnumerable<BoardMember>> GetMembersAsync(int boardId)
+    public async Task<int> GetMembersCountAsync(int id)
     {
         var sql = @"
-            SELECT m.*, u.*
-            FROM BoardMembers m
-            JOIN Users u ON m.UserId = u.Id
-            WHERE m.BoardId = @boardId";
+            SELECT COUNT(*)
+            FROM BoardMembers
+            WHERE BoardId = @BoardId
+        ";
 
-        var result = await Connection.QueryAsync<BoardMember, User, BoardMember>(
-            sql,
-            (member, user) =>
-            {
-                member.User = user;
-                return member;
-            },
-            new { boardId },
-            splitOn: "Id",
-            transaction: Transaction
-        );
+        var count = await Connection.ExecuteScalarAsync<int>(sql, new { BoardId = id }, transaction: Transaction);
 
-        return result;
+        return count;
     }
 }

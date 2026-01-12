@@ -7,7 +7,7 @@ public class CreateBoardCommand : IRequest<int>
 {
     public required string Title { get; set; } 
 
-    public required string DisplayColor { get; set; }
+    public required string BackgroundColor { get; set; }
 
     public BoardVisibility Visibility { get; set; }
 

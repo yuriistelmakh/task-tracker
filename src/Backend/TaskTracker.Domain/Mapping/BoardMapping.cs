@@ -6,17 +6,18 @@ namespace TaskTracker.Domain.Mapping;
 
 public static class BoardMapping
 {
-    public static BoardDetailsDto ToBoardDetailsDto(this Board board) =>
+    public static BoardDetailsDto ToBoardDetailsDto(this Board board, BoardMemberStatisticsDto memberStatistics) =>
         new()
         {
             Id = board.Id,
             Title = board.Title,
             Owner = board.Creator.ToUserSummaryDto(),
-            DisplayColor = board.DisplayColor,
+            BackgroundColor = board.BackgroundColor,
             CreatedAt = board.CreatedAt,
             Description= board.Description,
             IsArchived = board.IsArchived,
-            Columns = board.Columns.Select(c => c.ToColumnSummaryDto()).ToList()
+            Columns = board.Columns.Select(c => c.ToColumnSummaryDto()).ToList(),
+            MemberStatistics = memberStatistics
         };
 
     public static BoardSummaryDto ToBoardSummaryDto(this Board board) =>
@@ -24,7 +25,7 @@ public static class BoardMapping
         {
             Id = board.Id,
             Title = board.Title,
-            DisplayColor = board.DisplayColor,
+            BackgroundColor = board.BackgroundColor,
             Members = board.Members.Select(m => m.ToUserSummaryDto()).ToList(),
             IsArchived = board.IsArchived,
             MembersCount = board.Members.Count,

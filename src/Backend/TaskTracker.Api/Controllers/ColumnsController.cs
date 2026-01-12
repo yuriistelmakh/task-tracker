@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -12,6 +13,7 @@ using TaskTracker.Domain.DTOs.Columns;
 namespace TaskTracker.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ColumnsController : ControllerBase
 {
     private readonly IMediator _mediator;
