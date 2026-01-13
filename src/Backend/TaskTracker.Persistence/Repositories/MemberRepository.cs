@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TaskTracker.Application.Interfaces.Repositories;
+using TaskTracker.Domain.DTOs;
 using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Persistence.Repositories;
@@ -77,5 +78,79 @@ public class MemberRepository : Repository<BoardMember, int>, IMemberRepository
         );
 
         return result;
+    }
+
+    public async Task<(IEnumerable<BoardMember> Items, int Count)> SearchByNameOrTag(int boardId, string? searchPrompt, int pageSize, int page = 1)
+    {
+        if (string.IsNullOrWhiteSpace(searchPrompt))
+        {
+            searchPrompt = null;
+        }
+
+        int offset = (page - 1) * pageSize;
+
+        var sql = @"
+            SELECT COUNT(*)
+            FROM BoardMembers bm    
+            JOIN Users u ON u.Id = bm.UserId 
+            WHERE
+                bm.BoardId = @boardId
+                AND (
+                    @SearchPrompt IS NULL 
+                    OR u.DisplayName LIKE @SearchPrompt + '%' 
+                    OR u.Tag LIKE @SearchPrompt + '%'
+                );
+
+            SELECT bm.*, u.*
+            FROM BoardMembers bm    
+            JOIN Users u ON u.Id = bm.UserId 
+            WHERE
+                bm.BoardId = @boardId
+                AND (
+                    @SearchPrompt IS NULL 
+                    OR u.DisplayName LIKE @SearchPrompt + '%' 
+                    OR u.Tag LIKE @SearchPrompt + '%'
+                )
+            ORDER BY u.DisplayName
+            OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+        ";
+
+        using var multi = await Connection.QueryMultipleAsync(
+            sql,
+            new
+            {
+                boardId,
+                searchPrompt,
+                Offset = offset,
+                PageSize = pageSize
+            },
+            transaction: Transaction
+        );
+
+        var totalCount = await multi.ReadSingleAsync<int>();
+
+        var items = multi.Read<BoardMember, User, BoardMember>(
+            (member, user) =>
+            {
+                member.User = user;
+                return member;
+            },
+            splitOn: "Id"
+        );
+
+        return (items, totalCount);
+    }
+
+    public async Task<int> GetCountAsync(int boardId)
+    {
+        var sql = @"
+            SELECT COUNT(*)
+            FROM BoardMembers
+            WHERE BoardId = @BoardId
+        ";
+
+        var count = await Connection.ExecuteScalarAsync<int>(sql, new { boardId }, transaction: Transaction);
+
+        return count;
     }
 }

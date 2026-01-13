@@ -17,13 +17,13 @@ public class BoardsService : IBoardsService
         _userService = userService;
     }
 
-    public async Task<Result<IEnumerable<BoardSummaryDto>>> GetAllAsync()
+    public async Task<Result<PagedResponse<BoardSummaryDto>>> GetAllAsync(int page, int pageSize)
     {
-        var result = await _boardsApi.GetAllAsync();
+        var result = await _boardsApi.GetAllAsync(page, pageSize);
 
         return result.IsSuccessful
-            ? Result<IEnumerable<BoardSummaryDto>>.Success(result.Content!)
-            : Result<IEnumerable<BoardSummaryDto>>.Failure(result.Error.Content!);
+            ? Result<PagedResponse<BoardSummaryDto>>.Success(result.Content!)
+            : Result<PagedResponse<BoardSummaryDto>>.Failure(result.Error.Content!);
     }
 
     public async Task<Result<int>> CreateAsync(CreateBoardRequest request)

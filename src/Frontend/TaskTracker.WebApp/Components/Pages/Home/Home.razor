@@ -4,96 +4,121 @@
 
 <AuthGuard>
     <MudLayout>
-        <Header SearchPlaceholder="Search boards..." />
+        <Header />
 
         <MudMainContent>
             <MudContainer Class="my-8">
-                <MudStack>
-                    @if (_boards.Count == 0)
+                <MudStack Spacing=2>
+                    @if (_isLoading)
                     {
-                        <MudStack AlignItems=@AlignItems.Center>
+                        @for (int i = 0; i < 4; i++)
+                        {
+                            <MudSkeleton Height="150px"
+                                         SkeletonType=@SkeletonType.Rectangle
+                                         Style="border-radius: 10px">
 
-                            <MudIcon Icon=@Icons.Material.Filled.Folder
-                                     Style="background-color: var(--mud-palette-secondary); height: 75px; width: 75px; border-radius: 100%"
-                                     Class="pa-2"
-                                     Color=@Color.Primary />
-
-                            <MudText Typo=@Typo.h4>
-                                <b>Welcome to TaskTracker!</b>
-                            </MudText>
-
-                            <MudText Typo=@Typo.h5>
-                                Begin organizing your projects and tasks right now. Create a new board or get invited to one.
-                            </MudText>
-
-                            <MudButton Variant=@Variant.Filled
-                                       Color=@Color.Primary
-                                       Size=@Size.Large
-                                       StartIcon=@Icons.Material.Filled.Add
-                                       @onclick=@OnCreateBoardClicked>
-                                Create a board
-                            </MudButton>
-                        </MudStack>
+                            </MudSkeleton>
+                        }
                     }
                     else
                     {
-                        <MudStack Row=true
-                                  AlignItems=@AlignItems.Center
-                                  Justify=@Justify.SpaceBetween>
+                        @if (_boards.Count == 0)
+                        {
+                            <MudStack AlignItems=@AlignItems.Center>
 
-                            <MudText Typo=@Typo.h5>
-                                Your boards
-                            </MudText>
+                                <MudIcon Icon=@Icons.Material.Filled.Folder
+                                         Style="background-color: var(--mud-palette-secondary); height: 75px; width: 75px; border-radius: 100%"
+                                         Class="pa-2"
+                                         Color=@Color.Primary />
 
-                            <MudButton Variant=@Variant.Filled
-                                       Color=@Color.Primary
-                                       StartIcon=@Icons.Material.Filled.Add
-                                       @onclick=@OnCreateBoardClicked>
-                                Create a board
-                            </MudButton>
-                        </MudStack>
+                                <MudText Typo=@Typo.h4>
+                                    <b>Welcome to TaskTracker!</b>
+                                </MudText>
 
-                        <MudStack>
-                            @foreach (var board in _boards)
-                            {
-                                <div>
-                                    <MudPaper Elevation=4
-                                              Class="board-card"
-                                              @onclick=@(() => OnBoardClicked(board.Id))
-                                              Style=@($"background-color:{board.BackgroundColor};" + "color: white;")>
-                                        <MudStack>
+                                <MudText Typo=@Typo.h5>
+                                    Begin organizing your projects and tasks right now. Create a new board or get invited to one.
+                                </MudText>
 
-                                            <MudText Typo=@Typo.h6>
-                                                @board.Title
-                                            </MudText>
+                                <MudButton Variant=@Variant.Filled
+                                           Color=@Color.Primary
+                                           Size=@Size.Large
+                                           StartIcon=@Icons.Material.Filled.Add
+                                           @onclick=@OnCreateBoardClicked>
+                                    Create a board
+                                </MudButton>
+                            </MudStack>
+                        }
+                        else
+                        {
+                            <MudStack Row=true
+                                      AlignItems=@AlignItems.Center
+                                      Justify=@Justify.SpaceBetween>
 
-                                            <MudStack Row=true AlignItems=@AlignItems.Center>
-                                                <MudText Typo=@Typo.body2
-                                                         Class="board-meta">
-                                                    @board.TasksCount tasks&nbsp;&nbsp;
-                                                    @board.MembersCount members
+                                <MudText Typo=@Typo.h5>
+                                    Your boards
+                                </MudText>
+
+                                <MudButton Variant=@Variant.Filled
+                                           Color=@Color.Primary
+                                           StartIcon=@Icons.Material.Filled.Add
+                                           @onclick=@OnCreateBoardClicked>
+                                    Create a board
+                                </MudButton>
+                            </MudStack>
+
+                            <MudStack>
+                                @foreach (var board in _boards)
+                                {
+                                    <div>
+                                        <MudPaper Elevation=4
+                                                  Class="board-card"
+                                                  @onclick=@(() => OnBoardClicked(board.Id))
+                                                  Style=@($"background-color:{board.BackgroundColor};" + "color: white;")>
+                                            <MudStack>
+
+                                                <MudText Typo=@Typo.h6>
+                                                    @board.Title
                                                 </MudText>
 
-                                                <MudSpacer />
+                                                <MudStack Row=true AlignItems=@AlignItems.Center>
+                                                    <MudText Typo=@Typo.body2
+                                                             Class="board-meta">
+                                                        @board.TasksCount tasks&nbsp;&nbsp;
+                                                        @board.MembersCount members
+                                                    </MudText>
 
-                                                <MudButton Variant=@Variant.Text
-                                                           Style="color: white;">
-                                                    <MudAvatarGroup Max=3>
-                                                        @foreach (var member in board.Members)
-                                                        {
-                                                            <MudAvatar>
-                                                                <MudIcon Icon=@Icons.Material.Filled.AccountCircle />
-                                                            </MudAvatar>
-                                                        }
-                                                    </MudAvatarGroup>
-                                                </MudButton>
+                                                    <MudSpacer />
+
+                                                    <MudButton Variant=@Variant.Text
+                                                               Style="color: white;">
+                                                        <MudAvatarGroup Max=3>
+                                                            @foreach (var member in board.Members)
+                                                            {
+                                                                <MudAvatar>
+                                                                    <MudIcon Icon=@Icons.Material.Filled.AccountCircle />
+                                                                </MudAvatar>
+                                                            }
+                                                        </MudAvatarGroup>
+                                                    </MudButton>
+                                                </MudStack>
+
                                             </MudStack>
+                                        </MudPaper>
+                                    </div>
+                                }
+                            </MudStack>
 
-                                        </MudStack>
-                                    </MudPaper>
-                                </div>
+                            @if (_boardsPagesCount > 1)
+                            {
+                                <MudContainer Class="bg-opacity-10 d-flex justify-end">
+                                    <MudPagination Count=@_boardsPagesCount
+                                                   Selected=@_selectedBoardsPage
+                                                   SelectedChanged=@OnPageChanged>
+
+                                    </MudPagination>
+                                </MudContainer>
                             }
-                        </MudStack>
+                        }
                     }
                 </MudStack>
 

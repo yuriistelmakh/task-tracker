@@ -32,9 +32,25 @@ public partial class Home
 
     private List<BoardModel> _boards = [];
 
+    private readonly int _pageSize = 4;
+
+    private int _boardsPagesCount;
+
+    private int _selectedBoardsPage = 1;
+
+    private bool _isLoading = false;
+
     protected override async Task OnInitializedAsync()
     {
-        var result = await BoardsService.GetAllAsync();
+        await FetchBoards();
+
+        UiStateService.OnBoardListChanged += HandleBoardListChanged;
+    }
+
+    private async Task FetchBoards()
+    {
+        _isLoading = true;
+        var result = await BoardsService.GetAllAsync(_selectedBoardsPage, _pageSize);
 
         if (!result.IsSuccess)
         {
@@ -44,9 +60,10 @@ public partial class Home
 
         var boardDtos = result.Value!;
 
-        _boards = boardDtos.Select(bd => bd.ToBoardModel()).ToList();
+        _boards = boardDtos.Items.Select(bd => bd.ToBoardModel()).ToList();
+        _boardsPagesCount = boardDtos.TotalCount / _pageSize + 1;
 
-        UiStateService.OnBoardListChanged += HandleBoardListChanged;
+        _isLoading = false;
     }
 
     private async Task OnCreateBoardClicked()
@@ -59,24 +76,21 @@ public partial class Home
 
         if (dialogResult!.Data is not null)
         {
-            UiStateService.NotifyBoardListChanged();
+            await FetchBoards();
         }
     }
 
     private async void HandleBoardListChanged()
     {
-        var result = await BoardsService.GetAllAsync();
+        await FetchBoards();
+        StateHasChanged();
+    }
 
-        if (!result.IsSuccess)
-        {
-            Snackbar.Add($"Error while fetching boards: {result.ErrorMessage}", Severity.Error);
-            return;
-        }
+    private async Task OnPageChanged(int selectedPage)
+    {
+        _selectedBoardsPage = selectedPage;
 
-        var boardDtos = result.Value!;
-
-        _boards = boardDtos.Select(bd => bd.ToBoardModel()).ToList();
-
+        await FetchBoards();
         StateHasChanged();
     }
 

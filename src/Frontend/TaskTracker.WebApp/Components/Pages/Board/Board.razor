@@ -7,7 +7,7 @@
 @rendermode InteractiveServer
 
 <AuthGuard>
-    <Header SearchPlaceholder="Search tasks...">
+    <Header>
         <LeftContent>
             <MudIconButton Icon=@Icons.Material.Filled.ChevronLeft
                            Size=@Size.Large
@@ -25,6 +25,46 @@
             <MudText Typo=@Typo.h6>
                 @_boardTitle
             </MudText>
+
+            <MudAutocomplete Value=@_taskSearchInput
+                          T=@TaskSummaryModel
+                          ValueChanged=@OnTaskSelectedFromSearch
+                          Placeholder="Search tasks..."
+                          Variant=@Variant.Outlined
+                          SearchFunc=@PerformTaskSearch
+                          Style="width: 500px"
+                          ToStringFunc=@(t => t is null ? null : t.Title)
+                          Class="search-bar ml-8"
+                          Margin=@Margin.Dense
+                          AdornmentIcon=@Icons.Material.Filled.Search
+                          Adornment=@Adornment.Start>
+                <ItemTemplate Context="e">
+                    <MudStack Row=true
+                              Spacing=1
+                              AlignItems=@AlignItems.Center>
+                        @switch (e.Priority)
+                        {
+                            case Priority.Low:
+                                <MudIcon Icon=@Icons.Material.Filled.KeyboardArrowDown
+                                         Color=@Color.Success />
+                                break;
+                            case Priority.Medium:
+                                <MudIcon Icon=@Icons.Material.Filled.Remove
+                                         Color=@Color.Warning />    
+                                break;
+                            case Priority.High:
+                                <MudIcon Icon=@Icons.Material.Filled.KeyboardArrowUp
+                                         Color=@Color.Error />
+                                break;
+                        }
+                        <MudText>@e.Title</MudText>
+
+                        <MudSpacer/>
+
+                        <MudIcon Icon=@Icons.Material.Filled.AccountCircle/>
+                    </MudStack>
+                </ItemTemplate>          
+            </MudAutocomplete>
         </MiddleContent>
 
         <RightContent>

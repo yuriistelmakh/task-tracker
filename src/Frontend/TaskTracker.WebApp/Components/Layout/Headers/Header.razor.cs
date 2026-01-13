@@ -20,9 +20,6 @@ public partial class Header
     [Parameter]
     public RenderFragment? MiddleContent { get; set; }
 
-    [Parameter]
-    public string SearchPlaceholder { get; set; } = "Search...";
-
     [Inject]
     public ICurrentUserService CurrentUserService { get; private set; } = default!;
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Application.Interfaces.Repositories;
 

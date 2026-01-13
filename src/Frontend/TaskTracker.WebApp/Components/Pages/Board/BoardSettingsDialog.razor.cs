@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using TaskTracker.Domain;
 using TaskTracker.Domain.DTOs.BoardMembers;
-using TaskTracker.Domain.DTOs.Boards;
 using TaskTracker.Domain.Enums;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
-using TaskTracker.Services.Auth;
 using TaskTracker.WebApp.Components.Shared;
 using TaskTracker.WebApp.Models;
 using TaskTracker.WebApp.Models.Mapping;
@@ -257,7 +254,7 @@ public partial class BoardSettingsDialog
         StateHasChanged();
     }
 
-    private async Task<IEnumerable<UserSummaryModel>> PerformSearch(string prompt, CancellationToken token)
+    private async Task<IEnumerable<UserSummaryModel>> PerformAutocompleteSearch(string prompt, CancellationToken token)
     {
         var result = await UsersService.SearchAsync(prompt ?? string.Empty, _pageSize);
 
@@ -273,6 +270,22 @@ public partial class BoardSettingsDialog
             .Where(u => !existingMemberIds.Contains(u.Id))
             .Select(u => u.ToUserSummaryModel())
             .ToList();
+    }
+
+    private async Task PerformGlobalSearch(string prompt)
+    {
+        var result = await BoardMembersService.SearchAsync(BoardId, prompt, _currentMembersPage, _pageSize);
+
+        if (!result.IsSuccess)
+        {
+            Snackbar.Add($"Error getting members: {result.ErrorMessage}");
+            return;
+        }
+
+        _members = result.Value!.Items.Select(m => m.ToMemberModel()).ToList();
+        _totalMembersCount = result.Value!.TotalCount;
+
+        StateHasChanged();
     }
 
     private async Task SendInvitations()

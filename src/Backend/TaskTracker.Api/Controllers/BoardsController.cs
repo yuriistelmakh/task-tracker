@@ -28,7 +28,7 @@ public class BoardsController : ControllerBase
 
 
     [HttpGet("my-boards")]
-    public async Task<IActionResult> GetAllAsync()
+    public async Task<IActionResult> GetAllAsync([FromQuery] int page, [FromQuery] int pageSize)
     {
         var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -39,7 +39,12 @@ public class BoardsController : ControllerBase
 
         int id = int.Parse(userIdString);
 
-        var query = new GetAllBoardsQuery(id);
+        var query = new GetAllBoardsQuery 
+        { 
+            UserId = id,
+            Page = page,
+            PageSize = pageSize
+        };
 
         var result = await _mediator.Send(query);
 

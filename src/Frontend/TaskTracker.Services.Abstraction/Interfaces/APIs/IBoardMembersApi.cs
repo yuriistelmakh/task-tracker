@@ -1,4 +1,5 @@
 ﻿using Refit;
+using TaskTracker.Domain;
 using TaskTracker.Domain.DTOs.BoardMembers;
 using TaskTracker.Domain.DTOs.Users;
 
@@ -8,6 +9,9 @@ public interface IBoardMembersApi
 {
     [Get("/api/boards/{boardId}/members?page={page}&pageSize={pageSize}")]
     public Task<IApiResponse<IEnumerable<MemberSummaryDto>>> GetAllAsync(int boardId, int? page, int? pageSize);
+
+    [Get("/api/boards/{boardId}/members/search?prompt={prompt}&page={page}&pageSize={pageSize}")]
+    public Task<IApiResponse<PagedResponse<MemberSummaryDto>?>> SearchAsync(int boardId, string? prompt, int page, int pageSize);
 
     [Get("/api/boards/{boardId}/members/{userId}")]
     public Task<IApiResponse<MemberSummaryDto>> GetByIdAsync(int boardId, int userId);

@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using TaskTracker.Application.Interfaces.Repositories;
@@ -50,5 +51,22 @@ public class TaskRepository : Repository<BoardTask, int>, IBoardTaskRepository
         var result = await Connection.ExecuteAsync(sql, param: new { id, columnId }, transaction: Transaction);
 
         return result > 0;
+    }
+
+    public async Task<IEnumerable<BoardTask>> SearchAsync(int boardId, string? prompt, int pageSize)
+    {
+        var sql = @"
+            SELECT TOP (@PageSize) t.*
+            FROM Tasks t
+            JOIN Columns c ON c.Id = t.ColumnId
+            WHERE
+                c.BoardId = @BoardId AND
+                (@Prompt IS NULL OR t.Title LIKE @Prompt + '%')
+            ORDER BY t.Title
+        ";
+
+        var tasks = await Connection.QueryAsync<BoardTask>(sql, param: new { boardId, prompt, pageSize }, transaction: Transaction);
+
+        return tasks ?? [];
     }
 }

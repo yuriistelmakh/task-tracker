@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Dapper;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Schema;
 
 namespace TaskTracker.Persistence.Repositories;
 
@@ -59,15 +60,18 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
         return board;
     }
 
-    public async Task<IEnumerable<Board>> GetAllWithDetailsAsync(int userId)
+    public async Task<IEnumerable<Board>> GetAllWithDetailsAsync(int userId, int page, int pageSize)
     {
         var sqlBoards = @"
-            SELECT b.*, u.* 
-            FROM Boards b
+            SELECT b.*, u.* FROM Boards b
             JOIN BoardMembers bm ON b.Id = bm.BoardId
             JOIN Users u ON b.CreatedBy = u.Id
             WHERE b.IsArchived = 0
-              AND bm.UserId = @UserId";
+              AND bm.UserId = @UserId
+            ORDER BY b.CreatedAt DESC
+            OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+        var offset = (page - 1) * pageSize;
 
         var boards = (await Connection.QueryAsync<Board, User, Board>(
             sqlBoards,
@@ -76,12 +80,17 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
                 board.Creator = user;
                 return board;
             },
-            param: new { userId },
+            param: new
+            {
+                UserId = userId,
+                Offset = offset,
+                PageSize = pageSize
+            },
             splitOn: "Id",
             transaction: Transaction
         )).ToList();
 
-        if (!boards.Any())
+        if (boards.Count == 0)
             return boards;
 
         await LoadBoardDetailsAsync(boards);
@@ -160,6 +169,20 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
         ";
 
         var count = await Connection.ExecuteScalarAsync<int>(sql, new { BoardId = id }, transaction: Transaction);
+
+        return count;
+    }
+
+    public async Task<int> GetCountAsync(int userId)
+    {
+        var sql = @"
+            SELECT COUNT(*)
+            FROM Boards b
+            JOIN BoardMembers bm ON b.Id = bm.BoardId
+            WHERE bm.UserId = @UserId
+        ";
+
+        var count = await Connection.ExecuteScalarAsync<int>(sql, new { userId }, transaction: Transaction);
 
         return count;
     }

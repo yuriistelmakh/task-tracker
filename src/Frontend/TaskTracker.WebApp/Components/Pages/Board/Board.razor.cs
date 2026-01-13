@@ -68,6 +68,8 @@ public partial class Board
 
     private List<MemberModel> _boardMembers = [];
 
+    private TaskSummaryModel _taskSearchInput;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -180,7 +182,7 @@ public partial class Board
             Title = titleToSend
         };
 
-        var result = await TasksService.CreateAsync(request);
+        var result = await TasksService.CreateAsync(BoardId, request);
 
         if (!result.IsSuccess)
         {
@@ -214,7 +216,7 @@ public partial class Board
 
         _taskDropContainer.Refresh();
 
-        var result = await TasksService.ChangeStatusAsync(task.Id, request);
+        var result = await TasksService.ChangeStatusAsync(BoardId, task.Id, request);
 
         if (!result.IsSuccess)
         {
@@ -535,6 +537,26 @@ public partial class Board
             await OnInitializedAsync();
             _columnDropContainer.Refresh();
         }
+    }
+
+    private async Task<IEnumerable<TaskSummaryModel>> PerformTaskSearch(string prompt, CancellationToken token)
+    {
+        var result = await TasksService.SearchAsync(BoardId, prompt, 1, 4);
+
+        if (!result.IsSuccess)
+        {
+            Snackbar.Add($"Error getting the tasks: {result.ErrorMessage}");
+            return [];
+        }
+
+        return result.Value.Select(t => t.ToTaskSummaryModel()).ToList();
+    }
+
+    private async Task OnTaskSelectedFromSearch(TaskSummaryModel task)
+    {
+        await OnTaskClicked(task.Id);
+
+        _taskSearchInput = null;
     }
 
     private async void OnBoardSettingsClicked()

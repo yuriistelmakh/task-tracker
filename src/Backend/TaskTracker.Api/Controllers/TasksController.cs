@@ -7,11 +7,12 @@ using TaskTracker.Application.Features.Tasks.Commands.CreateTask;
 using TaskTracker.Application.Features.Tasks.Commands.DeleteTask;
 using TaskTracker.Application.Features.Tasks.Commands.UpdateTask;
 using TaskTracker.Application.Features.Tasks.Queries.GetTaskById;
+using TaskTracker.Application.Features.Tasks.Queries.SearchTasks;
 using TaskTracker.Domain.DTOs.Tasks;
 
 namespace TaskTracker.Api.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/boards/{boardId:int}/tasks")]
 [ApiController]
 [Authorize]
 public class TasksController : ControllerBase
@@ -24,7 +25,7 @@ public class TasksController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetByIdAsync(int id)
+    public async Task<IActionResult> GetByIdAsync([FromRoute] int boardId, [FromRoute] int id)
     {
         var query = new GetTaskByIdQuery
         {
@@ -38,8 +39,31 @@ public class TasksController : ControllerBase
             : Ok(result);
     }
 
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchAsync(
+        [FromRoute] int boardId,
+        [FromQuery] string? prompt,
+        [FromQuery] int page,
+        [FromQuery] int pageSize
+        )
+    {
+        var query = new SearchTasksQuery
+        {
+            BoardId = boardId,
+            Prompt = prompt,
+            Page = page,
+            PageSize = pageSize
+        };
+
+        var result = await _mediator.Send(query);
+
+        return result.IsSuccess
+            ? Ok(result.Value)
+            : NotFound();
+    }
+
     [HttpPost]
-    public async Task<IActionResult> CreateAsync([FromBody] CreateTaskRequest request)
+    public async Task<IActionResult> CreateAsync([FromRoute] int boardId, [FromBody] CreateTaskRequest request)
     {
         var command = new CreateTaskCommand
         {
@@ -55,7 +79,7 @@ public class TasksController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateTaskRequest request)
+    public async Task<IActionResult> UpdateAsync([FromRoute] int boardId, [FromRoute] int id, [FromBody] UpdateTaskRequest request)
     {
         var command = new UpdateTaskCommand
         {
@@ -77,7 +101,7 @@ public class TasksController : ControllerBase
     }
 
     [HttpPatch("{id}/status")]
-    public async Task<IActionResult> ChangeStatus(int id, [FromBody] ChangeTaskStatusRequest request)
+    public async Task<IActionResult> ChangeStatus([FromRoute] int boardId, [FromRoute] int id, [FromBody] ChangeTaskStatusRequest request)
     {
         var command = new ChangeTaskStatusCommand
         {
@@ -94,7 +118,7 @@ public class TasksController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAsync(int id)
+    public async Task<IActionResult> DeleteAsync([FromRoute] int id)
     {
         var command = new DeleteTaskCommand
         {
