@@ -11,4 +11,6 @@ public interface ISessionCacheService
     string CreateSession(AuthUserData userData);
 
     void RemoveSession(string sessionId);
+
+    void UpdateSessionTokens(string sessionId, string newAccess, string newRefresh);
 }
