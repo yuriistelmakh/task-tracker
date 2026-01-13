@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -66,10 +67,10 @@ public partial class BoardSettingsDialog
 
     private string _globalSearchPrompt;
 
-    private string? _ownersCount;
-    private string? _adminsCount;
-    private string? _membersCount;
-    private string? _visitorsCount;
+    private int? _ownersCount;
+    private int? _adminsCount;
+    private int? _membersCount;
+    private int? _visitorsCount;
 
     private readonly List<string> _backgroundColorOptions = [
         "#5A7863",
@@ -106,10 +107,10 @@ public partial class BoardSettingsDialog
         _description = boardDto.Description;
         _totalMembersCount = boardDto.MemberStatistics.TotalMembers;
 
-        _ownersCount = boardDto.MemberStatistics.OwnersCount.ToString();
-        _adminsCount = boardDto.MemberStatistics.AdministratorsCount.ToString();
-        _membersCount = boardDto.MemberStatistics.MembersCount.ToString();
-        _visitorsCount = boardDto.MemberStatistics.VisitorsCount.ToString();
+        _ownersCount = boardDto.MemberStatistics.OwnersCount;
+        _adminsCount = boardDto.MemberStatistics.AdministratorsCount;
+        _membersCount = boardDto.MemberStatistics.MembersCount;
+        _visitorsCount = boardDto.MemberStatistics.VisitorsCount;
 
         var boardMembersResult = await BoardMembersService.GetAllAsync(BoardId, _currentMembersPage, _pageSize);
 
@@ -388,13 +389,15 @@ public partial class BoardSettingsDialog
                 { x => x.MainButtonVariant, Variant.Filled }
             };
 
-        if (member.Id == _currentUserId)
+        bool isCurrentUserLeaving = member.Id == _currentUserId;
+
+        if (isCurrentUserLeaving)
         {
-            parameters.Add(x => x.Description, @"Are you sure you want to leave this board?");
+            parameters.Add(x => x.Description, "Are you sure you want to leave this board?");
         }
         else
         {
-            parameters.Add(x => x.Description, @"Are you sure you want to kick this member from this board?");
+            parameters.Add(x => x.Description, "Are you sure you want to kick this member from this board?");
         }
 
         var dialog = await DialogService.ShowAsync<CustomDialog>(string.Empty, parameters);
@@ -406,6 +409,14 @@ public partial class BoardSettingsDialog
             return;
         }
 
+        if (isCurrentUserLeaving &&
+            _currentUserRole == BoardRole.Owner &&
+            _members.Count(m => m.Role == BoardRole.Owner) == 1)
+        {
+            Snackbar.Add($"A board must have at least one owner. Assign somebody to be its owner or delete the board.", Severity.Warning);
+            return;
+        }
+
         var result = await BoardMembersService.KickAsync(BoardId, member.Id);
 
         if (!result.IsSuccess)
@@ -414,6 +425,35 @@ public partial class BoardSettingsDialog
             return;
         }
 
+        if (isCurrentUserLeaving)
+        {
+            Nav.NavigateTo("/");
+        }
+
         await FetchMembers();
+
+        switch (member.Role)
+        {
+            case BoardRole.Owner:
+                {
+                    _ownersCount--;
+                    break;
+                }
+            case BoardRole.Admin:
+                {
+                    _adminsCount--;
+                    break;
+                }
+            case BoardRole.Member:
+                {
+                    _membersCount--;
+                    break;
+                }
+            case BoardRole.Visitor:
+                {
+                    _visitorsCount--;
+                    break;
+                }
+        }
     }
 }
