@@ -50,6 +50,20 @@
 
                 </MudTextField>
 
+                @if (_currentUserRole == BoardRole.Owner)
+                {
+                    <MudButton Color=@Color.Error
+                                 Variant=@Variant.Filled
+                                 Class="my-2"
+                                 @onclick=OnDeleteBoardClicked>
+                        <MudStack Row=true
+                                  Spacing=1>
+                            <MudIcon Icon=@Icons.Material.Filled.Delete />
+                            Delete board
+                        </MudStack>
+                    </MudButton>
+                }
+
                 <MudContainer Class="d-flex justify-end pa-0 mt-2">
                     <MudButton>Cancel</MudButton>
 

@@ -121,4 +121,13 @@ public class BoardsService : IBoardsService
             ? Result.Success()
             : Result.Failure(result.Error.Message);
     }
+
+    public async Task<Result> DeleteAsync(int id)
+    {
+        var result = await _boardsApi.DeleteAsync(id);
+
+        return result.IsSuccessful
+            ? Result.Success()
+            : Result.Failure(result.Error.Message);
+    }
 }
