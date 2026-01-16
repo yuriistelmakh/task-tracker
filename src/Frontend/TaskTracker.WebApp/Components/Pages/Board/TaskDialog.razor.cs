@@ -265,6 +265,8 @@ public partial class TaskDialog
         var comment = result.Value!.ToCommentModel();
 
         _comments.Insert(0, comment);
+
+        _commentInput = string.Empty;
     }
 
     private void OnCloseClicked()
