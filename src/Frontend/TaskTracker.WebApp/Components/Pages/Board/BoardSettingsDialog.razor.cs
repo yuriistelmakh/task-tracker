@@ -123,13 +123,15 @@ public partial class BoardSettingsDialog
         _members = boardMembersResult.Value!.Select(m => m.ToMemberModel()).ToList();
 
         _currentUserId = await CurrentUserService.GetUserId();
-        var currentUser = _members.FirstOrDefault(m => m.Id == _currentUserId);
+        var currentUserResult = await BoardMembersService.GetByIdAsync(BoardId, _currentUserId.Value);
 
-        if (currentUser is null)
+        if (!currentUserResult.IsSuccess)
         {
-            Snackbar.Add("Error identifying current user", Severity.Error);
+            Snackbar.Add($"Error identifying current user: {currentUserResult.ErrorMessage}", Severity.Error);
             return;
         }
+
+        var currentUser = currentUserResult.Value!;
 
         _currentUserRole = currentUser.Role;
     }
@@ -429,8 +431,10 @@ public partial class BoardSettingsDialog
         {
             Nav.NavigateTo("/");
         }
-
+        
+        _currentMembersPage = 1;
         await FetchMembers();
+        
 
         switch (member.Role)
         {

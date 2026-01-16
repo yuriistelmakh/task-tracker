@@ -59,8 +59,8 @@ public class DatabaseInitializer
                 new { h = passHash });
 
             var boardId = await db.QuerySingleAsync<int>(@"
-            INSERT INTO Boards (Title, Description, CreatedBy, CreatedAt, IsArchived) 
-            VALUES (N'Головна дошка', N'Основний простір для задач', 1, GETDATE(), 0);
+            INSERT INTO Boards (Title, Description, BackgroundColor, CreatedBy, CreatedAt, IsArchived) 
+            VALUES (N'Головна дошка', N'Основний простір для задач', '#90AB8B', 1, GETDATE(), 0);
             SELECT CAST(SCOPE_IDENTITY() as int);");
 
             await db.ExecuteAsync(@"
