@@ -328,7 +328,32 @@
                                        Size=@Size.Small />
                     </MudStack>
 
-                    <MudStack Spacing=0>
+                    <MudStack Row=true
+                              Class="mb-2"
+                              Spacing=1>
+                        <MudContainer Class="d-flex gap-1 align-center pa-0">
+                            <MudIcon Icon=@Icons.Material.Filled.AccountCircle
+                                 Size=@Size.Large />
+                            <MudTextField @bind-Value=@_commentInput
+                                          Variant=@Variant.Outlined
+                                          FullWidth=true
+                                          Lines=1
+                                          MaxLines=4
+                                          Margin=@Margin.Dense
+                                          Class="flex-grow-1"
+                                          AutoGrow=true>
+
+                            </MudTextField>
+
+                            <MudIconButton Icon=@Icons.Material.Filled.Send
+                                           Color=@Color.Primary
+                                           @onclick=@OnSendCommentClicked />
+                        </MudContainer>
+                    </MudStack>
+
+                    <MudStack Spacing=0
+                              Class="overflow-y-auto"
+                              Style="height: 275px">
                         @if (_isCommentsLoading)
                         {
                             for (int i = 0; i < 3; i++)
@@ -366,32 +391,6 @@
                             {
                                 <i>No comments yet</i>
                             }
-
-                            <MudStack Row=true
-                                      Class="mt-2"
-                                      Spacing=1>
-                                <MudIcon Icon=@Icons.Material.Filled.AccountCircle
-                                         Size=@Size.Large />
-                                <MudStack Class="mud-width-full"
-                                          AlignItems=@AlignItems.End
-                                          Spacing=2>
-                                    <MudTextField @bind-Value=@_commentInput
-                                                  Variant=@Variant.Outlined
-                                                  FullWidth=true
-                                                  Lines=1
-                                                  MaxLines=4
-                                                  Margin=@Margin.Dense
-                                                  AutoGrow=true>
-
-                                    </MudTextField>
-
-                                    <MudButton Variant=@Variant.Filled
-                                               Color=@Color.Primary
-                                               @onclick=@OnSendCommentClicked>
-                                        Send
-                                    </MudButton>
-                                </MudStack>
-                            </MudStack>
                         }
                     </MudStack>
                 </div>
