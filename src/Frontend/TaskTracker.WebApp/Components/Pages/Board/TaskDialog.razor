@@ -50,7 +50,7 @@
 
             <MudSpacer />
             <MudIconButton Icon=@Icons.Material.Filled.Comment
-                           @onclick=@OnCommentsClicked/>
+                           @onclick=@OnCommentsClicked />
 
             <MudIconButton Icon=@Icons.Material.Filled.Close
                            @onclick=@OnCloseClicked />
@@ -333,7 +333,7 @@
                               Spacing=1>
                         <MudContainer Class="d-flex gap-1 align-center pa-0">
                             <MudIcon Icon=@Icons.Material.Filled.AccountCircle
-                                 Size=@Size.Large />
+                                     Size=@Size.Large />
                             <MudTextField @bind-Value=@_commentInput
                                           Variant=@Variant.Outlined
                                           FullWidth=true
@@ -358,7 +358,7 @@
                         {
                             for (int i = 0; i < 3; i++)
                             {
-                                <MudSkeleton Height="60px"/>
+                                <MudSkeleton Height="60px" />
                             }
                         }
                         else
@@ -368,7 +368,7 @@
                                 @foreach (var comment in _comments)
                                 {
                                     <MudStack Row=true 
-                                              AlignItems=@AlignItems.Center
+                                                          AlignItems=@AlignItems.Center
                                               Spacing=1
                                               Class="mt-2">
                                         <MudIcon Icon=@Icons.Material.Filled.AccountCircle
@@ -391,6 +391,25 @@
                             {
                                 <i>No comments yet</i>
                             }
+
+                            <div @ref=@_scrollAnchor 
+                                 class="d-flex justify-center py-2">
+                                @if (_hasMoreComments)
+                                {
+                                    if (_isLoadingMoreComments)
+                                    {
+                                        <MudProgressCircular Indeterminate=true 
+                                                             Size=@Size.Small />
+                                    }
+                                }
+                                else if (_comments.Count > 0)
+                                {
+                                    <MudText Typo=@Typo.caption
+                                             Class="mud-text-secondary">
+                                        No more comments
+                                    </MudText>
+                                }
+                            </div>
                         }
                     </MudStack>
                 </div>

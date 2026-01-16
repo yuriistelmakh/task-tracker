@@ -11,6 +11,7 @@ using TaskTracker.WebApp.Models.Tasks;
 using TaskTracker.Services.Auth;
 using TaskTracker.Domain.DTOs.Users;
 using TaskTracker.Domain.DTOs.Comments;
+using Microsoft.JSInterop;
 
 namespace TaskTracker.WebApp.Components.Pages.Board;
 
@@ -49,6 +50,9 @@ public partial class TaskDialog
     [Inject]
     public IDialogService DialogService { get; private set; } = default!;
 
+    [Inject]
+    public IJSRuntime JS { get; private set; } = default!;
+
     private List<CommentModel> _comments = [];
 
     private TaskDetailsModel task = new() { ColumnTitle = string.Empty, Title = string.Empty };
@@ -65,11 +69,23 @@ public partial class TaskDialog
 
     private int _pageSize = 4;
 
+    private int _commentsPageSize = 7;
+
     private bool _isCommentsVisible = false;
 
     private bool _isCommentsLoading = true;
 
     private string? _commentInput = string.Empty;
+
+    private ElementReference _scrollAnchor;
+
+    private DotNetObjectReference<TaskDialog>? _objRef;
+
+    private bool _isLoadingMoreComments = false;
+
+    private bool _hasMoreComments = true;
+
+    private bool _isObserverAttached = false;
 
     private TimeSpan? TaskTime
     {
@@ -108,6 +124,18 @@ public partial class TaskDialog
         }
 
         _isTaskLoaded = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_isCommentsVisible && !_isCommentsLoading && !_isObserverAttached)
+        {
+            _objRef = DotNetObjectReference.Create(this);
+
+            await JS.InvokeVoidAsync("observer.initialize", _scrollAnchor, _objRef);
+
+            _isObserverAttached = true;
+        }
     }
 
     private async Task SaveChanges()
@@ -228,7 +256,9 @@ public partial class TaskDialog
 
         if (_isCommentsVisible && _comments.Count == 0)
         {
-            var result = await CommentsService.GetAsync(BoardId, TaskId, 1, _pageSize);
+            _isObserverAttached = false; 
+
+            var result = await CommentsService.GetAsync(BoardId, TaskId, 1, _commentsPageSize);
 
             if (!result.IsSuccess)
             {
@@ -238,6 +268,8 @@ public partial class TaskDialog
 
             _isCommentsLoading = false;
             _comments = result.Value!.Items.Select(c => c.ToCommentModel()).ToList();
+
+            StateHasChanged();
         }
     }
 
@@ -269,8 +301,51 @@ public partial class TaskDialog
         _commentInput = string.Empty;
     }
 
+    [JSInvokable]
+    public async Task LoadMoreComments()
+    {
+        if (_isLoadingMoreComments || !_hasMoreComments)
+        {
+            return;
+        }
+
+        _isLoadingMoreComments = true;
+        StateHasChanged(); 
+
+        await Task.Delay(1000); 
+        
+        var result = await CommentsService.GetAsync(BoardId, TaskId, _comments.Count / _commentsPageSize + 1, _commentsPageSize);
+
+        if (!result.IsSuccess)
+        {
+            Snackbar.Add($"Error fetching more comments: {result.ErrorMessage}", Severity.Error);
+            return;
+        }
+
+        var newComments = result.Value!.Items.Select(c => c.ToCommentModel()).ToList();
+
+        _comments.AddRange(newComments);
+
+        if (newComments.Count < _commentsPageSize)
+        {
+            _hasMoreComments = false;
+        }
+
+        _isLoadingMoreComments = false;
+        StateHasChanged();
+    }
+
     private void OnCloseClicked()
     {
         MudDialog.Close();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_objRef is not null)
+        {
+            await JS.InvokeVoidAsync("observer.dispose");
+            _objRef.Dispose();
+        }
     }
 }
