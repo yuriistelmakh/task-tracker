@@ -20,6 +20,7 @@ public static class DependencyInjection
         services.AddScoped<ITasksService, TasksService>();
         services.AddScoped<IUsersService, UsersService>();
         services.AddScoped<IBoardMembersService, BoardMembersService>();
+        services.AddScoped<ICommentsService, CommentsService>();
 
         services.AddScoped<ICurrentUserService, CurrentUserService>();
 

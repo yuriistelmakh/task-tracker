@@ -16,6 +16,7 @@
     <None Remove="Scripts\008_AddBoardColorAndPublicity.sql" />
     <None Remove="Scripts\009_CreateInvitationsTable.sql" />
     <None Remove="Scripts\010_CreateNotificationsTable.sql" />
+    <None Remove="Scripts\011_CreateCommentsTable.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,6 +30,7 @@
     <EmbeddedResource Include="Scripts\008_AddBoardColorAndPublicity.sql" />
     <EmbeddedResource Include="Scripts\009_CreateInvitationsTable.sql" />
     <EmbeddedResource Include="Scripts\010_CreateNotificationsTable.sql" />
+    <EmbeddedResource Include="Scripts\011_CreateCommentsTable.sql" />
   </ItemGroup>
 
   <ItemGroup>

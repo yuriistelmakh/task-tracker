@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Components.Web;
 using TaskTracker.WebApp.Models.Tasks;
 using TaskTracker.Services.Auth;
 using TaskTracker.Domain.DTOs.Users;
+using TaskTracker.Domain.DTOs.Comments;
 
 namespace TaskTracker.WebApp.Components.Pages.Board;
 
@@ -40,12 +41,19 @@ public partial class TaskDialog
     public IBoardMembersService BoardMembersService {  get; private set; } = default!;
 
     [Inject]
+    public ICommentsService CommentsService { get; private set; } = default!;
+
+    [Inject]
     public ISnackbar Snackbar { get; private set; } = default!;
 
     [Inject]
     public IDialogService DialogService { get; private set; } = default!;
 
+    private List<CommentModel> _comments = [];
+
     private TaskDetailsModel task = new() { ColumnTitle = string.Empty, Title = string.Empty };
+
+    private int? _currentUserId;
 
     private bool _isTaskLoaded = false;
 
@@ -56,6 +64,12 @@ public partial class TaskDialog
     private string _titleBeforeEditing = string.Empty;
 
     private int _pageSize = 4;
+
+    private bool _isCommentsVisible = false;
+
+    private bool _isCommentsLoading = true;
+
+    private string? _commentInput = string.Empty;
 
     private TimeSpan? TaskTime
     {
@@ -85,6 +99,14 @@ public partial class TaskDialog
         var dto = result.Value!;
         task = dto.ToTaskDetailsModel();
         
+        _currentUserId = await UserService.GetUserId();
+
+        if (_currentUserId is null)
+        {
+            Snackbar.Add("Failed to get user's id");
+            return;
+        }
+
         _isTaskLoaded = true;
     }
 
@@ -198,6 +220,51 @@ public partial class TaskDialog
     private void OnExtendDescription()
     {
         _isDescriptionExpanded = !_isDescriptionExpanded;
+    }
+
+    private async Task OnCommentsClicked()
+    {
+        _isCommentsVisible = !_isCommentsVisible;
+
+        if (_isCommentsVisible && _comments.Count == 0)
+        {
+            var result = await CommentsService.GetAsync(BoardId, TaskId, 1, _pageSize);
+
+            if (!result.IsSuccess)
+            {
+                Snackbar.Add($"Error while fetching comments: {result.ErrorMessage}", Severity.Error);
+                return;
+            }
+
+            _isCommentsLoading = false;
+            _comments = result.Value!.Items.Select(c => c.ToCommentModel()).ToList();
+        }
+    }
+
+    private async Task OnSendCommentClicked()
+    {
+        if (string.IsNullOrEmpty(_commentInput))
+        {
+            return;
+        }
+
+        var request = new CreateCommentRequest
+        {
+            Content = _commentInput,
+            CreatedBy = _currentUserId!.Value
+        };
+
+        var result = await CommentsService.CreateAsync(BoardId, TaskId, request);
+
+        if (!result.IsSuccess)
+        {
+            Snackbar.Add($"Error while creating comment: {result.ErrorMessage}", Severity.Error);
+            return;
+        }
+
+        var comment = result.Value!.ToCommentModel();
+
+        _comments.Insert(0, comment);
     }
 
     private void OnCloseClicked()

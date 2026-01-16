@@ -7,7 +7,7 @@ using TaskTracker.Services.Abstraction.Interfaces.Services;
 
 namespace TaskTracker.WebApp.Components.Pages.Home;
 
-public partial class CreateBoardDialog : IComponent
+public partial class CreateBoardDialog
 {
     [CascadingParameter]
     public IMudDialogInstance Dialog { get; set; } = default!;

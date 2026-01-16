@@ -13,5 +13,7 @@ public interface IUnitOfWork : IDisposable
     IRefreshTokenRepository RefreshTokenRepository { get; }
     IInvitationRepository InvitationRepository { get; }
     INotificationRepository NotificationRepository { get; }
+    ICommentRepository CommentRepository { get; }
+
     void Commit();
 }
