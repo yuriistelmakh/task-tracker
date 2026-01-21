@@ -8,6 +8,8 @@ public class TaskSummaryDto
 
     public int ColumndId { get; set; }
 
+    public int CreatedBy { get; set; }
+
     public required string Title { get; set; }
 
     public Priority Priority { get; set; } = Priority.Medium;

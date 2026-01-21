@@ -23,6 +23,7 @@ public static class DependencyInjection
         services.AddScoped<ICommentsService, CommentsService>();
 
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<IBoardHubClient, BoardHubClient>();
 
         services.AddScoped<CustomAuthStateProvider>();
         services.AddScoped<AuthenticationStateProvider>(sp => 

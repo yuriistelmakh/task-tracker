@@ -1,27 +1,32 @@
 ﻿using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
+using TaskTracker.Application.Interfaces.SignalR;
 using TaskTracker.Application.Interfaces.UoW;
 
 namespace TaskTracker.Application.Features.Columns.Commands.DeleteColumn;
 
-public class DeleteColumnCommandHandler : IRequestHandler<DeleteColumnCommand, bool>
+public class DeleteColumnCommandHandler : IRequestHandler<DeleteColumnCommand, Result>
 {
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
+    private readonly IBoardNotificator _boardNotificator;
 
-    public DeleteColumnCommandHandler(IUnitOfWorkFactory unitOfWorkFactory)
+    public DeleteColumnCommandHandler(IUnitOfWorkFactory unitOfWorkFactory, IBoardNotificator boardNotificator)
     {
         _unitOfWorkFactory = unitOfWorkFactory;
+        _boardNotificator = boardNotificator;
     }
 
-    public async Task<bool> Handle(DeleteColumnCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(DeleteColumnCommand request, CancellationToken cancellationToken)
     {
         using var uow = _unitOfWorkFactory.Create();
 
-        var rowsDeleted = await uow.ColumnRepository.DeleteAsync(request.Id);
+        await uow.ColumnRepository.DeleteAsync(request.Id);
 
         uow.Commit();
 
-        return rowsDeleted > 0;
+        await _boardNotificator.ColumnDeletedAsync(request.BoardId, request.Id);
+
+        return Result.Success();
     }
 }

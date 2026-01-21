@@ -100,7 +100,7 @@
                                           ReadOnly=@(CurrentUserRole == BoardRole.Visitor)
                                           Variant=@Variant.Outlined
                                           Margin=@Margin.Dense
-                                          Lines=2
+                                          Lines=5
                                           MaxLength=700
                                           AutoGrow=_isDescriptionExpanded
                                           Immediate=true>
@@ -368,18 +368,20 @@
                                 @foreach (var comment in _comments)
                                 {
                                     <MudStack Row=true 
-                                                          AlignItems=@AlignItems.Center
+                                              AlignItems=@AlignItems.Center
                                               Spacing=1
                                               Class="mt-2">
                                         <MudIcon Icon=@Icons.Material.Filled.AccountCircle
                                                  Size=@Size.Large />
 
-                                        <MudStack Spacing=1>
+                                        <MudStack Spacing=1
+                                                  Style="border: 1px solid gray; border-radius: 10px"
+                                                  Class="pa-2">
                                             <MudStack Row=true
                                                       AlignItems=@AlignItems.Center
                                                       Spacing=1>
                                                 <MudText Typo=@Typo.body2>@comment.SenderName</MudText>
-                                                <MudText Typo=@Typo.caption>@comment.CreatedAt.ToString("dd.MM hh:mm")</MudText>
+                                                <MudText Typo=@Typo.caption>@comment.CreatedAt.ToLocalTime().ToString("dd.MM hh:mm")</MudText>
                                             </MudStack>
 
                                             <MudText>@comment.Content</MudText>

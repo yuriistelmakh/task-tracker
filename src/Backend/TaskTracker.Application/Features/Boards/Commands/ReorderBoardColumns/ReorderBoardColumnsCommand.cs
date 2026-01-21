@@ -5,5 +5,7 @@ namespace TaskTracker.Application.Features.Boards.Commands.ReorderBoardColumns;
 
 public class ReorderBoardColumnsCommand : IRequest<bool>
 {
+    public int BoardId { get; set; }
+
     public Dictionary<int, int> IdToOrder { get; set; } = [];
 }

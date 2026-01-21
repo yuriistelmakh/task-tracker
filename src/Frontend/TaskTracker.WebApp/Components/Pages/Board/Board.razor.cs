@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.JSInterop;
 using MudBlazor;
+using System.Data.Common;
 using TaskTracker.Domain.DTOs.Boards;
 using TaskTracker.Domain.DTOs.Columns;
 using TaskTracker.Domain.DTOs.Tasks;
@@ -14,7 +16,7 @@ using TaskTracker.WebApp.Models.Tasks;
 
 namespace TaskTracker.WebApp.Components.Pages.Board;
 
-public partial class Board
+public partial class Board : IAsyncDisposable
 {
     [Parameter]
     public int BoardId { get; set; }
@@ -33,6 +35,9 @@ public partial class Board
 
     [Inject]
     public ICurrentUserService CurrentUserService { get; private set; } = default!;
+
+    [Inject]
+    public IBoardHubClient BoardHubClient { get; private set; } = default!;
 
     [Inject]
     public UiStateService UiStateService { get; private set; } = default!;
@@ -61,6 +66,8 @@ public partial class Board
 
     private string _addColumnTitle = string.Empty;
 
+    private int _currentUserId;
+
     private BoardRole _currentUserRole;
 
     private bool _isReorderingColumns = false;
@@ -78,6 +85,8 @@ public partial class Board
     private List<MemberModel> _visibleHeaderMembers = [];
 
     private int _hiddenHeaderMembersCount;
+
+    private long _dropContainerVersion;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -99,6 +108,8 @@ public partial class Board
             return;
         }
 
+        _currentUserId = userId.Value;
+
         var currentUserResult = await BoardMembersService.GetByIdAsync(BoardId, userId.Value);
 
         if (!currentUserResult.IsSuccess)
@@ -109,6 +120,52 @@ public partial class Board
 
         _currentUserRole = currentUserResult.Value!.Role;
 
+        await FetchBoard();
+
+        var membersResult = await BoardMembersService.GetAllAsync(BoardId);
+
+        if (!membersResult.IsSuccess)
+        {
+            Snackbar.Add($"Error getting board members: {membersResult.ErrorMessage}", Severity.Error);
+            return;
+        }
+
+        _boardMembers = membersResult.Value!.Select(m => m.ToMemberModel()).ToList();
+
+        _visibleHeaderMembers = _boardMembers.Take(3).ToList();
+        _hiddenHeaderMembersCount = Math.Max(0, _boardMembers.Count - 3);
+
+        await BoardHubClient.ConnectAsync();
+
+        BoardHubClient.OnBoardChanged += HandleBoardChangedNotification;
+        BoardHubClient.OnTaskCreated += HandleOnNewTaskCreated;
+        BoardHubClient.OnTaskUpdated += HandleOnTaskUpdated;
+        BoardHubClient.OnTaskDeleted += HandleOnTaskDeleted;
+        BoardHubClient.OnColumnCreated += HandleOnColumnCreated;
+        BoardHubClient.OnColumnUpdated += HandleOnColumnUpdated;
+        BoardHubClient.OnColumnDeleted += HandleOnColumnDeleted;
+
+        await BoardHubClient.JoinBoardGroupAsync(BoardId);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        UiStateService.OnBoardSettingsChanged -= HandleBoardSettingsChanged;
+
+        BoardHubClient.OnBoardChanged -= HandleBoardChangedNotification;
+        BoardHubClient.OnTaskCreated -= HandleOnNewTaskCreated;
+        BoardHubClient.OnTaskUpdated -= HandleOnTaskUpdated;
+        BoardHubClient.OnTaskDeleted -= HandleOnTaskDeleted;
+        BoardHubClient.OnColumnCreated -= HandleOnColumnCreated;
+        BoardHubClient.OnColumnUpdated -= HandleOnColumnUpdated;
+        BoardHubClient.OnColumnDeleted -= HandleOnColumnDeleted;
+
+        await BoardHubClient.LeaveBoardGroupAsync(BoardId);
+        await BoardHubClient.DisconnectAsync();
+    }
+
+    private async Task FetchBoard()
+    {
         var boardResult = await BoardsService.GetAsync(BoardId);
 
         if (!boardResult.IsSuccess)
@@ -132,19 +189,127 @@ public partial class Board
             .ThenBy(t => t.Order)
             .ToList();
 
-        var membersResult = await BoardMembersService.GetAllAsync(BoardId);
+        _taskDropContainer?.Refresh();
+        _columnDropContainer?.Refresh();
 
-        if (!membersResult.IsSuccess)
+        _dropContainerVersion++;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async void HandleOnNewTaskCreated(int boardId, TaskSummaryDto task)
+    {
+        if (BoardId != boardId || task.CreatedBy == _currentUserId)
         {
-            Snackbar.Add($"Error getting board members: {membersResult.ErrorMessage}", Severity.Error);
+            return;
+        }
+        
+        var taskModel = task.ToTaskSummaryModel();
+
+        var column = _columns.FirstOrDefault(c => c.Id == taskModel.ColumnId);
+
+        if (column is null)
+        {
+            Snackbar.Add($"Error while getting a new task");
             return;
         }
 
-        _boardMembers = membersResult.Value!.Select(m => m.ToMemberModel()).ToList();
+        column.Tasks.Add(taskModel);
+        _allTasks.Add(taskModel);
 
-        _visibleHeaderMembers = _boardMembers.Take(3).ToList();
-        _hiddenHeaderMembersCount = Math.Max(0, _boardMembers.Count - 3);
+        _taskDropContainer.Refresh();
     }
+
+    private async void HandleOnTaskUpdated(int boardId, TaskSummaryDto task)
+    {
+        if (boardId != BoardId)
+        {
+            return;
+        }
+
+        var oldTask = _allTasks.FirstOrDefault(t => t.Id == task.Id);
+
+        if (oldTask is null)
+        {
+            Snackbar.Add($"Error while getting an updated task");
+            return;
+        }
+
+        oldTask.Title = task.Title;
+        oldTask.Priority = task.Priority;
+        oldTask.IsComplete = task.IsComplete;
+
+        _taskDropContainer?.Refresh();
+    }
+
+    private async void HandleOnTaskDeleted(int boardId, int taskId)
+    {
+        if (boardId != BoardId)
+        {
+            return;
+        }
+
+        var taskToRemove = _allTasks.FirstOrDefault(t => t.Id == taskId);
+        var column = _columns.FirstOrDefault(c => c.Id == taskToRemove?.ColumnId);
+
+        if (taskToRemove is not null && column is not null)
+        {
+            _allTasks.Remove(taskToRemove);
+            column.Tasks.Remove(taskToRemove);
+            _taskDropContainer.Refresh();
+        }
+    }
+
+    private async void HandleOnColumnUpdated(int boardId, ColumnSummaryDto column)
+    {
+        if (boardId != BoardId)
+        {
+            return;
+        }
+
+        var columnToUpdate = _columns.FirstOrDefault(c => c.Id == column.Id);
+
+        if (columnToUpdate is null)
+        {
+            Snackbar.Add($"Error while getting an updated column");
+            return;
+        }
+
+        columnToUpdate.Title = column.Title;
+        _columnDropContainer?.Refresh();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async void HandleOnColumnDeleted(int boardId, int columnId)
+    {
+        if (boardId != BoardId)
+        {
+            return;
+        }
+
+        var columnToRemove = _columns.FirstOrDefault(c => c.Id == columnId);
+
+        if (columnToRemove is not null)
+        {
+            _columns.Remove(columnToRemove);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async void HandleOnColumnCreated(int boardId, ColumnSummaryDto column)
+    {
+        if (boardId != BoardId || column.CreatedBy == _currentUserId)
+        {
+            return;
+        }
+
+        var columnModel = column.ToColumModel();
+
+        _columns.Add(columnModel);
+
+        await InvokeAsync(StateHasChanged);
+    }
+
     private async Task OnShowAllMembersClicked()
     {
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
@@ -295,7 +460,7 @@ public partial class Board
             BoardId = BoardId,
         };
 
-        var result = await ColumnsService.CreateAsync(request);
+        var result = await ColumnsService.CreateAsync(BoardId, request);
 
         if (!result.IsSuccess)
         {
@@ -342,7 +507,6 @@ public partial class Board
         var request = new ReorderColumnTasksRequest
         {
             MovedTaskId = dropItem.Item.Id,
-            ColumnId = newColumnId,
             MoveTaskRequests = tasksInTargetColumn.Select(t => new MoveTaskRequest
             {
                 TaskId = t.Id,
@@ -376,7 +540,7 @@ public partial class Board
             .ThenBy(t => t.Order)
             .ToList();
 
-        var result = await ColumnsService.ReorderAsync(newColumnId, request);
+        var result = await ColumnsService.ReorderAsync(BoardId, newColumnId, request);
 
         if (!result.IsSuccess)
         {
@@ -457,7 +621,7 @@ public partial class Board
             Order = column.Order
         };
 
-        var result = await ColumnsService.UpdateAsync(column.Id, request);
+        var result = await ColumnsService.UpdateAsync(BoardId, column.Id, request);
 
         if (!result.IsSuccess)
         {
@@ -503,10 +667,10 @@ public partial class Board
         {
             isConfirmed = (bool)result.Data;
         }
-        
+
         if (isConfirmed == true)
         {
-            var response = await ColumnsService.DeleteAsync(column.Id);
+            var response = await ColumnsService.DeleteAsync(BoardId, column.Id);
 
             if (!response.IsSuccess)
             {
@@ -526,10 +690,10 @@ public partial class Board
     private async Task OnColumnDropped(MudItemDropInfo<ColumnModel> dropItem)
     {
         var newIndex = dropItem.IndexInZone;
-        
+
         var column = dropItem.Item;
         _columns.Remove(column);
-        
+
         newIndex = Math.Clamp(newIndex, 0, _columns.Count);
         _columns.Insert(newIndex, column);
 
@@ -554,7 +718,7 @@ public partial class Board
         if (!result.IsSuccess)
         {
             Snackbar.Add($"Error moving column: {result.ErrorMessage}", Severity.Error);
-            
+
             await OnInitializedAsync();
             _columnDropContainer.Refresh();
         }
@@ -593,19 +757,15 @@ public partial class Board
 
     private async void HandleBoardSettingsChanged()
     {
-        var boardResult = await BoardsService.GetAsync(BoardId);
-
-        if (!boardResult.IsSuccess)
-        {
-            Snackbar.Add($"Error while fetching the board: {boardResult.ErrorMessage}", Severity.Error);
-            return;
-        }
-
-        var boardDto = boardResult.Value!;
-
-        _backgroundColor = boardDto.BackgroundColor;
-        _boardTitle = boardDto.Title;
-
+        await FetchBoard();
         StateHasChanged();
+    }
+
+    private async void HandleBoardChangedNotification(int id)
+    {
+        if (id == BoardId)
+        {
+            await FetchBoard();
+        }
     }
 }

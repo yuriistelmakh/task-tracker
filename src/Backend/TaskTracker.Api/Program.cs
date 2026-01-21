@@ -11,6 +11,7 @@ using System.Text.Json.Serialization;
 using TaskTracker.Api.Extensions;
 using TaskTracker.Application;
 using TaskTracker.Infrastructure;
+using TaskTracker.Infrastructure.Realtime;
 using TaskTracker.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,14 +33,13 @@ builder.Services.AddSwaggerGen(options =>
 
 
 builder.Services.AddLogging();
-
+builder.Services.AddSignalR();
 builder.Services.AddPersistence();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
-
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
@@ -66,10 +66,18 @@ var app = builder.Build();
 
 app.MigrateDatabase();
 
+app.UseCors(policy => policy
+    .WithOrigins("https://localhost:7289")
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials());
+
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<BoardHub>("/hubs/board");
 
 if (app.Environment.IsDevelopment())
 {

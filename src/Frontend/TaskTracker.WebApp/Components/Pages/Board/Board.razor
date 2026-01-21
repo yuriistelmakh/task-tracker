@@ -191,6 +191,7 @@
             else
             {
                 <MudDropContainer T=@TaskSummaryModel
+                                  @key=@_dropContainerVersion
                                   Items=@_allTasks
                                   Class="d-flex flex-nowrap gap-4"
                                   @ref=@_taskDropContainer
@@ -373,11 +374,12 @@
                             }
                         }
                     </ChildContent>
-                    <ItemRenderer Context="task">
+                        <ItemRenderer Context="task">
                         <div>
                             <MudPaper Class="task d-flex flex-column my-1 mud-theme-secondary cursor-pointer overflow-hidden"
                                       Elevation=1
                                       Style="min-height: 70px"
+                                          @key=@task.Id
                                       @onclick=@(() => OnTaskClicked(task.Id))>
                                 <div style="height: 4px; width: 100%; background-color: @GetColorForPriority(task.Priority);"></div>
 

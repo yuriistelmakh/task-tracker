@@ -2,21 +2,25 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using TaskTracker.Application.Interfaces.SignalR;
 using TaskTracker.Application.Interfaces.UoW;
 using TaskTracker.Domain.Entities;
+using TaskTracker.Domain.Mapping;
 
 namespace TaskTracker.Application.Features.Columns.Commands.CreateBoardColumns;
 
-public class CreateColumnCommandHandler : IRequestHandler<CreateColumnCommand, int>
+public class CreateColumnCommandHandler : IRequestHandler<CreateColumnCommand, Result<int>>
 {
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
+    private readonly IBoardNotificator _boardNotificator;
 
-    public CreateColumnCommandHandler(IUnitOfWorkFactory unitOfWorkFactory)
+    public CreateColumnCommandHandler(IUnitOfWorkFactory unitOfWorkFactory, IBoardNotificator boardNotificator)
     {
         _unitOfWorkFactory = unitOfWorkFactory;
+        _boardNotificator = boardNotificator;
     }
 
-    public async Task<int> Handle(CreateColumnCommand request, CancellationToken cancellationToken)
+    public async Task<Result<int>> Handle(CreateColumnCommand request, CancellationToken cancellationToken)
     {
         using var uow = _unitOfWorkFactory.Create();
 
@@ -29,10 +33,14 @@ public class CreateColumnCommandHandler : IRequestHandler<CreateColumnCommand, i
             Order = request.Order
         };
 
-        var result = await uow.ColumnRepository.AddAsync(column);
+        var id = await uow.ColumnRepository.AddAsync(column);
 
         uow.Commit();
 
-        return result;
+        column.Id = id;
+
+        await _boardNotificator.ColumnCreatedAsync(request.BoardId, column.ToColumnSummaryDto());
+
+        return Result<int>.Success(id);
     }
 }

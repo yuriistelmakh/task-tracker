@@ -26,20 +26,6 @@ public class TaskRepository : Repository<BoardTask, int>, IBoardTaskRepository
         return result;
     }
 
-    public async Task<bool> UpdateStatusAsync(int id, bool status, int updatedBy)
-    {
-        var sql = @"
-            UPDATE Tasks
-            SET IsComplete = @Status,
-            UpdatedBy = @UpdatedBy
-            WHERE Id = @Id
-        ";
-
-        var result = await Connection.ExecuteAsync(sql, param: new { status, id, updatedBy }, transaction: Transaction);
-
-        return result > 0;
-    }
-
     public async Task<bool> UpdateOrderAsync(int id, int order)
     {
         var sql = @"

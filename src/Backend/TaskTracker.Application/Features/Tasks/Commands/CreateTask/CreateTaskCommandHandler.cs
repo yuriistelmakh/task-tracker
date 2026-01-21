@@ -2,18 +2,22 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using TaskTracker.Application.Interfaces.SignalR;
 using TaskTracker.Application.Interfaces.UoW;
 using TaskTracker.Domain.Entities;
+using TaskTracker.Domain.Mapping;
 
 namespace TaskTracker.Application.Features.Tasks.Commands.CreateTask;
 
 public class CreateTaskCommandHandler : IRequestHandler<CreateTaskCommand, int>
 {
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
+    private readonly IBoardNotificator _boardNotificator;
 
-    public CreateTaskCommandHandler(IUnitOfWorkFactory unitOfWorkFactory)
+    public CreateTaskCommandHandler(IUnitOfWorkFactory unitOfWorkFactory, IBoardNotificator boardNotificator)
     {
         _unitOfWorkFactory = unitOfWorkFactory;
+        _boardNotificator = boardNotificator;
     }
 
     public async Task<int> Handle(CreateTaskCommand request, CancellationToken cancellationToken)
@@ -29,10 +33,14 @@ public class CreateTaskCommandHandler : IRequestHandler<CreateTaskCommand, int>
             Order = request.Order
         };
 
-        var result = await uow.TaskRepository.AddAsync(task);
+        var id = await uow.TaskRepository.AddAsync(task);
 
         uow.Commit();
 
-        return result;
+        task.Id = id;
+
+        await _boardNotificator.TaskCreatedAsync(request.BoardId, task.ToTaskSummaryDto());
+
+        return id;
     }
 }
