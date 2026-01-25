@@ -17,10 +17,13 @@ public interface IBoardHubClient
     event Action<int, ColumnSummaryDto>? OnColumnUpdated;
     event Action<int, int>? OnColumnDeleted;
     event Action<int, ColumnSummaryDto>? OnColumnCreated;
+    event Action<int, int>? OnUserJoined;
+    event Action<int, int>? OnUserLeft;
+    event Action<int, IReadOnlyCollection<int>>? OnOnlineUsersUpdated;
 
     Task ConnectAsync();
     Task DisconnectAsync();
 
-    Task JoinBoardGroupAsync(int boardId);
-    Task LeaveBoardGroupAsync(int boardId);
+    Task JoinBoardGroupAsync(int boardId, int userId);
+    Task LeaveBoardGroupAsync(int boardId, int userId);
 }

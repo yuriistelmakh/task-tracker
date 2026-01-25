@@ -44,7 +44,7 @@ public class AuthHeaderHandler : DelegatingHandler
             }
         }
 
-        var response = await base.SendAsync(request, cancellationToken);
+            var response = await base.SendAsync(request, cancellationToken);
 
         if (response.StatusCode != HttpStatusCode.Unauthorized)
         {

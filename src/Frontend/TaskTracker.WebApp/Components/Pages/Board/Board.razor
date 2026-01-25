@@ -26,7 +26,7 @@
                 @_boardTitle
             </MudText>
 
-            <MudAutocomplete Value=@_taskSearchInput
+            @* <MudAutocomplete Value=@_taskSearchInput
                           T=@TaskSummaryModel
                           ValueChanged=@OnTaskSelectedFromSearch
                           Placeholder="Search tasks..."
@@ -64,7 +64,7 @@
                         <MudIcon Icon=@Icons.Material.Filled.AccountCircle/>
                     </MudStack>
                 </ItemTemplate>          
-            </MudAutocomplete>
+            </MudAutocomplete> *@
         </MiddleContent>
 
         <RightContent>
@@ -76,7 +76,7 @@
 
                     <div style="@(isLast ? "" : "margin-right: -12px;")">
                         <MudAvatar Class="cursor-pointer"
-                                   Style="border: 2px solid var(--mud-palette-background);"
+                                   Style=@($"border: 2px solid {(member.IsOnline ? "blue" : "var(--mud-palette-background);")}")
                                    @onmouseenter=@(() => _hoveredMemberId = member.Id)
                                    @onmouseleave=@(() => _hoveredMemberId = null)>
                             <MudIcon Icon=@Icons.Material.Filled.AccountCircle />

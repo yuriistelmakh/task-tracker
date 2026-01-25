@@ -23,6 +23,10 @@ public class BoardHubClient : IBoardHubClient
     public event Action<int, ColumnSummaryDto>? OnColumnUpdated;
     public event Action<int, int>? OnColumnDeleted;
 
+    public event Action<int, int>? OnUserJoined;
+    public event Action<int, int>? OnUserLeft;
+    public event Action<int, IReadOnlyCollection<int>>? OnOnlineUsersUpdated;
+
     public BoardHubClient(
         IConfiguration configuration,
         ISessionCacheService sessionCacheService)
@@ -64,19 +68,19 @@ public class BoardHubClient : IBoardHubClient
         }
     }
 
-    public async Task JoinBoardGroupAsync(int boardId)
+    public async Task JoinBoardGroupAsync(int boardId, int userId)
     {
         if (_hubConnection is not null && _hubConnection.State == HubConnectionState.Connected)
         {
-            await _hubConnection.InvokeAsync("JoinBoard", boardId);
+            await _hubConnection.InvokeAsync("JoinBoard", boardId, userId);
         }
     }
 
-    public async Task LeaveBoardGroupAsync(int boardId)
+    public async Task LeaveBoardGroupAsync(int boardId, int userId)
     {
         if (_hubConnection is not null && _hubConnection.State == HubConnectionState.Connected)
         {
-            await _hubConnection.InvokeAsync("LeaveBoard", boardId);
+            await _hubConnection.InvokeAsync("LeaveBoard", boardId, userId);
         }
     }
 
@@ -97,6 +101,21 @@ public class BoardHubClient : IBoardHubClient
 
     private void RegisterReceivers(HubConnection connection)
     {
+        connection.On<int, int>("ReceiveUserJoined", (boardId, userId) =>
+        {
+            OnUserJoined?.Invoke(boardId, userId);
+        });
+
+        connection.On<int, int>("ReceiveUserLeft", (boardId, userId) =>
+        {
+            OnUserLeft?.Invoke(boardId, userId);
+        });
+
+        connection.On<int, IReadOnlyCollection<int>>("ReceiveOnlineUsersUpdated", (boardId, users) =>
+        {
+            OnOnlineUsersUpdated?.Invoke(boardId, users);
+        });
+
         connection.On<int, TaskSummaryDto>("ReceiveTaskCreated", (boardId, task) =>
         {
             OnTaskCreated?.Invoke(boardId, task);

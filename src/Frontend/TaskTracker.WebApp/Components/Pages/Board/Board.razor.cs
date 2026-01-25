@@ -16,7 +16,7 @@ namespace TaskTracker.WebApp.Components.Pages.Board;
 
 public partial class Board : IAsyncDisposable
 {
-    private const int HeaderMembersToShow = 3;
+    private const int DefaultHeaderMembersToShow = 3;
 
     [Parameter]
     public int BoardId { get; set; }
@@ -62,6 +62,7 @@ public partial class Board : IAsyncDisposable
     private List<TaskSummaryModel> _allTasks = [];
 
     // Members / header state
+    private HashSet<int> _pendingMemberIds = [];
     private List<MemberModel> _boardMembers = [];
     private List<MemberModel> _visibleHeaderMembers = [];
     private int _hiddenHeaderMembersCount;
@@ -132,35 +133,41 @@ public partial class Board : IAsyncDisposable
 
         _boardMembers = membersResult.Value!.Select(m => m.ToMemberModel()).ToList();
 
-        _visibleHeaderMembers = _boardMembers.Take(HeaderMembersToShow).ToList();
-        _hiddenHeaderMembersCount = Math.Max(0, _boardMembers.Count - HeaderMembersToShow);
+        var currentMember = _boardMembers.FirstOrDefault(m => m.Id == _currentUserId);
+        if (currentMember is not null)
+        {
+            currentMember.IsOnline = true;
+        }
 
-        await BoardHubClient.ConnectAsync();
+        await UpdateHeader();
 
-        BoardHubClient.OnBoardChanged += HandleBoardChangedNotification;
+        BoardHubClient.OnBoardChanged += HandleOnBoardChanged;
         BoardHubClient.OnTaskCreated += HandleOnNewTaskCreated;
         BoardHubClient.OnTaskUpdated += HandleOnTaskUpdated;
         BoardHubClient.OnTaskDeleted += HandleOnTaskDeleted;
         BoardHubClient.OnColumnCreated += HandleOnColumnCreated;
         BoardHubClient.OnColumnUpdated += HandleOnColumnUpdated;
         BoardHubClient.OnColumnDeleted += HandleOnColumnDeleted;
-
-        await BoardHubClient.JoinBoardGroupAsync(BoardId);
+        BoardHubClient.OnOnlineUsersUpdated += HandleOnOnlineUsersUpdated;
+        
+        await BoardHubClient.ConnectAsync();
+        await BoardHubClient.JoinBoardGroupAsync(BoardId, _currentUserId);
     }
 
     public async ValueTask DisposeAsync()
     {
         UiStateService.OnBoardSettingsChanged -= HandleBoardSettingsChanged;
 
-        BoardHubClient.OnBoardChanged -= HandleBoardChangedNotification;
+        BoardHubClient.OnBoardChanged -= HandleOnBoardChanged;
         BoardHubClient.OnTaskCreated -= HandleOnNewTaskCreated;
         BoardHubClient.OnTaskUpdated -= HandleOnTaskUpdated;
         BoardHubClient.OnTaskDeleted -= HandleOnTaskDeleted;
         BoardHubClient.OnColumnCreated -= HandleOnColumnCreated;
         BoardHubClient.OnColumnUpdated -= HandleOnColumnUpdated;
         BoardHubClient.OnColumnDeleted -= HandleOnColumnDeleted;
+        BoardHubClient.OnOnlineUsersUpdated -= HandleOnOnlineUsersUpdated;
 
-        await BoardHubClient.LeaveBoardGroupAsync(BoardId);
+        await BoardHubClient.LeaveBoardGroupAsync(BoardId, _currentUserId);
         await BoardHubClient.DisconnectAsync();
     }
 
@@ -168,7 +175,47 @@ public partial class Board : IAsyncDisposable
     // Hub notifications / external callbacks
     // ----------------------------
 
-    private async void HandleBoardChangedNotification(int id)
+    private async Task UpdateHeader()
+    {
+        _boardMembers = _boardMembers
+            .OrderByDescending(m => m.IsOnline)
+            .ThenBy(m => m.DisplayName)
+            .ToList();
+
+        var onlineCount = _boardMembers.Count(m => m.IsOnline);
+
+        var membersToShow = 0;
+
+        if (onlineCount < DefaultHeaderMembersToShow)
+        {
+            membersToShow = DefaultHeaderMembersToShow;
+        }
+        else
+        {
+            membersToShow = onlineCount;
+        }
+
+        _visibleHeaderMembers = _boardMembers.Take(membersToShow).ToList();
+        _hiddenHeaderMembersCount = Math.Max(0, _boardMembers.Count - membersToShow);
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async void HandleOnOnlineUsersUpdated(int boardId, IReadOnlyCollection<int> userIds)
+    {
+        _pendingMemberIds = userIds.ToHashSet();
+
+        foreach (var member in _boardMembers)
+        {
+            member.IsOnline = _pendingMemberIds.Contains(member.Id);
+        }
+
+        await UpdateHeader();
+
+        _pendingMemberIds.Clear();
+    }
+
+    private async void HandleOnBoardChanged(int id)
     {
         if (id == BoardId)
         {

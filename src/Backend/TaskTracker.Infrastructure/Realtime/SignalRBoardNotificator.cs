@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using TaskTracker.Application.Interfaces.SignalR;
 using TaskTracker.Domain.DTOs.Columns;
@@ -52,5 +54,11 @@ public class SignalRBoardNotificator : IBoardNotificator
     public async Task ColumnDeletedAsync(int boardId, int columnId)
     {
         await _context.Clients.Group($"Board_{boardId}").ReceiveColumnDeleted(boardId, columnId);
+    }
+
+
+    public async Task OnlineUsersUpdatedAsync(int boardId, IReadOnlyCollection<int> users)
+    {
+        await _context.Clients.Group($"Board_{boardId}").ReceiveOnlineUsersUpdated(boardId, users);
     }
 }

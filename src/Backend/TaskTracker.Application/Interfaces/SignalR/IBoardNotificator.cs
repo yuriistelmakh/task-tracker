@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using TaskTracker.Domain.DTOs.Columns;
 using TaskTracker.Domain.DTOs.Tasks;
 
@@ -10,6 +11,7 @@ public interface IBoardNotificator
     Task ColumnCreatedAsync(int boardId, ColumnSummaryDto column);
     Task ColumnDeletedAsync(int boardId, int columnId);
     Task ColumnUpdatedAsync(int boardId, ColumnSummaryDto column);
+    Task OnlineUsersUpdatedAsync(int boardId, IReadOnlyCollection<int> users);
     Task TaskCreatedAsync(int boardId, TaskSummaryDto task);
     Task TaskDeletedAsync(int boardId, int taskId);
     Task TaskUpdatedAsync(int boardId, TaskSummaryDto task);
