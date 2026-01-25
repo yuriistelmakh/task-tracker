@@ -21,4 +21,7 @@ public interface IBoardsApi
 
     [Post("/api/boards/{id}/reorder")]
     public Task<IApiResponse> ReorderColumnsAsync(int id, [Body] ReorderBoardColumnsRequest request);
+
+    [Delete("/api/boards/{id}")]
+    public Task<IApiResponse> DeleteAsync(int id);
 }

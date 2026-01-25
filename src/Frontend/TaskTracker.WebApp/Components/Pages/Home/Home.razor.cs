@@ -61,7 +61,7 @@ public partial class Home
         var boardDtos = result.Value!;
 
         _boards = boardDtos.Items.Select(bd => bd.ToBoardModel()).ToList();
-        _boardsPagesCount = boardDtos.TotalCount / _pageSize + 1;
+        _boardsPagesCount = (int)Math.Ceiling((double)boardDtos.TotalCount / _pageSize);
 
         _isLoading = false;
     }

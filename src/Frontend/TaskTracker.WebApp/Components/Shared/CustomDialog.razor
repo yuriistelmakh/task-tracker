@@ -1,6 +1,12 @@
 ﻿<MudDialog>
     <TitleContent>
-        <MudText Typo=@Typo.h6>@Title</MudText>
+        <MudStack Row=true
+                  Class="d-flex justify-space-between align-center">
+            <MudText Typo=@Typo.h6>@Title</MudText>
+            <MudIconButton Icon=@Icons.Material.Filled.Close
+                           @onclick=OnCancel/>
+        </MudStack>
+        
     </TitleContent>
 
     <DialogContent>

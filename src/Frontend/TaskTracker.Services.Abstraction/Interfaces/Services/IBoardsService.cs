@@ -7,6 +7,7 @@ namespace TaskTracker.Services.Abstraction.Interfaces.Services;
 public interface IBoardsService
 {
     Task<Result<int>> CreateAsync(CreateBoardRequest request);
+    Task<Result> DeleteAsync(int id);
     Task<Result<PagedResponse<BoardSummaryDto>>> GetAllAsync(int page, int pageSize);
     Task<Result<BoardDetailsDto>> GetAsync(int id);
     Task<Result> ReorderColumnsAsync(int id, ReorderBoardColumnsRequest request);
