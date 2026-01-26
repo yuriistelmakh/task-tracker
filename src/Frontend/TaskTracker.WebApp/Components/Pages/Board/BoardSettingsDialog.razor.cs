@@ -9,6 +9,7 @@ using TaskTracker.Services.Abstraction.Interfaces.Services;
 using TaskTracker.WebApp.Components.Shared;
 using TaskTracker.WebApp.Models;
 using TaskTracker.WebApp.Models.Mapping;
+using TaskTracker.WebApp.Models.Users;
 
 namespace TaskTracker.WebApp.Components.Pages.Board;
 
