@@ -17,8 +17,6 @@ public interface IBoardHubClient
     event Action<int, ColumnSummaryDto>? OnColumnUpdated;
     event Action<int, int>? OnColumnDeleted;
     event Action<int, ColumnSummaryDto>? OnColumnCreated;
-    event Action<int, int>? OnUserJoined;
-    event Action<int, int>? OnUserLeft;
     event Action<int, IReadOnlyCollection<int>>? OnOnlineUsersUpdated;
 
     Task ConnectAsync();

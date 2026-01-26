@@ -35,8 +35,6 @@ public class BoardHub : Hub<IBoardClient>
         await _mediator.Send(command);
     }
 
-    
-
     public async Task LeaveBoard(int boardId, int userId)
     {
         var groupName = $"Board_{boardId}";

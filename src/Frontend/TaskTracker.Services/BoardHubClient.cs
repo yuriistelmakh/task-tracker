@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.JSInterop;
 using TaskTracker.Domain.DTOs.Columns;
 using TaskTracker.Domain.DTOs.Tasks;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
+
+namespace TaskTracker.Services;
 
 public class BoardHubClient : IBoardHubClient
 {
@@ -23,8 +24,6 @@ public class BoardHubClient : IBoardHubClient
     public event Action<int, ColumnSummaryDto>? OnColumnUpdated;
     public event Action<int, int>? OnColumnDeleted;
 
-    public event Action<int, int>? OnUserJoined;
-    public event Action<int, int>? OnUserLeft;
     public event Action<int, IReadOnlyCollection<int>>? OnOnlineUsersUpdated;
 
     public BoardHubClient(
@@ -101,16 +100,6 @@ public class BoardHubClient : IBoardHubClient
 
     private void RegisterReceivers(HubConnection connection)
     {
-        connection.On<int, int>("ReceiveUserJoined", (boardId, userId) =>
-        {
-            OnUserJoined?.Invoke(boardId, userId);
-        });
-
-        connection.On<int, int>("ReceiveUserLeft", (boardId, userId) =>
-        {
-            OnUserLeft?.Invoke(boardId, userId);
-        });
-
         connection.On<int, IReadOnlyCollection<int>>("ReceiveOnlineUsersUpdated", (boardId, users) =>
         {
             OnOnlineUsersUpdated?.Invoke(boardId, users);

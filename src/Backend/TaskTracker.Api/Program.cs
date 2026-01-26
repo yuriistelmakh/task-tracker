@@ -33,7 +33,12 @@ builder.Services.AddSwaggerGen(options =>
 
 
 builder.Services.AddLogging();
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(hubOptions =>
+{
+    hubOptions.ClientTimeoutInterval = TimeSpan.FromSeconds(15);
+    hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(15);
+});
+
 builder.Services.AddPersistence();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
