@@ -1,4 +1,5 @@
-﻿using TaskTracker.Domain.Enums;
+﻿using System;
+using TaskTracker.Domain.Enums;
 namespace TaskTracker.Domain.DTOs.Users;
 
 public class MemberSummaryDto
@@ -14,4 +15,6 @@ public class MemberSummaryDto
     public BoardRole Role { get; set; }
 
     public string? AvatarUrl { get; set; }
+
+    public DateTime JoinedAt { get; set; }
 }

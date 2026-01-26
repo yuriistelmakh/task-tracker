@@ -50,7 +50,6 @@ public partial class BoardSettingsDialog
     private int _pageSize = 4;
 
     private int _totalMembersCount;
-
     private int _totalMembersPages => _totalMembersCount / _pageSize + 1;
 
     private int _currentMembersPage = 1;

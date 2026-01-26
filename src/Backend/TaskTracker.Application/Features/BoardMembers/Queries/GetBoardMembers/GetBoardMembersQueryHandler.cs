@@ -27,7 +27,7 @@ public class GetBoardMembersQueryHandler : IRequestHandler<GetBoardMembersQuery,
 
         uow.Commit();
 
-        var dtos = members.Select(m => m.User.ToMemberSummaryDto(m.Role));
+        var dtos = members.Select(m => m.ToMemberSummaryDto(m.Role));
 
         return dtos;
     }
