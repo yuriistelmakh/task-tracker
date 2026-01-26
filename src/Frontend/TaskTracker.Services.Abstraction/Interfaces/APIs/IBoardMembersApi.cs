@@ -16,6 +16,9 @@ public interface IBoardMembersApi
     [Get("/api/boards/{boardId}/members/{userId}")]
     public Task<IApiResponse<MemberSummaryDto>> GetByIdAsync(int boardId, int userId);
 
+    [Delete("/api/boards/{boardId}/members/{userId}")]
+    public Task<IApiResponse> KickAsync(int boardId, int userId);
+
     [Put("/api/boards/{boardId}/members/{userId}")]
     public Task<IApiResponse> UpdateRoleAsync(int boardId, int userId, [Body] UpdateBoardMemberRoleRequest request);
 

@@ -77,4 +77,13 @@ public class BoardMembersService : IBoardMembersService
             ? Result.Success()
             : Result.Failure(result.Error.Content!);
     }
+
+    public async Task<Result> KickAsync(int boardId, int userId)
+    {
+        var result = await _boardMembersApi.KickAsync(boardId, userId);
+
+        return result.IsSuccessful
+            ? Result.Success()
+            : Result.Failure(result.Error.Content!);
+    }
 }

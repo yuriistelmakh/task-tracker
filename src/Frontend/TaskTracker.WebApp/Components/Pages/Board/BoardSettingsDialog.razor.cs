@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using TaskTracker.Domain.DTOs.BoardMembers;
 using TaskTracker.Domain.Enums;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
@@ -50,7 +53,7 @@ public partial class BoardSettingsDialog
     private int _pageSize = 4;
 
     private int _totalMembersCount;
-    private int _totalMembersPages => _totalMembersCount / _pageSize + 1;
+    private int _totalMembersPages => (int)Math.Ceiling((double)_totalMembersCount / _pageSize);
 
     private int _currentMembersPage = 1;
 
@@ -62,10 +65,12 @@ public partial class BoardSettingsDialog
 
     private BoardRole _selectedInviteRole = BoardRole.Member;
 
-    private string? _ownersCount;
-    private string? _adminsCount;
-    private string? _membersCount;
-    private string? _visitorsCount;
+    private string _globalSearchPrompt;
+
+    private int? _ownersCount;
+    private int? _adminsCount;
+    private int? _membersCount;
+    private int? _visitorsCount;
 
     private readonly List<string> _backgroundColorOptions = [
         "#5A7863",
@@ -89,7 +94,7 @@ public partial class BoardSettingsDialog
     protected override async Task OnInitializedAsync()
     {
         var boardResult = await BoardsService.GetAsync(BoardId);
-        
+
         if (!boardResult.IsSuccess)
         {
             Snackbar.Add($"Error getting board: {boardResult.ErrorMessage}", Severity.Error);
@@ -102,10 +107,10 @@ public partial class BoardSettingsDialog
         _description = boardDto.Description;
         _totalMembersCount = boardDto.MemberStatistics.TotalMembers;
 
-        _ownersCount = boardDto.MemberStatistics.OwnersCount.ToString();
-        _adminsCount = boardDto.MemberStatistics.AdministratorsCount.ToString();
-        _membersCount = boardDto.MemberStatistics.MembersCount.ToString();
-        _visitorsCount = boardDto.MemberStatistics.VisitorsCount.ToString();
+        _ownersCount = boardDto.MemberStatistics.OwnersCount;
+        _adminsCount = boardDto.MemberStatistics.AdministratorsCount;
+        _membersCount = boardDto.MemberStatistics.MembersCount;
+        _visitorsCount = boardDto.MemberStatistics.VisitorsCount;
 
         var boardMembersResult = await BoardMembersService.GetAllAsync(BoardId, _currentMembersPage, _pageSize);
 
@@ -307,18 +312,8 @@ public partial class BoardSettingsDialog
 
     private async Task PerformGlobalSearch(string prompt)
     {
-        var result = await BoardMembersService.SearchAsync(BoardId, prompt, _currentMembersPage, _pageSize);
-
-        if (!result.IsSuccess)
-        {
-            Snackbar.Add($"Error getting members: {result.ErrorMessage}");
-            return;
-        }
-
-        _members = result.Value!.Items.Select(m => m.ToMemberModel()).ToList();
-        _totalMembersCount = result.Value!.TotalCount;
-
-        StateHasChanged();
+        _globalSearchPrompt = prompt;
+        await FetchMembers();
     }
 
     private async Task SendInvitations()
@@ -366,5 +361,99 @@ public partial class BoardSettingsDialog
         _members = boardMembersResult.Value!.Select(m => m.ToMemberModel()).ToList();
 
         StateHasChanged();
+    }
+
+    private async Task FetchMembers()
+    {
+        var result = await BoardMembersService.SearchAsync(BoardId, _globalSearchPrompt, _currentMembersPage, _pageSize);
+
+        if (!result.IsSuccess)
+        {
+            Snackbar.Add($"Error getting members: {result.ErrorMessage}");
+            return;
+        }
+
+        _members = result.Value!.Items.Select(m => m.ToMemberModel()).ToList();
+        _totalMembersCount = result.Value!.TotalCount;
+
+        StateHasChanged();
+    }
+
+    private async Task OnMemberKickClicked(MemberModel member)
+    {
+        var parameters = new DialogParameters<CustomDialog>
+            {
+                { x => x.Title, "Warning" },
+                { x => x.MainButtonText, "Delete" },
+                { x => x.MainButtonColor, Color.Error },
+                { x => x.MainButtonVariant, Variant.Filled }
+            };
+
+        bool isCurrentUserLeaving = member.Id == _currentUserId;
+
+        if (isCurrentUserLeaving)
+        {
+            parameters.Add(x => x.Description, "Are you sure you want to leave this board?");
+        }
+        else
+        {
+            parameters.Add(x => x.Description, "Are you sure you want to kick this member from this board?");
+        }
+
+        var dialog = await DialogService.ShowAsync<CustomDialog>(string.Empty, parameters);
+
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult.Data is null || !(bool)dialogResult.Data)
+        {
+            return;
+        }
+
+        if (isCurrentUserLeaving &&
+            _currentUserRole == BoardRole.Owner &&
+            _members.Count(m => m.Role == BoardRole.Owner) == 1)
+        {
+            Snackbar.Add($"A board must have at least one owner. Assign somebody to be its owner or delete the board.", Severity.Warning);
+            return;
+        }
+
+        var result = await BoardMembersService.KickAsync(BoardId, member.Id);
+
+        if (!result.IsSuccess)
+        {
+            Snackbar.Add($"Error removing member: {result.ErrorMessage}", Severity.Error);
+            return;
+        }
+
+        if (isCurrentUserLeaving)
+        {
+            Nav.NavigateTo("/");
+        }
+
+        await FetchMembers();
+
+        switch (member.Role)
+        {
+            case BoardRole.Owner:
+                {
+                    _ownersCount--;
+                    break;
+                }
+            case BoardRole.Admin:
+                {
+                    _adminsCount--;
+                    break;
+                }
+            case BoardRole.Member:
+                {
+                    _membersCount--;
+                    break;
+                }
+            case BoardRole.Visitor:
+                {
+                    _visitorsCount--;
+                    break;
+                }
+        }
     }
 }

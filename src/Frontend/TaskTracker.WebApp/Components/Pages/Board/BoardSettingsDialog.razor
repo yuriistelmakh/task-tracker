@@ -53,9 +53,9 @@
                 @if (_currentUserRole == BoardRole.Owner)
                 {
                     <MudButton Color=@Color.Error
-                                 Variant=@Variant.Filled
-                                 Class="my-2"
-                                 @onclick=OnDeleteBoardClicked>
+                               Variant=@Variant.Filled
+                               Class="my-2"
+                               @onclick=OnDeleteBoardClicked>
                         <MudStack Row=true
                                   Spacing=1>
                             <MudIcon Icon=@Icons.Material.Filled.Delete />
@@ -90,11 +90,11 @@
                             <MudPaper Class="d-flex align-center justify-center py-8 cursor-pointer"
                                       Elevation=2
                                       Style="@($"background-color:{color}; box-sizing: border-box;" +
-                                    (color == _selectedColor ? "border: 3px solid maroon" : "border: 3px solid transparent"))"
-                                      @onclick=@(() => OnColorClicked(color))>
-                            </MudPaper>
-                        </MudItem>
-                    }
+                                                                          (color == _selectedColor ? "border: 3px solid maroon" : "border: 3px solid transparent"))"
+                                  @onclick=@(() => OnColorClicked(color))>
+                        </MudPaper>
+                    </MudItem>
+                                        }
                 </MudGrid>
 
                 <MudContainer Class="d-flex justify-end pa-0 mt-2">
@@ -114,28 +114,30 @@
                 <MudGrid Spacing=3>
                     <MudItem xs=8>
                         <MudTextField T=string
-                                  Adornment=@Adornment.Start
-                                  AdornmentIcon=@Icons.Material.Filled.Search
-                                  Variant=@Variant.Outlined
-                                  DebounceInterval=500
-                                  ValueChanged=PerformGlobalSearch
-                                  Margin=@Margin.Dense
-                                  Style="width: 100%"
-                                  Placeholder="Search members..." />
+                                      Adornment=@Adornment.Start
+                                      AdornmentIcon=@Icons.Material.Filled.Search
+                                      Variant=@Variant.Outlined
+                                      DebounceInterval=500
+                                      ValueChanged=PerformGlobalSearch
+                                      Margin=@Margin.Dense
+                                      Style="width: 100%"
+                                      Placeholder="Search members..." />
 
                         <MudStack Class="pt-2"
                                   Style="min-height: 250px">
                             @foreach (var member in _members)
                             {
-                                <MudPaper Class="pa-2"
-                                          Elevation=0
-                                          Style="border: 1px solid var(--mud-palette-secondary)">
+                                var isKickAllowed = _currentUserRole >= BoardRole.Admin && member.Role != BoardRole.Owner;
+                                    <MudPaper Class=@($"pa-2 member-card {(isKickAllowed ? "is-kick-allowed" : string.Empty)}")
+                                              Elevation=0
+                                              Style="border: 1px solid var(--mud-palette-secondary); position: relative; overflow: hidden;">
 
-                                    <MudGrid Spacing=2>
-
-                                        <MudItem xs=6>
+                                        <MudStack Row=true
+                                                  AlignItems=@AlignItems.Center
+                                                  Justify=@Justify.SpaceBetween>
                                             <MudStack Row=true
-                                                      AlignItems=@AlignItems.Center>
+                                                      AlignItems=@AlignItems.Center
+                                                      Spacing=2>
                                                 <MudIcon Icon=@Icons.Material.Filled.AccountCircle
                                                          Size=@Size.Large />
                                                 <MudStack Spacing=0>
@@ -157,62 +159,42 @@
                                                     <MudText Typo=@Typo.subtitle2 Color=@Color.Primary>@($"@{member.Tag}")</MudText>
                                                 </MudStack>
                                             </MudStack>
-                                        </MudItem>
 
-                                        <MudItem xs=6>
-                                            @if (_currentUserRole > BoardRole.Member)
+                                            @if (_currentUserRole >= BoardRole.Admin)
                                             {
-                                                <MudSelect T=@BoardRole
-                                                           Margin=@Margin.Dense
-                                                           Variant=@Variant.Outlined
-                                                           FullWidth=true
-                                                           Value=@member.Role
-                                                           ValueChanged=@((BoardRole newRole) => OnRoleChange(member, newRole))
-                                                           Disabled=@(member.Role == BoardRole.Owner && member.Id != _currentUserId)>
-                                                    @if (_currentUserRole == BoardRole.Owner)
-                                                    {
-                                                        <MudSelectItem Value=@BoardRole.Owner>
-                                                            <MudText>Owner</MudText>
-                                                            <MudText Typo=@Typo.caption
-                                                                     Style="line-height: 5px !important">
-                                                                Has full control over the board including its deletion
-                                                            </MudText>
-                                                        </MudSelectItem>
-                                                    }
+                                                <MudStack Row=true
+                                                          Spacing=1
+                                                          AlignItems=@AlignItems.Center>
+                                                    <MudSelect T=@BoardRole
+                                                               Margin=@Margin.Dense
+                                                               Variant=@Variant.Outlined
+                                                               Style="width: 150px;"
+                                                               Value=@member.Role
+                                                               ValueChanged=@((BoardRole newRole) => OnRoleChange(member, newRole))
+                                                               Disabled=@(member.Role == BoardRole.Owner && member.Id != _currentUserId)>
+                                                        @if (_currentUserRole == BoardRole.Owner)
+                                                        {
+                                                            <MudSelectItem Value=@BoardRole.Owner>Owner</MudSelectItem>
+                                                        }
+                                                        <MudSelectItem Value=@BoardRole.Admin>Admin</MudSelectItem>
+                                                        <MudSelectItem Value=@BoardRole.Member>Member</MudSelectItem>
+                                                        <MudSelectItem Value=@BoardRole.Visitor>Visitor</MudSelectItem>
+                                                    </MudSelect>
 
-                                                    <MudSelectItem Value=@BoardRole.Admin>
-                                                        <MudText>Administrator</MudText>
-                                                        <MudText Typo=@Typo.caption>
-                                                            Can manage board settings and members
-                                                        </MudText>
-                                                    </MudSelectItem>
+                                                    <MudIconButton Icon=@Icons.Material.Filled.PersonRemove
+                                                                   Color=@Color.Error
+                                                                   Size=@Size.Small
+                                                                   Disabled=@(!isKickAllowed && member.Id != _currentUserId)
+                                                                   OnClick=@(() => OnMemberKickClicked(member)) />
 
-                                                    <MudSelectItem Value=@BoardRole.Member>
-                                                        <MudText>Member</MudText>
-                                                        <MudText Typo=@Typo.caption>
-                                                            Can create, edit and delete tasks
-                                                        </MudText>
-                                                    </MudSelectItem>
-
-                                                    <MudSelectItem Value=@BoardRole.Visitor>
-                                                        <MudText>Visitor</MudText>
-                                                        <MudText Typo=@Typo.caption>
-                                                            Can only view the board
-                                                        </MudText>
-                                                    </MudSelectItem>
-                                                </MudSelect>
+                                                </MudStack>
                                             }
                                             else
                                             {
-                                                <MudContainer Class="d-flex justify-end align-center pa-0 pr-2"
-                                                              Style="height: 100%">
-                                                    <MudText>@member.Role</MudText>
-                                                </MudContainer>
+                                                <MudText>@member.Role</MudText>
                                             }
-                                        </MudItem>
-
-                                    </MudGrid>
-                                </MudPaper>
+                                        </MudStack>
+                                    </MudPaper>
                             }
 
                             @if (_totalMembersPages > 1)
@@ -295,7 +277,7 @@
                                  Elevation=3>
                             <MudStack Row=true
                                       Spacing=1>
-                                <MudIcon Icon=@Icons.Material.Filled.ShowChart/>
+                                <MudIcon Icon=@Icons.Material.Filled.ShowChart />
                                 <MudText>Statistics</MudText>
                             </MudStack>
 
@@ -303,11 +285,11 @@
                             <MudText>@($"Admministrators: {_adminsCount}")</MudText>
                             <MudText>@($"Members: {_membersCount}")</MudText>
                             <MudText>@($"Visitors: {_visitorsCount}")</MudText>
-                            
+
                         </MudCard>
                     </MudItem>
                 </MudGrid>
-                <MudContainer Class="d-flex justify-end pa-0">
+                <MudContainer Class="d-flex justify-end pa-0 pt-2">
                     <MudButton Variant=@Variant.Filled
                                Color=@Color.Primary
                                @onclick=@OnCloseClicked>

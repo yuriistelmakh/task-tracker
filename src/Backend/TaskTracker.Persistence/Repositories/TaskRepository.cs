@@ -13,6 +13,19 @@ public class TaskRepository : Repository<BoardTask, int>, IBoardTaskRepository
     {
     }
 
+    public async Task<IEnumerable<BoardTask>> GetAllByAssignee(int assigneeId)
+    {
+        var sql = @"
+            SELECT *
+            FROM Tasks
+            WHERE AssigneeId = @AssigneeId
+        ";
+
+        var result = await Connection.QueryAsync<BoardTask>(sql, param: new { assigneeId }, transaction: Transaction);
+
+        return result;
+    }
+
     public async Task<bool> UpdateStatusAsync(int id, bool status, int updatedBy)
     {
         var sql = @"

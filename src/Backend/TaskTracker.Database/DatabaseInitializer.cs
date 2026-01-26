@@ -72,17 +72,21 @@ public class DatabaseInitializer
                 (4, @bid, 'Admin', GETDATE()),
                 (6, @bid, 'Member', GETDATE())", new { bid = boardId });
 
-            var columnId = await db.QuerySingleAsync<int>(@"
+            await db.ExecuteAsync(@"
             INSERT INTO [Columns] (BoardId, Title, [Order], CreatedBy, CreatedAt) 
-            VALUES (@bid, N'В черзі', 1, 1, GETDATE());
+            VALUES (@bid, N'В черзі', 1, 1, GETDATE()),
+                   (@bid, N'В процесі', 2, 1, GETDATE());
             SELECT CAST(SCOPE_IDENTITY() as int);", new { bid = boardId });
 
             await db.ExecuteAsync(@"
             INSERT INTO Tasks (ColumnId, Title, Priority, [Order], CreatedBy, AssigneeId, IsComplete, CreatedAt) 
             VALUES 
-                (@cid, N'Налаштувати проект', 2, 1, 1, 1, 1, GETDATE()), 
-                (@cid, N'Розробити API для дощок', 0, 2, 1, 2, 0, GETDATE())",
-                new { cid = columnId });
+                (1, N'Налаштувати проект', 2, 1, 1, 1, 1, GETDATE()), 
+                (1, N'Розробити API для дощок', 0, 2, 1, 2, 0, GETDATE()),
+                (2, N'Написати документацію до API', 2, 3, 1, 1, 0, GETDATE()),
+                (2, N'Налаштувати CI/CD пайплайн', 0, 4, 1, 1, 0, GETDATE()),
+                (1, N'Наповнити базу тестовими даними', 1, 5, 1, 1, 0, GETDATE()),
+                (1, N'Намалювати макет головної сторінки', 2, 6, 1, 1, 0, GETDATE())");
 
             logger.LogInformation("Database seeding completed successfully!");
         }

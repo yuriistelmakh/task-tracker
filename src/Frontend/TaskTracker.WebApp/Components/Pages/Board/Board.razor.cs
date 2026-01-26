@@ -44,6 +44,9 @@ public partial class Board
     public IDialogService DialogService { get; private set; } = default!;
 
     [Inject]
+    public NavigationManager Nav { get; private set; } = default!;
+
+    [Inject]
     public IJSRuntime JS { get; set; } = default!;
 
     private string _backgroundColor = string.Empty;
@@ -110,7 +113,7 @@ public partial class Board
 
         if (!boardResult.IsSuccess)
         {
-            Snackbar.Add($"Error while fetching the board: {boardResult.ErrorMessage}", Severity.Error);
+            Nav.NavigateTo("/");
             return;
         }
 
