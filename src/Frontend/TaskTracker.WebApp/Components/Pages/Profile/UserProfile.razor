@@ -24,11 +24,23 @@
                                 <MudText><b>@_user?.DisplayName</b></MudText>
                                 <MudText Typo=@Typo.caption>@($"@{@_user?.Tag}")</MudText>
 
-                                <MudPaper Elevation="0" Width="100%">
-                                    <MudList T="int" @bind-SelectedValue=@_activeTab SelectionMode="SelectionMode.SingleSelection" Color="Color.Primary" Class="w-100">
-                                        <MudListItem Text="General info" Value="1" Icon="@Icons.Material.Filled.Person" />
-                                        <MudListItem Text="Activity" Value="2" Icon="@Icons.Material.Filled.ShowChart" />
-                                        <MudListItem Text="Security" Value="3" Icon="@Icons.Material.Filled.Security" />
+                                <MudPaper Elevation=0
+                                          Width="100%">
+                                    <MudList T=int 
+                                        @bind-SelectedValue=@_activeTab 
+                                        SelectionMode=@SelectionMode.SingleSelection
+                                        Color=@Color.Primary
+                                        Class="w-100">
+                                        <MudListItem Text="General info" 
+                                            Value=1
+                                            Icon=@Icons.Material.Filled.Person />
+                                        <MudListItem Text="Activity" 
+                                            Value=2
+                                            Icon=@Icons.Material.Filled.ShowChart />
+                                        <MudListItem 
+                                            Text="Security" 
+                                            Value=3
+                                            Icon=@Icons.Material.Filled.Security />
                                     </MudList>
                                 </MudPaper>
                             </MudStack>
@@ -82,7 +94,7 @@
                                                   For=@(() => _profileUpdate.DisplayName)
                                                   Variant=@_inputVariant
                                                   Margin=@Margin.Dense
-                                                  ReadOnly=@(!_isEditingMode)/>
+                                                  ReadOnly=@(!_isEditingMode) />
 
                                     <MudInputLabel Class="mt-3 mb-1">Tag</MudInputLabel>
                                     <MudTextField @bind-Value=@_profileUpdate.Tag
@@ -98,7 +110,7 @@
                                                   For=@(() => _profileUpdate.Email)
                                                   Variant=@_inputVariant
                                                   Margin=@Margin.Dense
-                                                  ReadOnly=@(!_isEditingMode)/>
+                                                  ReadOnly=@(!_isEditingMode) />
                                 </EditForm>
                             </MudCard>
                         </MudItem>
