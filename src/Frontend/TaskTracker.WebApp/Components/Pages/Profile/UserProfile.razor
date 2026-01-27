@@ -11,23 +11,57 @@
         <MudMainContent Class="d-flex flex-grow-1">
             <MudContainer Class="pa-8 d-flex flex-grow-1">
                 <MudGrid Class="flex-grow-1">
-                    <MudItem md=4 
-                        Class="d-flex">
+                    <MudItem md=4
+                             Class="d-flex">
                         <MudCard Class="d-flex flex-grow-1 pa-2"
                                  Style="height: 70%">
                             <MudStack Spacing=1
                                       Class="d-flex flex-column"
                                       AlignItems=@AlignItems.Center>
-                                <MudSkeleton SkeletonType=@SkeletonType.Circle
-                                             Style="height:150px; width:150px" />
+                                <div style="position: relative; width: 150px; height: 150px;">
+                                    @if (!string.IsNullOrEmpty(_user?.AvatarUrl))
+                                    {
+                                        <img src="@_user.AvatarUrl"
+                                             alt="@_user.DisplayName"
+                                             style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />
+                                    }
+                                    else
+                                    {
+                                        <MudAvatar Size=@Size.Large
+                                                   Style="height:150px; width:150px;">
+                                            <MudIcon Icon=@Icons.Material.Filled.Person
+                                                     Size=@Size.Large />
+                                        </MudAvatar>
+                                    }
 
-                                <MudText><b>@_user?.DisplayName</b></MudText>
-                                <MudText Typo=@Typo.caption>@($"@{@_user?.Tag}")</MudText>
+                                    <MudIconButton Icon=@Icons.Material.Filled.PhotoCamera
+                                                   Size=@Size.Small
+                                                   Color=@Color.Primary
+                                                   Variant=@Variant.Filled
+                                                   Style="position: absolute; bottom: 0; right: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.2); border-radius: 20px"
+                                                   OnClick=@OnChangePhotoClicked/>
+                                </div>
 
-                                <MudPaper Elevation="0" Width="100%">
-                                    <MudList T="int" @bind-SelectedValue=@_activeTab SelectionMode="SelectionMode.SingleSelection" Color="Color.Primary" Class="w-100">
-                                        <MudListItem Text="General info" Value="1" Icon="@Icons.Material.Filled.Person" />
-                                        <MudListItem Text="Security" Value="2" Icon="@Icons.Material.Filled.Security" />
+                                <MudText>
+                                    <b>@_user?.DisplayName</b>
+                                </MudText>
+                                <MudText Typo=@Typo.caption>
+                                    @($"@{@_user?.Tag}")
+                                </MudText>
+
+                                <MudPaper Elevation=0
+                                          Width="100%">
+                                    <MudList T=int
+                                             @bind-SelectedValue=@_activeTab
+                                             SelectionMode=@SelectionMode.SingleSelection
+                                             Color=@Color.Primary
+                                             Class="w-100">
+                                        <MudListItem Text="General info"
+                                                     Value=1
+                                                     Icon=@Icons.Material.Filled.Person />
+                                        <MudListItem Text="Security"
+                                                     Value=2
+                                                     Icon=@Icons.Material.Filled.Security />
                                     </MudList>
                                 </MudPaper>
                             </MudStack>
@@ -76,14 +110,18 @@
                                           OnValidSubmit=@OnUpdateUserValidSubmit>
                                     <DataAnnotationsValidator />
 
-                                    <MudInputLabel Class="mt-3 mb-1">Display name</MudInputLabel>
+                                    <MudInputLabel Class="mt-3 mb-1">
+                                        Display name
+                                    </MudInputLabel>
                                     <MudTextField @bind-Value=@_profileUpdate.DisplayName
                                                   For=@(() => _profileUpdate.DisplayName)
                                                   Variant=@_inputVariant
                                                   Margin=@Margin.Dense
                                                   ReadOnly=@(!_isEditingMode) />
 
-                                    <MudInputLabel Class="mt-3 mb-1">Tag</MudInputLabel>
+                                    <MudInputLabel Class="mt-3 mb-1">
+                                        Tag
+                                    </MudInputLabel>
                                     <MudTextField @bind-Value=@_profileUpdate.Tag
                                                   For=@(() => _profileUpdate.Tag)
                                                   Variant=@_inputVariant
@@ -92,7 +130,9 @@
                                                   Adornment=@Adornment.Start
                                                   AdornmentText=@("@") />
 
-                                    <MudInputLabel Class="mt-3 mb-1">Email</MudInputLabel>
+                                    <MudInputLabel Class="mt-3 mb-1">
+                                        Email
+                                    </MudInputLabel>
                                     <MudTextField @bind-Value=@_profileUpdate.Email
                                                   For=@(() => _profileUpdate.Email)
                                                   Variant=@_inputVariant
@@ -113,7 +153,9 @@
                                           Model=@_changePassword
                                           OnValidSubmit=@OnChangePasswordValidSubmit>
                                     <DataAnnotationsValidator />
-                                    <MudInputLabel Class="mt-3 mb-1">Current password</MudInputLabel>
+                                    <MudInputLabel Class="mt-3 mb-1">
+                                        Current password
+                                    </MudInputLabel>
                                     <MudTextField @bind-Value=@_changePassword.OldPassword
                                                   For=@(() => _changePassword.OldPassword)
                                                   Variant=@Variant.Outlined
@@ -123,7 +165,9 @@
                                                   OnAdornmentClick=@ToggleOldPasswordVisibility
                                                   Margin=@Margin.Dense />
 
-                                    <MudInputLabel Class="mt-3 mb-1">New password</MudInputLabel>
+                                    <MudInputLabel Class="mt-3 mb-1">
+                                        New password
+                                    </MudInputLabel>
                                     <MudTextField @bind-Value=@_changePassword.NewPassword
                                                   For=@(() => _changePassword.NewPassword)
                                                   Variant=@Variant.Outlined
@@ -133,7 +177,9 @@
                                                   OnAdornmentClick=@ToggleNewPasswordVisibility
                                                   Margin=@Margin.Dense />
 
-                                    <MudInputLabel Class="mt-3 mb-1">Repeat password</MudInputLabel>
+                                    <MudInputLabel Class="mt-3 mb-1">
+                                        Repeat password
+                                    </MudInputLabel>
                                     <MudTextField @bind-Value=@_changePassword.PasswordRepeat
                                                   For=@(() => _changePassword.PasswordRepeat)
                                                   Variant=@Variant.Outlined
@@ -154,9 +200,13 @@
                             </MudCard>
 
                             <MudCard Class="d-flex flex-column pa-4">
-                                <MudText Typo=@Typo.h6 Color=@Color.Error>Delete account</MudText>
+                                <MudText Typo=@Typo.h6
+                                         Color=@Color.Error>
+                                    Delete account
+                                </MudText>
 
-                                <MudText Typo=@Typo.body2 Class="mt-3">
+                                <MudText Typo=@Typo.body2
+                                         Class="mt-3">
                                     Once you delete your account, there is no going back. Please be certain.
                                 </MudText>
 

@@ -21,14 +21,14 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
 
         var userWithSameTag = await uow.UserRepository.GetByTagAsync(request.Tag);
 
-        if (userWithSameTag is not null)
+        if (userWithSameTag is not null && userWithSameTag.Id != request.Id)
         {
             return Result.Conflict($"User with that tag already exists");
         }
 
         var userWithSameEmail = await uow.UserRepository.GetByEmailAsync(request.Email);
 
-        if (userWithSameEmail is not null)
+        if (userWithSameEmail is not null && userWithSameEmail.Id != request.Id)
         {
             return Result.Conflict($"User with that email already exists");
         }

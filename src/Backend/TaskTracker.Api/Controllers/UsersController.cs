@@ -18,7 +18,7 @@ namespace TaskTracker.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+//[Authorize]
 public class UsersController : Controller
 {
     private readonly IMediator _mediator;
@@ -29,7 +29,7 @@ public class UsersController : Controller
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetByIdAsync(int id)
+    public async Task<IActionResult> GetByIdAsync([FromRoute] int id)
     {
         var query = new GetUserByIdQuery
         {
@@ -44,7 +44,7 @@ public class UsersController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> SearchAsync(string? prompt, int pageSize)
+    public async Task<IActionResult> SearchAsync([FromQuery] string? prompt, [FromQuery] int pageSize)
     {
         var command = new SearchUsersCommand
         {
@@ -74,7 +74,7 @@ public class UsersController : Controller
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateUserRequest request)
+    public async Task<IActionResult> UpdateAsync([FromRoute] int id, [FromBody] UpdateUserRequest request)
     {
         var command = new UpdateUserCommand
         {
@@ -96,7 +96,7 @@ public class UsersController : Controller
     }
 
     [HttpPut("{id}/change-password")]
-    public async Task<IActionResult> ChangePasswordAsync(int id, [FromBody] ChangePasswordRequest request)
+    public async Task<IActionResult> ChangePasswordAsync([FromRoute] int id, [FromBody] ChangePasswordRequest request)
     {
         var command = new ChangePasswordCommand
         {
@@ -116,7 +116,7 @@ public class UsersController : Controller
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAsync(int id)
+    public async Task<IActionResult> DeleteAsync([FromRoute] int id)
     {
         var command = new DeleteUserCommand
         {
@@ -131,7 +131,7 @@ public class UsersController : Controller
     }
 
     [HttpGet("{id}/notifications")]
-    public async Task<IActionResult> GetUnreadNotificationsAsync(int id)
+    public async Task<IActionResult> GetUnreadNotificationsAsync([FromRoute] int id)
     {
         var query = new GetUserNotificationsQuery
         {
@@ -144,12 +144,12 @@ public class UsersController : Controller
     }
 
     [HttpPut("{id}/avatar")]
-    public async Task<IActionResult> ChangeAvatarAsync(int id, IFormFile file)
+    public async Task<IActionResult> UploadAvatarAsync([FromRoute] int id, IFormFile avatar)
     {
-        var request = new ChangeAvatarCommand
+        var request = new UploadAvatarCommand
         {
             UserId = id,
-            File = file
+            File = avatar
         };
 
         var result = await _mediator.Send(request);

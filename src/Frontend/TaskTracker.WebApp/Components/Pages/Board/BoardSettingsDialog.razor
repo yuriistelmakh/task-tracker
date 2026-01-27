@@ -139,8 +139,19 @@
                                             <MudStack Row=true
                                                       AlignItems=@AlignItems.Center
                                                       Spacing=2>
-                                                <MudIcon Icon=@Icons.Material.Filled.AccountCircle
-                                                         Size=@Size.Large />
+                                                @if (!string.IsNullOrEmpty(member.AvatarUrl))
+                                                {
+                                                    <MudAvatar Size=@Size.Medium>
+                                                        <MudImage Src=@member.AvatarUrl
+                                                                  Alt=@member.DisplayName
+                                                                  ObjectFit=@ObjectFit.Cover />
+                                                    </MudAvatar>
+                                                }
+                                                else
+                                                {
+                                                    <MudIcon Icon=@Icons.Material.Filled.AccountCircle
+                                                             Size=@Size.Large />
+                                                }
                                                 <MudStack Spacing=0>
                                                     <MudStack Row=true
                                                               Spacing=1
@@ -235,7 +246,19 @@
                                     <MudStack Row=true
                                               AlignItems=@AlignItems.Center
                                               Spacing=2>
-                                        <MudIcon Icon=@Icons.Material.Filled.AccountCircle />
+                                        @if (!string.IsNullOrEmpty(e.AvatarUrl))
+                                        {
+                                            <MudAvatar Size=@Size.Medium>
+                                                <MudImage Src=@e.AvatarUrl
+                                                          Alt=@e.DisplayName
+                                                          ObjectFit=@ObjectFit.Cover />
+                                            </MudAvatar>
+                                        }
+                                        else
+                                        {
+                                            <MudIcon Icon=@Icons.Material.Filled.AccountCircle
+                                                     Size=@Size.Large />
+                                        }
                                         <MudStack Spacing=0>
                                             <MudText>@e.DisplayName</MudText>
                                             <MudText Typo=@Typo.caption>@($"@{e.Tag}")</MudText>

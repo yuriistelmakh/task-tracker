@@ -34,8 +34,19 @@
                             <MudItem xs=6>
                                 <MudStack Row=true
                                           AlignItems=@AlignItems.Center>
-                                    <MudIcon Icon=@Icons.Material.Filled.AccountCircle
-                                             Size=@Size.Large />
+                                    @if (!string.IsNullOrEmpty(member.AvatarUrl))
+                                    {
+                                        <MudAvatar Size=@Size.Medium>
+                                            <MudImage Src=@member.AvatarUrl
+                                                      Alt=@member.DisplayName
+                                                      ObjectFit=@ObjectFit.Cover />
+                                        </MudAvatar>
+                                    }
+                                    else
+                                    {
+                                        <MudIcon Icon=@Icons.Material.Filled.AccountCircle
+                                                 Size=@Size.Large />
+                                    }
                                     <MudStack Spacing=0>
                                         <MudStack Row=true
                                                   Spacing=1

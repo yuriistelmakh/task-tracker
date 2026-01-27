@@ -8,18 +8,18 @@ using TaskTracker.Domain.Enums;
 
 namespace TaskTracker.Application.Features.Users.Commands.ChangeAvatar;
 
-public class ChangeAvatarCommandHandler : IRequestHandler<ChangeAvatarCommand, Result>
+public class UploadAvatarCommandHandler : IRequestHandler<UploadAvatarCommand, Result>
 {
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
     private readonly IBlobStorageService _blobStorageService;
 
-    public ChangeAvatarCommandHandler(IUnitOfWorkFactory unitOfWorkFactory, IBlobStorageService blobStorageService)
+    public UploadAvatarCommandHandler(IUnitOfWorkFactory unitOfWorkFactory, IBlobStorageService blobStorageService)
     {
         _unitOfWorkFactory = unitOfWorkFactory;
         _blobStorageService = blobStorageService;
     }
 
-    public async Task<Result> Handle(ChangeAvatarCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(UploadAvatarCommand request, CancellationToken cancellationToken)
     {
         var uow = _unitOfWorkFactory.Create();
 

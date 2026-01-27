@@ -78,22 +78,44 @@
 
                     <div style="@(isLast ? "" : "margin-right: -12px;")">
                         <MudAvatar Class="cursor-pointer"
+                                   Size=@Size.Medium
                                    Style=@($"border: 2px solid {(member.IsOnline ? "blue" : "var(--mud-palette-background);")}")
                                    @onmouseenter=@(() => _hoveredMemberId = member.Id)
                                    @onmouseleave=@(() => _hoveredMemberId = null)>
-                            <MudIcon Icon=@Icons.Material.Filled.AccountCircle />
+                            @if (!string.IsNullOrEmpty(member.AvatarUrl))
+                            {
+                                <MudImage Src=@member.AvatarUrl
+                                          Alt=@member.DisplayName
+                                          ObjectFit=@ObjectFit.Cover />
+                            }
+                            else
+                            {
+                                <MudIcon Icon=@Icons.Material.Filled.AccountCircle
+                                         Size=@Size.Large />
+                            }
                         </MudAvatar>
 
                         <MudPopover Open=@(_hoveredMemberId == member.Id)
-                                    Style="min-height: 50px; min-width: 100px"
-                                    Elevation=1
-                                    AnchorOrigin=@Origin.BottomLeft
-                                    Class="pa-2">
-                            <MudStack Row=true
-                                      Spacing=1
-                                      AlignItems=@AlignItems.Center>
-                                <MudIcon Icon=@Icons.Material.Filled.AccountCircle
-                                         Size=@Size.Large />
+                                               Style="min-height: 50px; min-width: 100px"
+                                               Elevation=1
+                                               AnchorOrigin=@Origin.BottomLeft
+                                               Class="pa-2">
+                                       <MudStack Row=true
+                                                 Spacing=1
+                                                 AlignItems=@AlignItems.Center>
+                                           @if (!string.IsNullOrEmpty(member.AvatarUrl))
+                                           {
+                                               <MudAvatar Size=@Size.Medium>
+                                                   <MudImage Src=@member.AvatarUrl
+                                                             Alt=@member.DisplayName
+                                                             ObjectFit=@ObjectFit.Cover />
+                                               </MudAvatar>
+                                           }
+                                           else
+                                           {
+                                               <MudIcon Icon=@Icons.Material.Filled.AccountCircle
+                                                        Size=@Size.Large />
+                                           }
                                 <MudStack Spacing=1>
                                     <MudText>@member.DisplayName</MudText>
                                     <MudText Typo=@Typo.caption>@($"@{member.Tag}")</MudText>

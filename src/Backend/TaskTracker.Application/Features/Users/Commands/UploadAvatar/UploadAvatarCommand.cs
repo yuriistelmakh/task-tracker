@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace TaskTracker.Application.Features.Users.Commands.ChangeAvatar;
 
-public class ChangeAvatarCommand : IRequest<Result>
+public class UploadAvatarCommand : IRequest<Result>
 {
     public int UserId { get; set; }
 

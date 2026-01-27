@@ -52,7 +52,8 @@ builder.Services.AddRefitClient<ICommentsApi>(refitSettings)
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
-builder.Services.AddScoped<UiStateService>();
+builder.Services.AddScoped<BoardStateService>();
+builder.Services.AddScoped<HeaderStateService>();
 
 var app = builder.Build();
 

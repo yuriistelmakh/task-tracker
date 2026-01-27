@@ -97,8 +97,20 @@
     <MudStack>
         <MudButton Color=@Color.Inherit
                    @onclick=OnProfilePopoverClicked>
-            <MudIcon Icon=@Icons.Material.Filled.AccountCircle
-                     Size=@Size.Large />
+            @if (!string.IsNullOrEmpty(_avatarUrl))
+            {
+                <MudAvatar Size=@Size.Medium
+                           Style="margin-right: 8px;">
+                    <MudImage Src=@_avatarUrl
+                              Alt=@_username
+                              ObjectFit=@ObjectFit.Cover />
+                </MudAvatar>
+            }
+            else
+            {
+                <MudIcon Icon=@Icons.Material.Filled.AccountCircle
+                         Size=@Size.Large />
+            }
             <MudText Class="ml-2">@_username</MudText>
         </MudButton>
 

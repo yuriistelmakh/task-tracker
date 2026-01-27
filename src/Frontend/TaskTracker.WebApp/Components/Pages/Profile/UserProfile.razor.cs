@@ -29,6 +29,9 @@ public partial class UserProfile
     public NavigationManager Navigation { get; private set; } = default!;
 
     [Inject]
+    public HeaderStateService HeaderStateService { get; private set; } = default!;
+
+    [Inject]
     public IAuthService AuthService { get; private set; } = default!;
 
     private UserDetailsModel _user = new() { Email = string.Empty, DisplayName = string.Empty, Tag = string.Empty };
@@ -109,6 +112,12 @@ public partial class UserProfile
         }
 
         _isEditingMode = false;
+        _user.DisplayName = _profileUpdate.DisplayName;
+        _user.Tag = _profileUpdate.Tag;
+        _user.Email = _profileUpdate.Email;
+
+        HeaderStateService.NotifyUserUpdated();
+        
     }
 
     private async Task OnChangePasswordValidSubmit()
@@ -214,6 +223,30 @@ public partial class UserProfile
 
             await AuthService.LogoutAsync();
             Navigation.NavigateTo("/login");
+        }
+    }
+
+    private async Task OnChangePhotoClicked()
+    {
+        var parameters = new DialogParameters<ChangePhotoDialog>
+        {
+            { x => x.UserId, UserId }
+        };
+
+        var options = new DialogOptions
+        {
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<ChangePhotoDialog>("", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is bool success && success)
+        {
+            await OnInitializedAsync();
+            HeaderStateService.NotifyUserUpdated();
+            StateHasChanged();
         }
     }
 }

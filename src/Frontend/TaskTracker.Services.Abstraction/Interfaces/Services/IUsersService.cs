@@ -11,5 +11,6 @@ public interface IUsersService
     Task<Result<IEnumerable<NotificationDto>>> GetUnreadNotifications(int userId);
     Task<Result<IEnumerable<UserSummaryDto>>> SearchAsync(string prompt, int pageSize);
     Task<Result> UpdateAsync(int id, UpdateUserRequest userUpdate);
-    Task<Result> DeleteAsync(int userId);
-}
+        Task<Result> DeleteAsync(int userId);
+        Task<Result> UploadAvatarAsync(int userId, Stream fileStream, string fileName, string contentType);
+    }
