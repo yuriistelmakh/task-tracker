@@ -94,7 +94,7 @@ public class JwtTokenService : IJwtTokenService
         savedRefreshToken.RevokedAt = DateTime.UtcNow;
         await uow.RefreshTokenRepository.UpdateAsync(savedRefreshToken);
 
-        var newAcessToken = GenerateAccessToken(user);
+        var newAccessToken = GenerateAccessToken(user);
 
         var newRefreshToken = GenerateRefreshToken();
         newRefreshToken.UserId = userId;
@@ -105,7 +105,7 @@ public class JwtTokenService : IJwtTokenService
 
         var userData = new AuthUserData
         {
-            AccessToken = accessToken,
+            AccessToken = newAccessToken,
             RefreshToken = newRefreshToken.Token,
             DisplayName = user.DisplayName,
             Tag = user.Tag,
@@ -128,7 +128,8 @@ public class JwtTokenService : IJwtTokenService
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSettings:SecretKey"]!)),
             ValidAudience = _config["JwtSettings:Audience"],
             ValidIssuer = _config["JwtSettings:Issuer"],
-            ValidateLifetime = false
+            ValidateLifetime = false,
+            ClockSkew = TimeSpan.Zero
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();

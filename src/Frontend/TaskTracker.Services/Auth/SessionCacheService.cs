@@ -35,6 +35,15 @@ public class SessionCacheService : ISessionCacheService
         return null;
     }
 
+    public void UpdateSessionTokens(string sessionId, string newAccess, string newRefresh)
+    {
+        if (_memoryCache.TryGetValue(sessionId, out AuthUserData userData))
+        {
+            userData.AccessToken = newAccess;
+            userData.RefreshToken = newRefresh;
+        }
+    }
+
     public void RemoveSession(string sessionId)
     {
         _memoryCache.Remove(sessionId);
