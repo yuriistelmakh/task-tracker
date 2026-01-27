@@ -1,8 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TaskTracker.Application;
+using TaskTracker.Application.Features.Users.Commands.ChangeAvatar;
 using TaskTracker.Application.Features.Users.Commands.ChangePassword;
 using TaskTracker.Application.Features.Users.Commands.CreateUser;
 using TaskTracker.Application.Features.Users.Commands.DeleteUser;
@@ -139,5 +141,25 @@ public class UsersController : Controller
         var result = await _mediator.Send(query);
 
         return Ok(result);
+    }
+
+    [HttpPut("{id}/avatar")]
+    public async Task<IActionResult> ChangeAvatarAsync(int id, IFormFile file)
+    {
+        var request = new ChangeAvatarCommand
+        {
+            UserId = id,
+            File = file
+        };
+
+        var result = await _mediator.Send(request);
+
+        return result.ErrorType switch
+        {
+            ErrorType.None => Ok(),
+            ErrorType.Failure => BadRequest(),
+            ErrorType.NotFound => NotFound(),
+            _ => BadRequest()
+        };
     }
 }
