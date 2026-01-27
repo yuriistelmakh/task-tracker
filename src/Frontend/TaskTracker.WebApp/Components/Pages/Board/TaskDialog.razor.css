@@ -1,0 +1,21 @@
+﻿::deep .comments-sidebar {
+    width: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: width 0.3s ease-in-out, opacity 0.3s ease-in-out, padding 0.3s ease;
+    padding-left: 0;
+    border-left: 0;
+}
+
+::deep .comments-sidebar.open {
+    width: 350px;
+    opacity: 1;
+    padding-left: 16px;
+    border-left: 1px solid var(--mud-palette-lines-default);
+}
+
+::deep .comments-sidebar-content {
+    width: 100%;
+    min-width: 0;
+    overflow-y: auto;
+}
