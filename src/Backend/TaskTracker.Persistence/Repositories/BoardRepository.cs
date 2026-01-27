@@ -20,7 +20,7 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
         var sql = @"
             SELECT b.*, u.*
             FROM Boards b
-            JOIN Users u ON b.CreatedBy = u.Id
+            JOIN ActiveUsers u ON b.CreatedBy = u.Id
             WHERE b.Id = @Id
 
             SELECT *
@@ -65,7 +65,7 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
         var sqlBoards = @"
             SELECT b.*, u.* FROM Boards b
             JOIN BoardMembers bm ON b.Id = bm.BoardId
-            JOIN Users u ON b.CreatedBy = u.Id
+            JOIN ActiveUsers u ON b.CreatedBy = u.Id
             WHERE b.IsArchived = 0
               AND bm.UserId = @UserId
             ORDER BY b.CreatedAt DESC
@@ -139,7 +139,7 @@ public class BoardRepository : Repository<Board, int>, IBoardRepository
 
         var sqlMembers = @"
         SELECT m.BoardId, u.* FROM BoardMembers m
-        JOIN Users u ON m.UserId = u.Id
+        JOIN ActiveUsers u ON m.UserId = u.Id
         WHERE m.BoardId IN @BoardIds";
 
         var membersResult = (await Connection.QueryAsync<int, User, (int BoardId, User User)>(

@@ -11,6 +11,4 @@ public class UserDetailsDto
     public required string Email { get; set; }
 
     public string? AvatarUrl { get; set; }
-
-    public bool IsDeleted { get; set; }
 }

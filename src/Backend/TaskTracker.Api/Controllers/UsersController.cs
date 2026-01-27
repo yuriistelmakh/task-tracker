@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TaskTracker.Application;
+using TaskTracker.Application.Features.Users.Commands.ChangePassword;
 using TaskTracker.Application.Features.Users.Commands.CreateUser;
 using TaskTracker.Application.Features.Users.Commands.DeleteUser;
 using TaskTracker.Application.Features.Users.Commands.UpdateUser;
@@ -83,6 +84,26 @@ public class UsersController : Controller
 
         var result = await _mediator.Send(command);
 
+        return result.ErrorType switch
+        {
+            ErrorType.None => Ok(),
+            ErrorType.NotFound => NotFound(),
+            ErrorType.Conflict => Conflict(result.ErrorMessage),
+            _ => BadRequest(result.ErrorMessage)
+        };
+    }
+
+    [HttpPut("{id}/change-password")]
+    public async Task<IActionResult> ChangePasswordAsync(int id, [FromBody] ChangePasswordRequest request)
+    {
+        var command = new ChangePasswordCommand
+        {
+            UserId = id,
+            NewPassword = request.NewPassword,
+            OldPassword = request.OldPassword
+        };
+
+        var result = await _mediator.Send(command);
         return result.ErrorType switch
         {
             ErrorType.None => Ok(),

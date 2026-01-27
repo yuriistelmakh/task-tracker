@@ -22,7 +22,7 @@ public class MemberRepository : Repository<BoardMember, int>, IMemberRepository
         var sql = @"
         SELECT bm.*, u.*
         FROM BoardMembers bm
-        JOIN Users u ON bm.UserId = u.Id
+        JOIN ActiveUsers u ON bm.UserId = u.Id
         WHERE bm.BoardId = @BoardId AND
               bm.UserId = @UserId
         ";
@@ -47,7 +47,7 @@ public class MemberRepository : Repository<BoardMember, int>, IMemberRepository
         var sqlBuilder = new StringBuilder(@"
             SELECT bm.*, u.*
             FROM BoardMembers bm
-            JOIN Users u ON bm.UserId = u.Id
+            JOIN ActiveUsers u ON bm.UserId = u.Id
             WHERE bm.BoardId = @boardId");
 
         var parameters = new DynamicParameters();
@@ -92,7 +92,7 @@ public class MemberRepository : Repository<BoardMember, int>, IMemberRepository
         var sql = @"
             SELECT COUNT(*)
             FROM BoardMembers bm    
-            JOIN Users u ON u.Id = bm.UserId 
+            JOIN ActiveUsers u ON u.Id = bm.UserId 
             WHERE
                 bm.BoardId = @boardId
                 AND (
@@ -103,7 +103,7 @@ public class MemberRepository : Repository<BoardMember, int>, IMemberRepository
 
             SELECT bm.*, u.*
             FROM BoardMembers bm    
-            JOIN Users u ON u.Id = bm.UserId 
+            JOIN ActiveUsers u ON u.Id = bm.UserId 
             WHERE
                 bm.BoardId = @boardId
                 AND (

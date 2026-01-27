@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TaskTracker.WebApp.Models;
+namespace TaskTracker.WebApp.Models.Forms;
 
 public class LoginModel
 {

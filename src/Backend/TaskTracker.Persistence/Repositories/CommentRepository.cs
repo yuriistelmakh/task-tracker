@@ -20,7 +20,7 @@ public class CommentRepository : Repository<Comment, int>, ICommentRepository
         var sql = @"
             SELECT c.*, u.*
             FROM Comments c
-            JOIN Users u ON u.Id = c.CreatedBy
+            JOIN ActiveUsers u ON u.Id = c.CreatedBy
             WHERE c.TaskId = @TaskId
             ORDER BY c.CreatedAt DESC
             OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;";

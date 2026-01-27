@@ -11,6 +11,4 @@ public class UserSummaryDto
     public required string Tag { get; set; }
 
     public string? AvatarUrl { get; set; }
-
-    public bool IsDeleted { get; set; }
 }

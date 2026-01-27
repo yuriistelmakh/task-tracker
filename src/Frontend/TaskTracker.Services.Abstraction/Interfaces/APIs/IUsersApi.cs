@@ -17,4 +17,10 @@ public interface IUsersApi
 
     [Get("/api/users/{id}/notifications")]
     public Task<IApiResponse<IEnumerable<NotificationDto>>> GetUnreadNotificationsAsync(int id);
+
+    [Put("/api/users/{id}/change-password")]
+    public Task<IApiResponse> ChangePasswordAsync(int id, ChangePasswordRequest request);
+
+    [Delete("/api/users/{id}")]
+    public Task<IApiResponse> DeleteAsync(int id);
 }
