@@ -19,4 +19,7 @@ public interface IAttachmentsApi
 
     [Delete("/api/boards/{boardId}/tasks/{taskId}/attachments/{attachmentId}")]
     public Task<IApiResponse> DeleteAsync(int boardId, int taskId, int attachmentId);
+
+    [Patch("/api/boards/{boardId}/tasks/{taskId}/attachments/{attachmentId}/rename")]
+    public Task<IApiResponse> RenameAsync(int boardId, int taskId, int attachmentId, [Body] RenameAttachmentRequest request);
 }

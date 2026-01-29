@@ -172,6 +172,36 @@ public partial class ManageAttachmentsDialog
         Snackbar.Add($"Deleted {attachment.Name}", Severity.Success);
     }
 
+    private async Task OnRenameAttachmentAsync(AttachmentModel attachment)
+    {
+        var parameters = new DialogParameters<RenameDialog>
+        {
+            { x => x.Title, "Rename Attachment" },
+            { x => x.CurrentName, attachment.Name }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<RenameDialog>(string.Empty, parameters, options);
+        var result = await dialog.Result;
+
+        if (result.Canceled || result.Data is not string newName || string.IsNullOrWhiteSpace(newName))
+        {
+            return;
+        }
+
+        var renameResult = await AttachmentsService.RenameAsync(BoardId, TaskId, attachment.Id, newName);
+
+        if (!renameResult.IsSuccess)
+        {
+            Snackbar.Add($"Error renaming attachment: {renameResult.ErrorMessage}", Severity.Error);
+            return;
+        }
+
+        attachment.Name = newName;
+        Snackbar.Add($"Renamed to {newName}", Severity.Success);
+        StateHasChanged();
+    }
+
     private void OnCloseClicked()
     {
         MudDialog.Cancel();

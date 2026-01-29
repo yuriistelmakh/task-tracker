@@ -1,0 +1,26 @@
+@using MudBlazor
+
+<MudDialog TitleClass="pa-0">
+    <DialogContent>
+        <MudStack Spacing=3>
+            <MudText Typo=@Typo.h6>@Title</MudText>
+            
+            <MudTextField @bind-Value=@_newName
+                          Label="New name"
+                          Variant=@Variant.Outlined
+                          Immediate=true
+                          AutoFocus=true
+                          OnKeyDown=@OnKeyDown />
+        </MudStack>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick=@Cancel>Cancel</MudButton>
+        <MudButton Variant=@Variant.Filled
+                   Color=@Color.Primary
+                   OnClick=@Submit
+                   Disabled=@string.IsNullOrWhiteSpace(_newName)>
+            Rename
+        </MudButton>
+    </DialogActions>
+</MudDialog>

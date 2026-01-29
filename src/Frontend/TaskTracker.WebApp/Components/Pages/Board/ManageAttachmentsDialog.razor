@@ -93,15 +93,20 @@
                                         </MudText>
                                     </MudStack>
 
-                                    <MudText Typo=@Typo.caption>
-                                        @FileTypeHelper.FormatFileSize(attachment.SizeKB)
-                                    </MudText>
+                                        <MudText Typo=@Typo.caption>
+                                            @FileTypeHelper.FormatFileSize(attachment.SizeKB)
+                                        </MudText>
 
-                                    <MudIconButton Icon=@Icons.Material.Filled.Delete
-                                                   Size=@Size.Small
-                                                   Color=@Color.Error
-                                                   OnClick=@(() => OnDeleteAttachmentAsync(attachment)) />
-                                </MudStack>
+                                        <MudIconButton Icon=@Icons.Material.Filled.Edit
+                                                       Size=@Size.Small
+                                                       Color=@Color.Primary
+                                                       OnClick=@(() => OnRenameAttachmentAsync(attachment)) />
+
+                                        <MudIconButton Icon=@Icons.Material.Filled.Delete
+                                                       Size=@Size.Small
+                                                       Color=@Color.Error
+                                                       OnClick=@(() => OnDeleteAttachmentAsync(attachment)) />
+                                    </MudStack>
                             </MudPaper>
                         }
                     </MudStack>

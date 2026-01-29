@@ -19,8 +19,8 @@ public class AttachmentsService : IAttachmentsService
         int boardId,
         int taskId,
         int createdBy,
-        Stream fileStream, 
-        string fileName, 
+        Stream fileStream,
+        string fileName,
         string contentType)
     {
         var file = new StreamPart(fileStream, fileName, contentType);
@@ -43,6 +43,16 @@ public class AttachmentsService : IAttachmentsService
     public async Task<Result> DeleteAsync(int boardId, int taskId, int attachmentId)
     {
         var result = await _attachmentsApi.DeleteAsync(boardId, taskId, attachmentId);
+
+        return result.IsSuccessful
+            ? Result.Success()
+            : Result.Failure(result.Error.Content!);
+    }
+
+    public async Task<Result> RenameAsync(int boardId, int taskId, int attachmentId, string newName)
+    {
+        var request = new RenameAttachmentRequest { NewName = newName };
+        var result = await _attachmentsApi.RenameAsync(boardId, taskId, attachmentId, request);
 
         return result.IsSuccessful
             ? Result.Success()

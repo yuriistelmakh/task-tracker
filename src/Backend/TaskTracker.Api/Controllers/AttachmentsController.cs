@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using System.Threading.Tasks;
 using TaskTracker.Application.Features.Attachments.Commands.CreateAttachment;
 using TaskTracker.Application.Features.Attachments.Commands.DeleteAttachment;
+using TaskTracker.Application.Features.Attachments.Commands.RenameAttachment;
 using TaskTracker.Application.Features.Attachments.Queries.GetAllAttachments;
+using TaskTracker.Domain.DTOs.Attachments;
 
 namespace TaskTracker.Api.Controllers;
 
@@ -73,5 +75,20 @@ public class AttachmentsController : Controller
         return result.IsSuccess
             ? Ok()
             : BadRequest();
+    }
+
+    [HttpPatch("{attachmentId}/rename")]
+    public async Task<IActionResult> RenameAsync(
+        [FromRoute] int attachmentId,
+        [FromBody] RenameAttachmentRequest request)
+    {
+        var command = new RenameAttachmentCommand
+        {
+            Id = attachmentId,
+            NewName = request.NewName
+        };
+
+        var result = await _mediator.Send(command);
+        return result.IsSuccess ? Ok() : BadRequest();
     }
 }
