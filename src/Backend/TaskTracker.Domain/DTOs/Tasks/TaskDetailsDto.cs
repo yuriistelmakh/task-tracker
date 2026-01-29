@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using TaskTracker.Domain.DTOs.Attachments;
 using TaskTracker.Domain.DTOs.Users;
 using TaskTracker.Domain.Enums;
 
@@ -25,6 +27,8 @@ public class TaskDetailsDto
     public int? UpdatedBy { get; set; }
 
     public bool IsComplete { get; set; }
+
+    public List<AttachmentDto> Attachments { get; set; } = [];
 
     public string? ColumnTitle { get; set; }
 

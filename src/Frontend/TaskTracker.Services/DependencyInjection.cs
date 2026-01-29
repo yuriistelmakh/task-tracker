@@ -21,6 +21,7 @@ public static class DependencyInjection
         services.AddScoped<IUsersService, UsersService>();
         services.AddScoped<IBoardMembersService, BoardMembersService>();
         services.AddScoped<ICommentsService, CommentsService>();
+        services.AddScoped<IAttachmentsService, AttachmentsService>();
 
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IBoardHubClient, BoardHubClient>();

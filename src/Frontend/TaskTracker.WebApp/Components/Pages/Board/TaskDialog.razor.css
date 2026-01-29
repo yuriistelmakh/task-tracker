@@ -19,3 +19,12 @@
     min-width: 0;
     overflow-y: auto;
 }
+
+.attachment-link {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.attachment-link:hover {
+    text-decoration: underline;
+}

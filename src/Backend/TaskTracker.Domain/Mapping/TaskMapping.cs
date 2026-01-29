@@ -1,4 +1,5 @@
-﻿using TaskTracker.Domain.DTOs.Tasks;
+﻿using System.Linq;
+using TaskTracker.Domain.DTOs.Tasks;
 using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Domain.Mapping;
@@ -30,6 +31,7 @@ public static class TaskMapping
             Priority = task.Priority,
             UpdatedAt = task.UpdatedAt,
             UpdatedBy = task.UpdatedBy,
-            IsComplete = task.IsComplete
+            IsComplete = task.IsComplete,
+            Attachments = task.Attachments.Select(a => a.ToAttachmentDto()).ToList()
         };
 }

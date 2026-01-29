@@ -20,7 +20,7 @@ public class GetTaskByIdQueryHandler : IRequestHandler<GetTaskByIdQuery, TaskDet
     {
         var uow = _unitOfWorkFactory.Create();
 
-        var task = await uow.TaskRepository.GetAsync(request.Id);
+        var task = await uow.TaskRepository.GetByIdWithAttachments(request.Id);
 
         if (task is null)
         {

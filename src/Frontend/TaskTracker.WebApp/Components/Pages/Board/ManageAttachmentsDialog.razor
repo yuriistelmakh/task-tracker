@@ -1,0 +1,132 @@
+@using TaskTracker.Domain.Enums
+@using TaskTracker.Domain.Helpers
+
+<MudDialog TitleClass="pa-0">
+    <DialogContent>
+        <MudStack Spacing=3>
+            <MudStack Row=true
+                      AlignItems=@AlignItems.Center
+                      Justify=@Justify.SpaceBetween>
+                <MudStack Row=true
+                          Spacing=1
+                          AlignItems=@AlignItems.Center>
+                    <MudIcon Icon=@Icons.Material.Filled.Attachment
+                             Size=@Size.Small />
+                    <MudText Typo=@Typo.h6>Manage attachments</MudText>
+                </MudStack>
+
+                <MudIconButton Icon=@Icons.Material.Filled.Close
+                               Size=@Size.Small
+                               OnClick=@OnCloseClicked />
+            </MudStack>
+
+            <MudFileUpload T="IReadOnlyList<IBrowserFile>"
+                           @ref="_fileUpload"
+                           OnFilesChanged="OnInputFileChanged"
+                           AppendMultipleFiles
+                           Hidden="false"
+                           InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20 cursor-pointer"
+                           InputStyle="opacity:0"
+                           @ondrop="@(() => _isDragging = false)"
+                           @ondragenter="@(() => _isDragging = true)"
+                           @ondragleave="@(() => _isDragging = false)">
+                <ActivatorContent>
+                    <MudPaper Height="200px"
+                              Outlined="true"
+                              Class=@($"cursor-pointer rounded-lg d-flex align-center justify-center {(_isDragging ? "drag-over" : "")}")
+                              Style="border: 2px dashed var(--mud-palette-primary); background-color: var(--mud-palette-background-grey);">
+                        <MudStack AlignItems=@AlignItems.Center
+                                  Spacing=2>
+                            <MudIcon Icon=@Icons.Material.Filled.CloudUpload
+                                     Size=@Size.Large
+                                     Color=@Color.Primary />
+
+                            <MudText Align=@Align.Center>
+                                Drag files here or click to browse
+                            </MudText>
+
+                            <MudText Typo=@Typo.caption
+                                     Align=@Align.Center
+                                     Color=@Color.Secondary>
+                                Max. 10 MB per file
+                            </MudText>
+                        </MudStack>
+                    </MudPaper>
+                </ActivatorContent>
+            </MudFileUpload>
+
+            @if (_attachments.Count > 0)
+            {
+                <MudStack Spacing=1>
+                    <MudStack Row=true
+                              Spacing=1
+                              AlignItems=@AlignItems.Center>
+                        <MudIcon Icon=@Icons.Material.Filled.Attachment
+                                 Size=@Size.Small />
+                        <MudText Typo=@Typo.subtitle2>Attachments (@_attachments.Count)</MudText>
+                    </MudStack>
+
+                    <MudStack Spacing=1>
+                        @foreach (var attachment in _attachments)
+                        {
+                            <MudPaper Elevation=1
+                                      Class="pa-3"
+                                      Style="background-color: var(--mud-palette-secondary-lighten)">
+                                <MudStack Row=true
+                                          AlignItems=@AlignItems.Center
+                                          Spacing=2>
+                                    <MudCard Class="pa-1 d-flex align-center justify-center cursor-pointer"
+                                             Style="width: 50px; height: 50px;"
+                                             @onclick="@(() => OnAttachmentClicked(attachment))">
+                                        <MudIcon Icon=@GetAttachmentIcon(attachment.Type)
+                                                 Size=@Size.Large />
+                                    </MudCard>
+
+                                    <MudStack Spacing=0
+                                              Class="flex-grow-1">
+                                        <MudText Typo=@Typo.body2
+                                                 @onclick="@(() => OnAttachmentClicked(attachment))">
+                                            <b class="attachment-link">@attachment.Name</b>
+                                        </MudText>
+                                        <MudText Typo=@Typo.caption>
+                                            Added by @attachment.CreatedBy.DisplayName • @attachment.CreatedAt.ToString("dd.MM.yyyy")
+                                        </MudText>
+                                    </MudStack>
+
+                                    <MudText Typo=@Typo.caption>
+                                        @FileTypeHelper.FormatFileSize(attachment.SizeKB)
+                                    </MudText>
+
+                                    <MudIconButton Icon=@Icons.Material.Filled.Delete
+                                                   Size=@Size.Small
+                                                   Color=@Color.Error
+                                                   OnClick=@(() => OnDeleteAttachmentAsync(attachment)) />
+                                </MudStack>
+                            </MudPaper>
+                        }
+                    </MudStack>
+                </MudStack>
+
+                <MudStack Row=true
+                          Spacing=1
+                          AlignItems=@AlignItems.Center>
+                    <MudText Typo=@Typo.caption
+                             Color=@Color.Secondary>
+                        Total size: <b>@FileTypeHelper.FormatFileSize(_totalSizeKB)</b>
+                    </MudText>
+                </MudStack>
+            }
+        </MudStack>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick=@OnCloseClicked>
+            Cancel
+        </MudButton>
+        <MudButton Variant=@Variant.Filled
+                   Color=@Color.Primary
+                   OnClick=@OnSaveClicked>
+            Ok
+        </MudButton>
+    </DialogActions>
+</MudDialog>

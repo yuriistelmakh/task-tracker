@@ -42,15 +42,6 @@
 
 /* Task view dialog (since dialog boxes cannot be modified through .razor.css) */
 
-.add-attachment-container {
-    cursor: pointer;
-    transition: background-color 0.5s;
-}
-
-.add-attachment-container:hover {
-    background-color: var(--mud-palette-action-default-hover) !important;
-}
-
 .completed-checkbox-container {
     border: 1px solid var(--mud-palette-lines-inputs);
 }

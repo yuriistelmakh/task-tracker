@@ -18,6 +18,7 @@
     <None Remove="Scripts\010_CreateNotificationsTable.sql" />
     <None Remove="Scripts\011_CreateCommentsTable.sql" />
     <None Remove="Scripts\012_CreateActiveUsersView.sql" />
+    <None Remove="Scripts\013_CreateAttachmentsTable.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +34,7 @@
     <EmbeddedResource Include="Scripts\010_CreateNotificationsTable.sql" />
     <EmbeddedResource Include="Scripts\011_CreateCommentsTable.sql" />
     <EmbeddedResource Include="Scripts\012_CreateActiveUsersView.sql" />
+    <EmbeddedResource Include="Scripts\013_CreateAttachmentsTable.sql" />
   </ItemGroup>
 
   <ItemGroup>

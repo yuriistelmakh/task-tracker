@@ -23,7 +23,7 @@ public class UploadAvatarCommandHandler : IRequestHandler<UploadAvatarCommand, R
     {
         var uow = _unitOfWorkFactory.Create();
 
-        var path = await _blobStorageService.UploadAvatarAsync(request.File, BlobContainerType.Avatars, request.UserId);
+        var path = await _blobStorageService.UploadAvatarAsync(request.File, request.UserId);
 
         if (path is null)
         {

@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using TaskTracker.Application.Interfaces.Repositories;
 using TaskTracker.Domain.Entities;
@@ -11,6 +13,45 @@ public class TaskRepository : Repository<BoardTask, int>, IBoardTaskRepository
 {
     public TaskRepository(IDbTransaction transaction) : base(transaction)
     {
+    }
+
+    public async Task<BoardTask> GetByIdWithAttachments(int taskId)
+    {
+        var sql = @"
+            SELECT t.*, a.*, u.*
+            FROM Tasks t
+            LEFT JOIN Attachments a ON a.TaskId = t.Id
+            LEFT JOIN ActiveUsers u ON u.Id = a.CreatedBy
+            WHERE t.Id = @TaskId
+        ";
+
+        var taskDict = new Dictionary<int, BoardTask>();
+
+        await Connection.QueryAsync<BoardTask, Attachment, User, BoardTask>(
+            sql,
+            (task, attachment, user) =>
+            {
+                if (!taskDict.TryGetValue(task.Id, out var existingTask))
+                {
+                    existingTask = task;
+                    existingTask.Attachments = new List<Attachment>();
+                    taskDict.Add(task.Id, existingTask);
+                }
+
+                if (attachment is not null)
+                {
+                    attachment.Creator = user;
+                    existingTask.Attachments.Add(attachment);
+                }
+
+                return existingTask;
+            },
+            new { TaskId = taskId },
+            splitOn: "Id,Id",
+            transaction: Transaction
+        );
+
+        return taskDict.Values.FirstOrDefault();
     }
 
     public async Task<IEnumerable<BoardTask>> GetAllByAssignee(int assigneeId)

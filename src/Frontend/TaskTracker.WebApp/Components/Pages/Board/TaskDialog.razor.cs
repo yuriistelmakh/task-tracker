@@ -12,6 +12,7 @@ using TaskTracker.Services.Auth;
 using TaskTracker.Domain.DTOs.Users;
 using TaskTracker.Domain.DTOs.Comments;
 using Microsoft.JSInterop;
+using TaskTracker.Domain.Helpers;
 
 namespace TaskTracker.WebApp.Components.Pages.Board;
 
@@ -39,7 +40,7 @@ public partial class TaskDialog
     public ITasksService TasksService { get; private set; } = default!;
 
     [Inject]
-    public IBoardMembersService BoardMembersService {  get; private set; } = default!;
+    public IBoardMembersService BoardMembersService { get; private set; } = default!;
 
     [Inject]
     public ICommentsService CommentsService { get; private set; } = default!;
@@ -53,9 +54,11 @@ public partial class TaskDialog
     [Inject]
     public IJSRuntime JS { get; private set; } = default!;
 
+    private TaskDetailsModel task = new() { ColumnTitle = string.Empty, Title = string.Empty };
+
     private List<CommentModel> _comments = [];
 
-    private TaskDetailsModel task = new() { ColumnTitle = string.Empty, Title = string.Empty };
+    private List<AttachmentModel> _attachments = [];
 
     private int? _currentUserId;
 
@@ -114,7 +117,8 @@ public partial class TaskDialog
 
         var dto = result.Value!;
         task = dto.ToTaskDetailsModel();
-        
+        _attachments = dto.Attachments.Select(a => a.ToAttachmentModel()).ToList();
+
         _currentUserId = await UserService.GetUserId();
 
         if (_currentUserId is null)
@@ -190,7 +194,7 @@ public partial class TaskDialog
         {
             isConfirmed = (bool)result.Data;
         }
-        
+
         if (isConfirmed == true)
         {
             var response = await TasksService.DeleteAsync(BoardId, task.Id);
@@ -256,7 +260,7 @@ public partial class TaskDialog
 
         if (_isCommentsVisible && _comments.Count == 0)
         {
-            _isObserverAttached = false; 
+            _isObserverAttached = false;
 
             var result = await CommentsService.GetAsync(BoardId, TaskId, 1, _commentsPageSize);
 
@@ -310,10 +314,10 @@ public partial class TaskDialog
         }
 
         _isLoadingMoreComments = true;
-        StateHasChanged(); 
+        StateHasChanged();
 
-        await Task.Delay(1000); 
-        
+        await Task.Delay(1000);
+
         var result = await CommentsService.GetAsync(BoardId, TaskId, _comments.Count / _commentsPageSize + 1, _commentsPageSize);
 
         if (!result.IsSuccess)
@@ -333,6 +337,60 @@ public partial class TaskDialog
 
         _isLoadingMoreComments = false;
         StateHasChanged();
+    }
+
+    private string GetAttachmentIcon(FileType fileType) =>
+        fileType switch
+        {
+            FileType.Document => Icons.Material.Filled.Description,
+            FileType.Spreadsheet => Icons.Material.Filled.TableChart,
+            FileType.Audio => Icons.Material.Filled.Audiotrack,
+            FileType.Video => Icons.Material.Filled.Videocam,
+            FileType.Image => Icons.Material.Filled.Image,
+            _ => Icons.Material.Filled.Attachment,
+        };
+
+    private async Task OnAttachmentClicked(AttachmentModel attachment)
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("openFile", attachment.FileUrl, attachment.Name);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error opening file: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task OnDownloadAttachment(AttachmentModel attachment)
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("downloadFile", attachment.FileUrl, attachment.Name);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error downloading file: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task OnManageAttachmentsClicked()
+    {
+        var parameters = new DialogParameters<ManageAttachmentsDialog>
+        {
+            { x => x.Attachments, _attachments },
+            { x => x.BoardId, BoardId  },
+            { x => x.TaskId, TaskId }
+        };
+        var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<ManageAttachmentsDialog>(string.Empty, parameters, options);
+        var result = await dialog.Result;
+
+        if (result.Data is not null)
+        {
+            var updatedAttachments = (List<AttachmentModel>)result.Data;
+            _attachments = updatedAttachments;
+        }
     }
 
     private void OnCloseClicked()

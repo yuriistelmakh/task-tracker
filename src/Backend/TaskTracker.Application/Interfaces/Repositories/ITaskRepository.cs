@@ -10,4 +10,5 @@ public interface IBoardTaskRepository : IRepository<BoardTask, int>
     Task<bool> MoveToColumn(int id, int columnId);
     Task<IEnumerable<BoardTask>> SearchAsync(int boardId, string? prompt, int pageSize);
     Task<IEnumerable<BoardTask>> GetAllByAssignee(int asigneeId);
+    Task<BoardTask> GetByIdWithAttachments(int taskId);
 }
