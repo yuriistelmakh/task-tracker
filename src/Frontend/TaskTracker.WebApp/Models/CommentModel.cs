@@ -1,8 +1,10 @@
-﻿namespace TaskTracker.WebApp.Models;
+﻿using TaskTracker.WebApp.Models.Users;
+
+namespace TaskTracker.WebApp.Models;
 
 public class CommentModel
 {
-    public required string SenderName { get; set; }
+    public required UserSummaryModel Sender { get; set; }
 
     public required string Content { get; set; }
 

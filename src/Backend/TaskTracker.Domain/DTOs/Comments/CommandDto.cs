@@ -1,10 +1,11 @@
 ﻿using System;
+using TaskTracker.Domain.DTOs.Users;
 
 namespace TaskTracker.Domain.DTOs.Comments;
 
 public class CommentDto
 {
-    public required string SenderName { get; set; }
+    public UserSummaryDto Sender { get; set; }
 
     public required string Content { get; set; }
 
