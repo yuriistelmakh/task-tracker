@@ -16,7 +16,7 @@ public class ColumnsService : IColumnsService
         _columnsApi = columnsApi;
     }
 
-    public async Task<Result<int>> CreateAsync(CreateColumnRequest request)
+    public async Task<Result<int>> CreateAsync(int boardId, CreateColumnRequest request)
     {
         var userId = await _userService.GetUserId();
 
@@ -27,23 +27,23 @@ public class ColumnsService : IColumnsService
 
         request.CreatedBy = userId.Value;
 
-        var result = await _columnsApi.CreateAsync(request);
+        var result = await _columnsApi.CreateAsync(boardId, request);
 
         return result.IsSuccessful
             ? Result<int>.Success(result.Content)
             : Result<int>.Failure(result.Error.Message);
     }
 
-    public async Task<Result> ReorderAsync(int columndId, ReorderColumnTasksRequest request)
+    public async Task<Result> ReorderAsync(int boardId, int columndId, ReorderColumnTasksRequest request)
     {
-        var response = await _columnsApi.ReorderTasksAsync(columndId, request);
+        var response = await _columnsApi.ReorderTasksAsync(boardId, columndId, request);
 
         return response.IsSuccessful
             ? Result.Success()
             : Result.Failure(response.Error.Message);
     }
 
-    public async Task<Result> UpdateAsync(int columnId, UpdateColumnRequest request)
+    public async Task<Result> UpdateAsync(int boardId, int columnId, UpdateColumnRequest request)
     {
         var userId = await _userService.GetUserId();
 
@@ -54,16 +54,16 @@ public class ColumnsService : IColumnsService
 
         request.UpdatedBy = userId.Value;
 
-        var response = await _columnsApi.UpdateAsync(columnId, request);
+        var response = await _columnsApi.UpdateAsync(boardId, columnId, request);
 
         return response.IsSuccessful
             ? Result.Success()
             : Result.Failure(response.Error.Message);
     }
 
-    public async Task<Result> DeleteAsync(int id)
+    public async Task<Result> DeleteAsync(int boardId, int id)
     {
-        var response = await _columnsApi.DeleteAsync(id);
+        var response = await _columnsApi.DeleteAsync(boardId, id);
 
         return response.IsSuccessful
             ? Result.Success()

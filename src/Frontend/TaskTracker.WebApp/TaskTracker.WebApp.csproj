@@ -22,6 +22,7 @@
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.12" />
     <PackageReference Include="MudBlazor" Version="8.15.0" />
     <PackageReference Include="Refit" Version="9.0.2" />
     <PackageReference Include="Refit.HttpClientFactory" Version="9.0.2" />

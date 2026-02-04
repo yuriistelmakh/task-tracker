@@ -4,6 +4,8 @@ namespace TaskTracker.Application.Features.Tasks.Commands.CreateTask;
 
 public class CreateTaskCommand : IRequest<int>
 {
+    public int BoardId { get; set; }
+
     public int ColumnId { get; set; }
 
     public required string Title { get; set; }

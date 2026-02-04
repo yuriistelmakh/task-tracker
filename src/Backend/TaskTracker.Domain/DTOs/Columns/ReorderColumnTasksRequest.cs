@@ -8,6 +8,4 @@ public class ReorderColumnTasksRequest
 
     // Id of the moved task to change its columnId
     public int MovedTaskId { get; set; }
-
-    public int ColumnId { get; set; }
 }

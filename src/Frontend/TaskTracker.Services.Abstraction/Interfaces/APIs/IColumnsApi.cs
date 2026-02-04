@@ -5,15 +5,15 @@ namespace TaskTracker.Services.Abstraction.Interfaces.APIs;
 
 public interface IColumnsApi
 {
-    [Post("/api/columns")]
-    public Task<IApiResponse<int>> CreateAsync([Body] CreateColumnRequest request);
+    [Post("/api/boards/{boardId}/columns")]
+    public Task<IApiResponse<int>> CreateAsync(int boardId, [Body] CreateColumnRequest request);
 
-    [Post("/api/columns/{columnId}/reorder")]
-    public Task<IApiResponse> ReorderTasksAsync(int columnId, [Body] ReorderColumnTasksRequest request);
+    [Post("/api/boards/{boardId}/columns/{columnId}/reorder")]
+    public Task<IApiResponse> ReorderTasksAsync(int boardId, int columnId, [Body] ReorderColumnTasksRequest request);
 
-    [Put("/api/columns/{id}")]
-    public Task<IApiResponse> UpdateAsync(int id, [Body] UpdateColumnRequest request);
+    [Put("/api/boards/{boardId}/columns/{id}")]
+    public Task<IApiResponse> UpdateAsync(int boardId, int id, [Body] UpdateColumnRequest request);
 
-    [Delete("/api/columns/{id}")]
-    public Task<IApiResponse> DeleteAsync(int id);
+    [Delete("/api/boards/{boardId}/columns/{id}")]
+    public Task<IApiResponse> DeleteAsync(int boardId, int id);
 }

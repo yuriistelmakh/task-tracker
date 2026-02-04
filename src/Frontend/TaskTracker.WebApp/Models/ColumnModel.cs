@@ -8,6 +8,7 @@ public class ColumnModel
     public required string Title { get; set; }
     public List<TaskSummaryModel> Tasks { get; set; } = [];
     public int Order { get; set; }
+    public int CreatedBy { get; set; }
 
     public bool IsAddTaskOpen { get; set; }
     public bool IsEditing { get; set; }

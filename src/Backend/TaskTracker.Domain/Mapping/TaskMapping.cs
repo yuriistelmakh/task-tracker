@@ -14,7 +14,8 @@ public static class TaskMapping
             Priority = task.Priority,
             ColumndId = task.ColumnId,
             AssigneeId = task.AssigneeId,
-            IsComplete = task.IsComplete
+            IsComplete = task.IsComplete,
+            CreatedBy = task.CreatedBy
         };
 
     public static TaskDetailsDto ToTaskDetailsDto(this BoardTask task) =>

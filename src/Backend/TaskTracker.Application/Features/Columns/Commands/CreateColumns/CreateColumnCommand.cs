@@ -2,7 +2,7 @@
 
 namespace TaskTracker.Application.Features.Columns.Commands.CreateBoardColumns;
 
-public class CreateColumnCommand : IRequest<int>
+public class CreateColumnCommand : IRequest<Result<int>>
 {
     public int BoardId { get; set; }
 

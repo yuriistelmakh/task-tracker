@@ -5,6 +5,8 @@ namespace TaskTracker.Application.Features.Columns.Commands.ReorderColumnTasks;
 
 public class ReorderColumnTasksCommand : IRequest<bool>
 {
+    public int BoardId { get; set; }
+
     public int TaskId { get; set; }
 
     public int ColumnId { get; set; }

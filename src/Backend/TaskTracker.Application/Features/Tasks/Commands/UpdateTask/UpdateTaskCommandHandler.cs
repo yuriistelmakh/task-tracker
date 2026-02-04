@@ -2,20 +2,24 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using TaskTracker.Application.Interfaces.SignalR;
 using TaskTracker.Application.Interfaces.UoW;
+using TaskTracker.Domain.Mapping;
 
 namespace TaskTracker.Application.Features.Tasks.Commands.UpdateTask;
 
-public class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommand, bool>
+public class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommand, Result>
 {
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
+    private readonly IBoardNotificator _boardNotificator;
 
-    public UpdateTaskCommandHandler(IUnitOfWorkFactory unitOfWorkFactory)
+    public UpdateTaskCommandHandler(IUnitOfWorkFactory unitOfWorkFactory, IBoardNotificator boardNotificator)
     {
         _unitOfWorkFactory = unitOfWorkFactory;
+        _boardNotificator = boardNotificator;
     }
 
-    public async Task<bool> Handle(UpdateTaskCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(UpdateTaskCommand request, CancellationToken cancellationToken)
     {
         using var uow = _unitOfWorkFactory.Create();
 
@@ -23,7 +27,7 @@ public class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommand, bool>
 
         if (task is null)
         {
-            return false;
+            return Result.Failure("Task was not found", ErrorType.NotFound);
         }
 
         task.Title = request.Title;
@@ -35,10 +39,12 @@ public class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommand, bool>
         task.UpdatedBy = request.UpdatedBy;
         task.UpdatedAt = DateTime.UtcNow;
 
-        var rowsAffected = await uow.TaskRepository.UpdateAsync(task);
+        await uow.TaskRepository.UpdateAsync(task);
 
         uow.Commit();
 
-        return rowsAffected > 0;
+        await _boardNotificator.TaskUpdatedAsync(request.BoardId, task.ToTaskSummaryDto());
+
+        return Result.Success();
     }
 }

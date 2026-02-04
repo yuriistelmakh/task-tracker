@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using TaskTracker.Application.Features.Boards.Queries.GetBoardById;
 using TaskTracker.Application.Features.Tasks.Commands.ChangeStatus;
 using TaskTracker.Application.Features.Tasks.Commands.CreateTask;
 using TaskTracker.Application.Features.Tasks.Commands.DeleteTask;
@@ -71,6 +72,7 @@ public class TasksController : ControllerBase
             Title = request.Title,
             CreatedBy = request.CreatedBy,
             Order = request.Order,
+            BoardId = boardId
         };
 
         var result = await _mediator.Send(command);
@@ -84,6 +86,7 @@ public class TasksController : ControllerBase
         var command = new UpdateTaskCommand
         {
             Id = id,
+            BoardId = boardId,
             Title = request.Title,
             Description = request.Description,
             AssigneeId = request.AssigneeId,
@@ -93,9 +96,9 @@ public class TasksController : ControllerBase
             UpdatedBy = request.UpdatedBy
         };
 
-        var isSuccess = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
-        return isSuccess
+        return result.IsSuccess
             ? NoContent()
             : NotFound();
     }
@@ -107,27 +110,29 @@ public class TasksController : ControllerBase
         {
             Id = id,
             IsComplete = request.IsComplete,
-            UpdatedBy = request.UpdatedBy
+            UpdatedBy = request.UpdatedBy,
+            BoardId = boardId
         };
 
-        var isSuccess = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
-        return isSuccess
+        return result.IsSuccess
             ? NoContent()
             : NotFound();
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAsync([FromRoute] int id)
+    public async Task<IActionResult> DeleteAsync([FromRoute] int boardId, [FromRoute] int id)
     {
         var command = new DeleteTaskCommand
         {
-            Id = id
+            Id = id,
+            BoardId = boardId
         };
 
-        var isSuccess = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
-        return isSuccess 
+        return result.IsSuccess
             ? NoContent()
             : NotFound();
     }

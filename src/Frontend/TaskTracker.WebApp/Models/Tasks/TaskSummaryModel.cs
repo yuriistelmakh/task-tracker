@@ -8,6 +8,8 @@ public class TaskSummaryModel
 
     public required string Title { get; set; }
 
+    public int CreatedBy { get; set; }
+
     public Priority Priority { get; set; } = Priority.Medium;
 
     public int Order { get; set; }

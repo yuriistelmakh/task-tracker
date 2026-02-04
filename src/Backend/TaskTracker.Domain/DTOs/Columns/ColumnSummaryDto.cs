@@ -11,5 +11,7 @@ public class ColumnSummaryDto
 
     public int Order { get; set; }
 
+    public int CreatedBy { get; set; }
+
     public List<TaskSummaryDto> Tasks { get; set; } = [];
 }

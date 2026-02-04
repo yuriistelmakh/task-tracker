@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 using TaskTracker.Application;
 using TaskTracker.Application.Features.BoardMembers.Commands.AcceptInvitation;

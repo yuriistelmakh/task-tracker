@@ -11,6 +11,7 @@ public static class ColumnMapping
         { 
             Id = column.Id,
             Title = column.Title,
+            CreatedBy = column.CreatedBy,
             Order = column.Order,
             Tasks = column.Tasks.Select(t => t.ToTaskSummaryDto()).ToList()
         };

@@ -120,6 +120,7 @@ public class BoardsController : ControllerBase
     {
         var command = new ReorderBoardColumnsCommand
         {
+            BoardId = id,
             IdToOrder = request.MoveColumnRequests.ToDictionary(r => r.ColumnId, r => r.NewOrder),
         };
 

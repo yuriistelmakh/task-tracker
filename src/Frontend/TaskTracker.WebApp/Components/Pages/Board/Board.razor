@@ -76,7 +76,7 @@
 
                     <div style="@(isLast ? "" : "margin-right: -12px;")">
                         <MudAvatar Class="cursor-pointer"
-                                   Style="border: 2px solid var(--mud-palette-background);"
+                                   Style=@($"border: 2px solid {(member.IsOnline ? "blue" : "var(--mud-palette-background);")}")
                                    @onmouseenter=@(() => _hoveredMemberId = member.Id)
                                    @onmouseleave=@(() => _hoveredMemberId = null)>
                             <MudIcon Icon=@Icons.Material.Filled.AccountCircle />
@@ -191,6 +191,7 @@
             else
             {
                 <MudDropContainer T=@TaskSummaryModel
+                                  @key=@_dropContainerVersion
                                   Items=@_allTasks
                                   Class="d-flex flex-nowrap gap-4"
                                   @ref=@_taskDropContainer
@@ -373,11 +374,12 @@
                             }
                         }
                     </ChildContent>
-                    <ItemRenderer Context="task">
+                        <ItemRenderer Context="task">
                         <div>
                             <MudPaper Class="task d-flex flex-column my-1 mud-theme-secondary cursor-pointer overflow-hidden"
                                       Elevation=1
                                       Style="min-height: 70px"
+                                          @key=@task.Id
                                       @onclick=@(() => OnTaskClicked(task.Id))>
                                 <div style="height: 4px; width: 100%; background-color: @GetColorForPriority(task.Priority);"></div>
 

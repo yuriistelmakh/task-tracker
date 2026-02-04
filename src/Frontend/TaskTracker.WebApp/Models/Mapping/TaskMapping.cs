@@ -13,7 +13,8 @@ public static class TaskMapping
             IsComplete = dto.IsComplete,
             Order = dto.Order,
             Priority = dto.Priority,
-            ColumnId = dto.ColumndId
+            ColumnId = dto.ColumndId,
+            CreatedBy = dto.CreatedBy
         };
 
     public static TaskDetailsModel ToTaskDetailsModel(this TaskDetailsDto dto) =>

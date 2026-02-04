@@ -1,7 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Interfaces.Auth;
+using TaskTracker.Application.Interfaces.SignalR;
 using TaskTracker.Infrastructure.Auth;
+using TaskTracker.Infrastructure.Realtime;
 
 namespace TaskTracker.Infrastructure;
 
@@ -11,6 +14,9 @@ public static class DependencyInjection
     {
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IBoardNotificator, SignalRBoardNotificator>();
+        services.AddSingleton<IOnlineBoardUsers, OnlineBoardUsers>();
+
         return services;
     }
 }

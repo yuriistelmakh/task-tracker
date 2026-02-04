@@ -18,30 +18,35 @@ builder.Services.AddProjectServices();
 
 builder.Services.AddTransient<AuthHeaderHandler>();
 
-builder.Services.AddRefitClient<IAuthApi>()
+var refitSettings = new RefitSettings
+{
+    ContentSerializer = new SystemTextJsonContentSerializer()
+};
+
+builder.Services.AddRefitClient<IAuthApi>(refitSettings)
     .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]));
 
-builder.Services.AddRefitClient<IBoardsApi>()
+builder.Services.AddRefitClient<IBoardsApi>(refitSettings)
     .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]))
     .AddHttpMessageHandler<AuthHeaderHandler>();
 
-builder.Services.AddRefitClient<ITasksApi>()
+builder.Services.AddRefitClient<ITasksApi>(refitSettings)
     .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]))
     .AddHttpMessageHandler<AuthHeaderHandler>();
 
-builder.Services.AddRefitClient<IColumnsApi>()
+builder.Services.AddRefitClient<IColumnsApi>(refitSettings)
     .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]))
     .AddHttpMessageHandler<AuthHeaderHandler>();
 
-builder.Services.AddRefitClient<IUsersApi>()
+builder.Services.AddRefitClient<IUsersApi>(refitSettings)
     .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]))
     .AddHttpMessageHandler<AuthHeaderHandler>();
 
-builder.Services.AddRefitClient<IBoardMembersApi>()
+builder.Services.AddRefitClient<IBoardMembersApi>(refitSettings)
     .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]))
     .AddHttpMessageHandler<AuthHeaderHandler>();
 
-builder.Services.AddRefitClient<ICommentsApi>()
+builder.Services.AddRefitClient<ICommentsApi>(refitSettings)
     .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]))
     .AddHttpMessageHandler<AuthHeaderHandler>();
 
