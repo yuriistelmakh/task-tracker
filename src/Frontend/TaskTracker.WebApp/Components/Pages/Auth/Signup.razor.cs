@@ -4,7 +4,7 @@ using MudBlazor;
 using TaskTracker.Domain.DTOs.Auth;
 using TaskTracker.Domain.Enums;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
-using TaskTracker.WebApp.Models;
+using TaskTracker.WebApp.Models.Forms;
 
 namespace TaskTracker.WebApp.Components.Pages.Auth;
 

@@ -24,23 +24,10 @@
                                 <MudText><b>@_user?.DisplayName</b></MudText>
                                 <MudText Typo=@Typo.caption>@($"@{@_user?.Tag}")</MudText>
 
-                                <MudPaper Elevation=0
-                                          Width="100%">
-                                    <MudList T=int 
-                                        @bind-SelectedValue=@_activeTab 
-                                        SelectionMode=@SelectionMode.SingleSelection
-                                        Color=@Color.Primary
-                                        Class="w-100">
-                                        <MudListItem Text="General info" 
-                                            Value=1
-                                            Icon=@Icons.Material.Filled.Person />
-                                        <MudListItem Text="Activity" 
-                                            Value=2
-                                            Icon=@Icons.Material.Filled.ShowChart />
-                                        <MudListItem 
-                                            Text="Security" 
-                                            Value=3
-                                            Icon=@Icons.Material.Filled.Security />
+                                <MudPaper Elevation="0" Width="100%">
+                                    <MudList T="int" @bind-SelectedValue=@_activeTab SelectionMode="SelectionMode.SingleSelection" Color="Color.Primary" Class="w-100">
+                                        <MudListItem Text="General info" Value="1" Icon="@Icons.Material.Filled.Person" />
+                                        <MudListItem Text="Security" Value="2" Icon="@Icons.Material.Filled.Security" />
                                     </MudList>
                                 </MudPaper>
                             </MudStack>
@@ -63,10 +50,10 @@
                                         <MudButton @onclick=@OnCancelClicked>
                                             Cancel
                                         </MudButton>
-                                         <MudButton Variant=@Variant.Filled
-                                                    Color=@Color.Primary
-                                                    ButtonType=@ButtonType.Submit
-                                                    Form="profile-form">
+                                        <MudButton Variant=@Variant.Filled
+                                                   Color=@Color.Primary
+                                                   ButtonType=@ButtonType.Submit
+                                                   Form="profile-form">
                                             Save
                                         </MudButton>
                                     }
@@ -86,7 +73,7 @@
 
                                 <EditForm id="profile-form"
                                           Model=@_profileUpdate
-                                          OnValidSubmit=@OnValidSubmit>
+                                          OnValidSubmit=@OnUpdateUserValidSubmit>
                                     <DataAnnotationsValidator />
 
                                     <MudInputLabel Class="mt-3 mb-1">Display name</MudInputLabel>
@@ -118,10 +105,69 @@
                     else if (_activeTab == 2)
                     {
                         <MudItem md=8
-                                 Class="d-flex"
-                                 Style="height: 55%">
-                            <MudCard Class="d-flex flex-grow-1 pa-4">
-                                <MudText Typo=@Typo.h6>Recent activity</MudText>
+                                 Class="d-flex flex-column gap-4">
+                            <MudCard Class="d-flex flex-column pa-4">
+                                <MudText Typo=@Typo.h6>Change password</MudText>
+
+                                <EditForm id="change-password-form"
+                                          Model=@_changePassword
+                                          OnValidSubmit=@OnChangePasswordValidSubmit>
+                                    <DataAnnotationsValidator />
+                                    <MudInputLabel Class="mt-3 mb-1">Current password</MudInputLabel>
+                                    <MudTextField @bind-Value=@_changePassword.OldPassword
+                                                  For=@(() => _changePassword.OldPassword)
+                                                  Variant=@Variant.Outlined
+                                                  InputType=@_oldPasswordInputType
+                                                  Adornment=@Adornment.End
+                                                  AdornmentIcon=@_oldPasswordInputIcon
+                                                  OnAdornmentClick=@ToggleOldPasswordVisibility
+                                                  Margin=@Margin.Dense />
+
+                                    <MudInputLabel Class="mt-3 mb-1">New password</MudInputLabel>
+                                    <MudTextField @bind-Value=@_changePassword.NewPassword
+                                                  For=@(() => _changePassword.NewPassword)
+                                                  Variant=@Variant.Outlined
+                                                  InputType=@_newPasswordInputType
+                                                  Adornment=@Adornment.End
+                                                  AdornmentIcon=@_newPasswordInputIcon
+                                                  OnAdornmentClick=@ToggleNewPasswordVisibility
+                                                  Margin=@Margin.Dense />
+
+                                    <MudInputLabel Class="mt-3 mb-1">Repeat password</MudInputLabel>
+                                    <MudTextField @bind-Value=@_changePassword.PasswordRepeat
+                                                  For=@(() => _changePassword.PasswordRepeat)
+                                                  Variant=@Variant.Outlined
+                                                  InputType=@_repeatPasswordInputType
+                                                  Adornment=@Adornment.End
+                                                  AdornmentIcon=@_repeatPasswordInputIcon
+                                                  OnAdornmentClick=@ToggleRepeatPasswordVisibility
+                                                  Margin=@Margin.Dense />
+
+                                    <div class="d-flex justify-end mt-4">
+                                        <MudButton Variant=@Variant.Filled
+                                                   Color=@Color.Primary
+                                                   ButtonType=@ButtonType.Submit>
+                                            Change password
+                                        </MudButton>
+                                    </div>
+                                </EditForm>
+                            </MudCard>
+
+                            <MudCard Class="d-flex flex-column pa-4">
+                                <MudText Typo=@Typo.h6 Color=@Color.Error>Delete account</MudText>
+
+                                <MudText Typo=@Typo.body2 Class="mt-3">
+                                    Once you delete your account, there is no going back. Please be certain.
+                                </MudText>
+
+                                <div class="d-flex justify-end mt-4">
+                                    <MudButton Variant=@Variant.Filled
+                                               Color=@Color.Error
+                                               StartIcon=@Icons.Material.Filled.Delete
+                                               OnClick=@OnDeleteAccountClicked>
+                                        Delete my account
+                                    </MudButton>
+                                </div>
                             </MudCard>
                         </MudItem>
                     }

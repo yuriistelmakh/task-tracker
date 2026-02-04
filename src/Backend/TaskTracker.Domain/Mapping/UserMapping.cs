@@ -13,7 +13,6 @@ public static class UserMapping
             DisplayName = user.DisplayName,
             Tag = user.Tag,
             AvatarUrl = user.AvatarUrl,
-            IsDeleted = user.IsDeleted
         };
 
     public static UserDetailsDto ToUserDetailsDto(this User user) =>
@@ -23,7 +22,6 @@ public static class UserMapping
             DisplayName = user.DisplayName,
             Tag = user.Tag,
             AvatarUrl = user.AvatarUrl,
-            IsDeleted = user.IsDeleted,
             Email = user.Email
         };
 }

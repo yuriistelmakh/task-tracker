@@ -32,10 +32,8 @@ public class UserRepository : Repository<User, int>, IUserRepository
     {
         var sql = @"
             SELECT *
-            FROM Users
-            WHERE 
-                Email = @Email
-                AND IsDeleted = 0";
+            FROM ActiveUsers
+            WHERE Email = @Email";
 
         var users = await Connection.QueryAsync<User>(sql, transaction: Transaction, param: new { email });
 
@@ -46,10 +44,8 @@ public class UserRepository : Repository<User, int>, IUserRepository
     {
         var sql = @"
             SELECT *
-            FROM Users
-            WHERE 
-                Tag = @Tag
-                AND IsDeleted = 0";
+            FROM ActiveUsers
+            WHERE Tag = @Tag";
 
         var users = await Connection.QueryAsync<User>(sql, transaction: Transaction, param: new { tag });
 
@@ -60,7 +56,7 @@ public class UserRepository : Repository<User, int>, IUserRepository
     {
         var sql = @"
             SELECT TOP (@PageSize) u.*
-            FROM Users u
+            FROM ActiveUsers u
             WHERE
                 DisplayName LIKE @SearchPrompt + '%' OR
                 Tag LIKE @SearchPrompt + '%'

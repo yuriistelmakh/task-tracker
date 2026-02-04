@@ -43,6 +43,14 @@ public class UsersService : IUsersService
             : Result<IEnumerable<UserSummaryDto>>.Failure(result.Error.Message);
     }
 
+    public async Task<Result> ChangePasswordAsync(int userId, ChangePasswordRequest changePasswordRequest)
+    {
+        var result = await _usersApi.ChangePasswordAsync(userId, changePasswordRequest);
+        return result.IsSuccessful
+            ? Result.Success()
+            : Result.Failure(result.Error.Content!);
+    }
+
     public async Task<Result<IEnumerable<NotificationDto>>> GetUnreadNotifications(int userId)
     {
         var result = await _usersApi.GetUnreadNotificationsAsync(userId);
@@ -50,5 +58,14 @@ public class UsersService : IUsersService
         return result.IsSuccessful
             ? Result<IEnumerable<NotificationDto>>.Success(result.Content)
             : Result<IEnumerable<NotificationDto>>.Failure(result.Error.Message);
+    }
+
+    public async Task<Result> DeleteAsync(int userId)
+    {
+        var result = await _usersApi.DeleteAsync(userId);
+
+        return result.IsSuccessful
+            ? Result.Success()
+            : Result.Failure(result.Error.Message);
     }
 }
