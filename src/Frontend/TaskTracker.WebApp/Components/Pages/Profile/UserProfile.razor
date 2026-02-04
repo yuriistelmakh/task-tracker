@@ -1,0 +1,132 @@
+﻿@page "/profile/{UserId:int}"
+@using TaskTracker.WebApp.Components.Layout.Headers
+@using TaskTracker.WebApp.Components.Pages.Auth
+@using Microsoft.AspNetCore.Components.Forms
+
+<AuthGuard Context=authContext>
+    <MudLayout Style="min-height: 100dvh; display: flex; flex-direction: column;">
+        <Header>
+        </Header>
+
+        <MudMainContent Class="d-flex flex-grow-1">
+            <MudContainer Class="pa-8 d-flex flex-grow-1">
+                <MudGrid Class="flex-grow-1">
+                    <MudItem md=4 
+                        Class="d-flex">
+                        <MudCard Class="d-flex flex-grow-1 pa-2"
+                                 Style="height: 70%">
+                            <MudStack Spacing=1
+                                      Class="d-flex flex-column"
+                                      AlignItems=@AlignItems.Center>
+                                <MudSkeleton SkeletonType=@SkeletonType.Circle
+                                             Style="height:150px; width:150px" />
+
+                                <MudText><b>@_user?.DisplayName</b></MudText>
+                                <MudText Typo=@Typo.caption>@($"@{@_user?.Tag}")</MudText>
+
+                                <MudPaper Elevation=0
+                                          Width="100%">
+                                    <MudList T=int 
+                                        @bind-SelectedValue=@_activeTab 
+                                        SelectionMode=@SelectionMode.SingleSelection
+                                        Color=@Color.Primary
+                                        Class="w-100">
+                                        <MudListItem Text="General info" 
+                                            Value=1
+                                            Icon=@Icons.Material.Filled.Person />
+                                        <MudListItem Text="Activity" 
+                                            Value=2
+                                            Icon=@Icons.Material.Filled.ShowChart />
+                                        <MudListItem 
+                                            Text="Security" 
+                                            Value=3
+                                            Icon=@Icons.Material.Filled.Security />
+                                    </MudList>
+                                </MudPaper>
+                            </MudStack>
+                        </MudCard>
+                    </MudItem>
+
+                    @if (_activeTab == 1)
+                    {
+                        <MudItem md=8
+                                 Class="d-flex"
+                                 Style="height: 70%">
+                            <MudCard Class="d-flex flex-grow-1 pa-4">
+                                <MudStack Row=true>
+                                    <MudText Typo=@Typo.h6>Personal information</MudText>
+
+                                    <MudSpacer />
+
+                                    @if (_isEditingMode)
+                                    {
+                                        <MudButton @onclick=@OnCancelClicked>
+                                            Cancel
+                                        </MudButton>
+                                         <MudButton Variant=@Variant.Filled
+                                                    Color=@Color.Primary
+                                                    ButtonType=@ButtonType.Submit
+                                                    Form="profile-form">
+                                            Save
+                                        </MudButton>
+                                    }
+                                    else
+                                    {
+                                        <MudButton Variant=@Variant.Filled
+                                                   Color=@Color.Primary
+                                                   @onclick=@OnEditClicked>
+                                            <MudStack Row=true
+                                                      Spacing=1>
+                                                <MudIcon Icon=@Icons.Material.Filled.Edit />
+                                                Edit
+                                            </MudStack>
+                                        </MudButton>
+                                    }
+                                </MudStack>
+
+                                <EditForm id="profile-form"
+                                          Model=@_profileUpdate
+                                          OnValidSubmit=@OnValidSubmit>
+                                    <DataAnnotationsValidator />
+
+                                    <MudInputLabel Class="mt-3 mb-1">Display name</MudInputLabel>
+                                    <MudTextField @bind-Value=@_profileUpdate.DisplayName
+                                                  For=@(() => _profileUpdate.DisplayName)
+                                                  Variant=@_inputVariant
+                                                  Margin=@Margin.Dense
+                                                  ReadOnly=@(!_isEditingMode) />
+
+                                    <MudInputLabel Class="mt-3 mb-1">Tag</MudInputLabel>
+                                    <MudTextField @bind-Value=@_profileUpdate.Tag
+                                                  For=@(() => _profileUpdate.Tag)
+                                                  Variant=@_inputVariant
+                                                  Margin=@Margin.Dense
+                                                  ReadOnly=@(!_isEditingMode)
+                                                  Adornment=@Adornment.Start
+                                                  AdornmentText=@("@") />
+
+                                    <MudInputLabel Class="mt-3 mb-1">Email</MudInputLabel>
+                                    <MudTextField @bind-Value=@_profileUpdate.Email
+                                                  For=@(() => _profileUpdate.Email)
+                                                  Variant=@_inputVariant
+                                                  Margin=@Margin.Dense
+                                                  ReadOnly=@(!_isEditingMode) />
+                                </EditForm>
+                            </MudCard>
+                        </MudItem>
+                    }
+                    else if (_activeTab == 2)
+                    {
+                        <MudItem md=8
+                                 Class="d-flex"
+                                 Style="height: 55%">
+                            <MudCard Class="d-flex flex-grow-1 pa-4">
+                                <MudText Typo=@Typo.h6>Recent activity</MudText>
+                            </MudCard>
+                        </MudItem>
+                    }
+                </MudGrid>
+            </MudContainer>
+        </MudMainContent>
+    </MudLayout>
+</AuthGuard>

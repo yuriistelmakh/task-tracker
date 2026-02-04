@@ -16,6 +16,24 @@ public class UsersService : IUsersService
         _usersApi = usersApi;
     }
 
+    public async Task<Result<UserDetailsDto>> GetByIdAsync(int id)
+    {
+        var result = await _usersApi.GetByIdAsync(id);
+
+        return result.IsSuccessful
+            ? Result<UserDetailsDto>.Success(result.Content)
+            : Result<UserDetailsDto>.Failure(result.Error.Message);
+    }
+
+    public async Task<Result> UpdateAsync(int id, UpdateUserRequest userUpdate)
+    {
+        var result = await _usersApi.UpdateAsync(id, userUpdate);
+
+        return result.IsSuccessful
+            ? Result.Success()
+            : Result.Failure(result.Error.Content!);
+    }
+
     public async Task<Result<IEnumerable<UserSummaryDto>>> SearchAsync(string prompt, int pageSize)
     {
         var result = await _usersApi.SearchAsync(prompt, pageSize);

@@ -15,4 +15,15 @@ public static class UserMapping
             AvatarUrl = user.AvatarUrl,
             IsDeleted = user.IsDeleted
         };
+
+    public static UserDetailsDto ToUserDetailsDto(this User user) =>
+        new() 
+        { 
+            Id = user.Id,
+            DisplayName = user.DisplayName,
+            Tag = user.Tag,
+            AvatarUrl = user.AvatarUrl,
+            IsDeleted = user.IsDeleted,
+            Email = user.Email
+        };
 }

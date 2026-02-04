@@ -44,9 +44,9 @@ public partial class Header
     [Inject]
     public UiStateService UiStateService { get; private set; } = default!;
 
-    private string username = string.Empty;
+    private string _username = string.Empty;
 
-    private string search = string.Empty;
+    private int? _currentUserId;
 
     private List<NotificationModel> _notifications { get; set; } = [];
 
@@ -56,13 +56,13 @@ public partial class Header
 
     protected override async Task OnInitializedAsync()
     {
-        username = await CurrentUserService.GetUserDisplayName() ?? "Anonymous";
+        _username = await CurrentUserService.GetUserDisplayName() ?? "Anonymous";
 
-        var userId = await CurrentUserService.GetUserId();
+        _currentUserId = await CurrentUserService.GetUserId();
 
-        if (userId is not null)
+        if (_currentUserId is not null)
         {
-            var result = await UsersService.GetUnreadNotifications(userId.Value);
+            var result = await UsersService.GetUnreadNotifications(_currentUserId.Value);
 
             if (!result.IsSuccess)
             {
@@ -151,7 +151,7 @@ public partial class Header
         _isNotificationsOpen = true;
     }
 
-    private void OnProfileClicked()
+    private void OnProfilePopoverClicked()
     {
         _isProfileOpen = true;
     }
@@ -160,5 +160,10 @@ public partial class Header
     {
         Nav.NavigateTo("/login");
         await AuthService.LogoutAsync();
+    }
+
+    private async Task OnProfileClicked()
+    {
+        Nav.NavigateTo($"/profile/{_currentUserId.Value}");
     }
 }

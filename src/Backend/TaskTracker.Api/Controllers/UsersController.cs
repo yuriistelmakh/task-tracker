@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using TaskTracker.Application;
 using TaskTracker.Application.Features.Users.Commands.CreateUser;
 using TaskTracker.Application.Features.Users.Commands.DeleteUser;
 using TaskTracker.Application.Features.Users.Commands.UpdateUser;
 using TaskTracker.Application.Features.Users.Queries.GetNotifications;
+using TaskTracker.Application.Features.Users.Queries.GetUserById;
 using TaskTracker.Application.Features.Users.Queries.SearchUsers;
 using TaskTracker.Domain.DTOs.Users;
 
@@ -21,6 +23,21 @@ public class UsersController : Controller
     public UsersController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetByIdAsync(int id)
+    {
+        var query = new GetUserByIdQuery
+        {
+            Id = id
+        };
+
+        var result = await _mediator.Send(query);
+        
+        return result is null
+            ? NotFound()
+            : Ok(result.Value);
     }
 
     [HttpGet]
@@ -59,17 +76,20 @@ public class UsersController : Controller
         var command = new UpdateUserCommand
         {
             Id = id,
+            Email = request.Email,
             Tag = request.Tag,
-            AvatarUrl = request.AvatarUrl,
-            DisplayName = request.DisplayName,
-            PasswordHash = request.PasswordHash
+            DisplayName = request.DisplayName
         };
 
-        var isSuccess = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
-        return isSuccess
-            ? NoContent()
-            : Ok();
+        return result.ErrorType switch
+        {
+            ErrorType.None => Ok(),
+            ErrorType.NotFound => NotFound(),
+            ErrorType.Conflict => Conflict(result.ErrorMessage),
+            _ => BadRequest(result.ErrorMessage)
+        };
     }
 
     [HttpDelete("{id}")]

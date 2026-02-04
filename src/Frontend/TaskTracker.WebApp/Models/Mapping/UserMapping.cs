@@ -1,4 +1,5 @@
 ﻿using TaskTracker.Domain.DTOs.Users;
+using TaskTracker.WebApp.Models.Users;
 
 namespace TaskTracker.WebApp.Models.Mapping;
 
@@ -22,5 +23,15 @@ public static class UserMapping
             Role = memberSummaryDto.Role,
             Tag = memberSummaryDto.Tag,
             JoinedAt = memberSummaryDto.JoinedAt
+        };
+
+    public static UserDetailsModel ToUserDetailsModel(this UserDetailsDto dto) =>
+        new()
+        {
+            Id = dto.Id,
+            AvatarUrl = dto.AvatarUrl,
+            DisplayName = dto.DisplayName,
+            Tag = dto.Tag,
+            Email = dto.Email
         };
 }

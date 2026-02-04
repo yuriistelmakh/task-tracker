@@ -96,10 +96,10 @@
 
     <MudStack>
         <MudButton Color=@Color.Inherit
-                   @onclick=OnProfileClicked>
+                   @onclick=OnProfilePopoverClicked>
             <MudIcon Icon=@Icons.Material.Filled.AccountCircle
                      Size=@Size.Large />
-            <MudText Class="ml-2">@username</MudText>
+            <MudText Class="ml-2">@_username</MudText>
         </MudButton>
 
         <MudPopover Open=@_isProfileOpen
@@ -108,9 +108,14 @@
                     Class="d-flex pa-4"
                     Style="background-color: white;">
 
-            <MudButton @onclick=OnLogoutClicked>
-                Logout
-            </MudButton>
+            <MudStack Spacing=1>
+                <MudButton @onclick=OnProfileClicked>
+                    Profile
+                </MudButton>
+                <MudButton @onclick=OnLogoutClicked>
+                    Logout
+                </MudButton>
+            </MudStack>
         </MudPopover>
 
         @if (_isProfileOpen)

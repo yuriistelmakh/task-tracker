@@ -1,4 +1,6 @@
-﻿namespace TaskTracker.WebApp.Models;
+﻿using TaskTracker.WebApp.Models.Users;
+
+namespace TaskTracker.WebApp.Models;
 
 public class BoardModel
 {
