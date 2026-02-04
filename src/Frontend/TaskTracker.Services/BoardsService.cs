@@ -47,6 +47,27 @@ public class BoardsService : IBoardsService
         return Result<int>.Success(result.Content);
     }
 
+    public async Task<Result<int>> CreateAsync(CreateBoardRequest request)
+    {
+        var userId = await _userService.GetUserId();
+
+        if (userId is null)
+        {
+            return Result<int>.Failure("User id was not found");
+        }
+
+        request.CreatedBy = userId.Value;
+
+        var result = await _boardsApi.CreateAsync(request);
+
+        if (!result.IsSuccessful)
+        {
+            return Result<int>.Failure(result.Error.Message);
+        }
+
+        return Result<int>.Success(result.Content);
+    }
+
     public async Task<Result<BoardDetailsDto>> GetAsync(int id)
     {
         var result = await _boardsApi.GetByIdAsync(id);

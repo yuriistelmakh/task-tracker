@@ -8,7 +8,6 @@ namespace TaskTracker.Services;
 public class TasksService : ITasksService
 {
     private readonly ITasksApi _tasksApi;
-
     private readonly ICurrentUserService _userService;
 
     public TasksService(ITasksApi tasksApi, ICurrentUserService userService)
