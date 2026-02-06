@@ -381,8 +381,22 @@
                               Class="mb-2"
                               Spacing=1>
                         <MudContainer Class="d-flex gap-1 align-center pa-0">
-                            <MudIcon Icon=@Icons.Material.Filled.AccountCircle
-                                     Size=@Size.Large />
+                            @if (!string.IsNullOrEmpty(_currentUser?.AvatarUrl))
+                            {
+                                <MudAvatar Size=@Size.Medium>
+                                    <MudImage Src=@_currentUser.AvatarUrl
+                                              Alt=@_currentUser.DisplayName
+                                              ObjectFit=@ObjectFit.Cover />
+                                </MudAvatar>
+                            }
+                            else
+                            {
+                                <MudAvatar Size=@Size.Medium>
+                                    <MudIcon Icon=@Icons.Material.Filled.AccountCircle
+                                             Size=@Size.Large />
+                                </MudAvatar>
+                            }
+
                             <MudTextField @bind-Value=@_commentInput
                                           Variant=@Variant.Outlined
                                           FullWidth=true
@@ -417,11 +431,24 @@
                                 @foreach (var comment in _comments)
                                 {
                                     <MudStack Row=true 
-                                              AlignItems=@AlignItems.Center
+                                                          AlignItems=@AlignItems.Center
                                               Spacing=1
                                               Class="mt-2">
-                                        <MudIcon Icon=@Icons.Material.Filled.AccountCircle
-                                                 Size=@Size.Large />
+                                        @if (!string.IsNullOrEmpty(comment.Sender.AvatarUrl))
+                                        {
+                                            <MudAvatar Size=@Size.Medium>
+                                                <MudImage Src=@comment.Sender.AvatarUrl
+                                                          Alt=@comment.Sender.DisplayName
+                                                          ObjectFit=@ObjectFit.Cover />
+                                            </MudAvatar>
+                                        }
+                                        else
+                                        {
+                                            <MudAvatar Size=@Size.Medium>
+                                                <MudIcon Icon=@Icons.Material.Filled.AccountCircle
+                                                         Size=@Size.Large />
+                                            </MudAvatar>
+                                        }
 
                                         <MudStack Spacing=1
                                                   Style="border: 1px solid gray; border-radius: 10px"
@@ -429,7 +456,7 @@
                                             <MudStack Row=true
                                                       AlignItems=@AlignItems.Center
                                                       Spacing=1>
-                                                <MudText Typo=@Typo.body2>@comment.SenderName</MudText>
+                                                <MudText Typo=@Typo.body2>@comment.Sender.DisplayName</MudText>
                                                 <MudText Typo=@Typo.caption>@comment.CreatedAt.ToLocalTime().ToString("dd.MM hh:mm")</MudText>
                                             </MudStack>
 
@@ -443,7 +470,7 @@
                                 <i>No comments yet</i>
                             }
 
-                            <div @ref=@_scrollAnchor 
+                            <div @ref=@_scrollAnchor
                                  class="d-flex justify-center py-2">
                                 @if (_hasMoreComments)
                                 {

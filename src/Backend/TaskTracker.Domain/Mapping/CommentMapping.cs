@@ -8,7 +8,7 @@ public static class CommentMapping
     public static CommentDto ToCommentDto(this Comment comment) =>
         new()
         {
-            SenderName = comment.Creator.DisplayName,
+            Sender = comment.Creator.ToUserSummaryDto(),
             Content = comment.Content,
             CreatedAt = comment.CreatedAt
         };

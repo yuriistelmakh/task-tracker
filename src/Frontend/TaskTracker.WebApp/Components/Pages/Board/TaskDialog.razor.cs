@@ -3,6 +3,7 @@ using MudBlazor;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
 using TaskTracker.WebApp.Models.Mapping;
 using TaskTracker.WebApp.Models;
+using TaskTracker.WebApp.Models.Users;
 using TaskTracker.Domain.DTOs.Tasks;
 using TaskTracker.Domain.Enums;
 using TaskTracker.WebApp.Components.Shared;
@@ -34,6 +35,9 @@ public partial class TaskDialog
     public ICurrentUserService UserService { get; private set; } = default!;
 
     [Inject]
+    public IUsersService UsersService { get; private set; } = default!;
+
+    [Inject]
     public IBoardsService BoardsService { get; private set; } = default!;
 
     [Inject]
@@ -61,6 +65,8 @@ public partial class TaskDialog
     private List<AttachmentModel> _attachments = [];
 
     private int? _currentUserId;
+
+    private UserSummaryModel? _currentUser;
 
     private bool _isTaskLoaded = false;
 
@@ -117,6 +123,7 @@ public partial class TaskDialog
 
         var dto = result.Value!;
         task = dto.ToTaskDetailsModel();
+
         _attachments = dto.Attachments.Select(a => a.ToAttachmentModel()).ToList();
 
         _currentUserId = await UserService.GetUserId();
@@ -125,6 +132,18 @@ public partial class TaskDialog
         {
             Snackbar.Add("Failed to get user's id");
             return;
+        }
+
+        var userResult = await UsersService.GetByIdAsync(_currentUserId.Value);
+        if (userResult.IsSuccess && userResult.Value is not null)
+        {
+            _currentUser = new UserSummaryModel
+            {
+                Id = userResult.Value.Id,
+                DisplayName = userResult.Value.DisplayName,
+                Tag = userResult.Value.Tag,
+                AvatarUrl = userResult.Value.AvatarUrl
+            };
         }
 
         _isTaskLoaded = true;
@@ -258,20 +277,29 @@ public partial class TaskDialog
     {
         _isCommentsVisible = !_isCommentsVisible;
 
-        if (_isCommentsVisible && _comments.Count == 0)
+        if (_isCommentsVisible)
         {
             _isObserverAttached = false;
+            _isCommentsLoading = true;
+            _comments.Clear();
+            _hasMoreComments = true;
 
             var result = await CommentsService.GetAsync(BoardId, TaskId, 1, _commentsPageSize);
 
             if (!result.IsSuccess)
             {
                 Snackbar.Add($"Error while fetching comments: {result.ErrorMessage}", Severity.Error);
+                _isCommentsLoading = false;
                 return;
             }
 
             _isCommentsLoading = false;
             _comments = result.Value!.Items.Select(c => c.ToCommentModel()).ToList();
+
+            if (_comments.Count < _commentsPageSize)
+            {
+                _hasMoreComments = false;
+            }
 
             StateHasChanged();
         }

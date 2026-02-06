@@ -7,7 +7,7 @@ public static class CommentMapping
     public static CommentModel ToCommentModel(this CommentDto dto) =>
         new()
         {
-            SenderName = dto.SenderName,
+            Sender = dto.Sender.ToUserSummaryModel(),
             Content = dto.Content,
             CreatedAt = dto.CreatedAt
         };
