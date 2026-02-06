@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using TaskTracker.Domain.Enums;
@@ -32,4 +33,6 @@ public class BoardTask
 
     public DateTime? UpdatedAt { get; set; }
     public int? UpdatedBy { get; set; }
+
+    public List<Attachment> Attachments { get; set; } = [];
 }

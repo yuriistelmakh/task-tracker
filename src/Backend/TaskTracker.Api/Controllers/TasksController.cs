@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using TaskTracker.Application.Features.Boards.Queries.GetBoardById;
 using TaskTracker.Application.Features.Tasks.Commands.ChangeStatus;
 using TaskTracker.Application.Features.Tasks.Commands.CreateTask;
 using TaskTracker.Application.Features.Tasks.Commands.DeleteTask;

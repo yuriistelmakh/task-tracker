@@ -1,0 +1,14 @@
+.drag-over {
+    background-color: var(--mud-palette-primary-lighten) !important;
+    border-color: var(--mud-palette-primary) !important;
+    border-width: 3px !important;
+}
+
+.attachment-link {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.attachment-link:hover {
+    text-decoration: underline;
+}

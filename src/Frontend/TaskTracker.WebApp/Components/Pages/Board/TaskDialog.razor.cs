@@ -13,6 +13,7 @@ using TaskTracker.Services.Auth;
 using TaskTracker.Domain.DTOs.Users;
 using TaskTracker.Domain.DTOs.Comments;
 using Microsoft.JSInterop;
+using TaskTracker.Domain.Helpers;
 
 namespace TaskTracker.WebApp.Components.Pages.Board;
 
@@ -57,9 +58,11 @@ public partial class TaskDialog
     [Inject]
     public IJSRuntime JS { get; private set; } = default!;
 
+    private TaskDetailsModel task = new() { ColumnTitle = string.Empty, Title = string.Empty };
+
     private List<CommentModel> _comments = [];
 
-    private TaskDetailsModel task = new() { ColumnTitle = string.Empty, Title = string.Empty };
+    private List<AttachmentModel> _attachments = [];
 
     private int? _currentUserId;
 
@@ -120,6 +123,8 @@ public partial class TaskDialog
 
         var dto = result.Value!;
         task = dto.ToTaskDetailsModel();
+
+        _attachments = dto.Attachments.Select(a => a.ToAttachmentModel()).ToList();
 
         _currentUserId = await UserService.GetUserId();
 
@@ -360,6 +365,60 @@ public partial class TaskDialog
 
         _isLoadingMoreComments = false;
         StateHasChanged();
+    }
+
+    private string GetAttachmentIcon(FileType fileType) =>
+        fileType switch
+        {
+            FileType.Document => Icons.Material.Filled.Description,
+            FileType.Spreadsheet => Icons.Material.Filled.TableChart,
+            FileType.Audio => Icons.Material.Filled.Audiotrack,
+            FileType.Video => Icons.Material.Filled.Videocam,
+            FileType.Image => Icons.Material.Filled.Image,
+            _ => Icons.Material.Filled.Attachment,
+        };
+
+    private async Task OnAttachmentClicked(AttachmentModel attachment)
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("openFile", attachment.FileUrl, attachment.Name);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error opening file: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task OnDownloadAttachment(AttachmentModel attachment)
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("downloadFile", attachment.FileUrl, attachment.Name);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error downloading file: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task OnManageAttachmentsClicked()
+    {
+        var parameters = new DialogParameters<ManageAttachmentsDialog>
+        {
+            { x => x.Attachments, _attachments },
+            { x => x.BoardId, BoardId  },
+            { x => x.TaskId, TaskId }
+        };
+        var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<ManageAttachmentsDialog>(string.Empty, parameters, options);
+        var result = await dialog.Result;
+
+        if (result.Data is not null)
+        {
+            var updatedAttachments = (List<AttachmentModel>)result.Data;
+            _attachments = updatedAttachments;
+        }
     }
 
     private void OnCloseClicked()

@@ -21,6 +21,7 @@ public class UnitOfWork : IUnitOfWork
     private IInvitationRepository? _invitationRepository;
     private INotificationRepository? _notificationRepository;
     private ICommentRepository? _commentRepository;
+    private IAttachmentRepository? _attachmentRepository;
 
     public IBoardRepository BoardRepository =>
         _boardRepository ??= new BoardRepository(_transaction);
@@ -48,6 +49,9 @@ public class UnitOfWork : IUnitOfWork
 
     public ICommentRepository CommentRepository =>
         _commentRepository ??= new CommentRepository(_transaction);
+
+    public IAttachmentRepository AttachmentRepository =>
+        _attachmentRepository ??= new AttachmentRepository(_transaction);
 
 
     public UnitOfWork(IConfiguration configuration)

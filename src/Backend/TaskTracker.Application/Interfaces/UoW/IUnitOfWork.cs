@@ -14,6 +14,7 @@ public interface IUnitOfWork : IDisposable
     IInvitationRepository InvitationRepository { get; }
     INotificationRepository NotificationRepository { get; }
     ICommentRepository CommentRepository { get; }
+    IAttachmentRepository AttachmentRepository { get; }
 
     void Commit();
 }
