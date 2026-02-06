@@ -21,7 +21,6 @@ window.downloadFile = async function (url, fileName) {
         link.click();
         document.body.removeChild(link);
 
-        // Clean up the blob URL
         setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
     } catch (error) {
         console.error('Download failed:', error);
