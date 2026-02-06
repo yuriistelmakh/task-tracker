@@ -72,7 +72,7 @@ var app = builder.Build();
 app.MigrateDatabase();
 
 app.UseCors(policy => policy
-    .WithOrigins("https://localhost:7289")
+    .WithOrigins(builder.Configuration["CorsSettings:AllowedOrigin"])
     .AllowAnyMethod()
     .AllowAnyHeader()
     .AllowCredentials());
