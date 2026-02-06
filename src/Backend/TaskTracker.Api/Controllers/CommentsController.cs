@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace TaskTracker.Api.Controllers;
 
 [Route("api/boards/{boardId:int}/tasks/{taskId:int}/comments")]
 [ApiController]
+[Authorize]
 public class CommentsController : ControllerBase
 {
     private readonly IMediator _mediator;
