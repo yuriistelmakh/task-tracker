@@ -40,7 +40,7 @@ public partial class Board : IAsyncDisposable
     public IBoardHubClient BoardHubClient { get; private set; } = default!;
 
     [Inject]
-    public UiStateService UiStateService { get; private set; } = default!;
+    public BoardStateService BoardStateService { get; private set; } = default!;
 
     [Inject]
     public ISnackbar Snackbar { get; private set; } = default!;
@@ -99,7 +99,7 @@ public partial class Board : IAsyncDisposable
 
     protected override async Task OnInitializedAsync()
     {
-        UiStateService.OnBoardSettingsChanged += HandleBoardSettingsChanged;
+        BoardStateService.OnBoardSettingsChanged += HandleBoardSettingsChanged;
 
         var userId = await CurrentUserService.GetUserId();
 
@@ -156,7 +156,7 @@ public partial class Board : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        UiStateService.OnBoardSettingsChanged -= HandleBoardSettingsChanged;
+        BoardStateService.OnBoardSettingsChanged -= HandleBoardSettingsChanged;
 
         BoardHubClient.OnBoardChanged -= HandleOnBoardChanged;
         BoardHubClient.OnTaskCreated -= HandleOnNewTaskCreated;

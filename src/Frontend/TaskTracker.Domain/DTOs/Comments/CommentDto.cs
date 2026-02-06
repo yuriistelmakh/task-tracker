@@ -1,8 +1,10 @@
-﻿namespace TaskTracker.Domain.DTOs.Comments;
+﻿using TaskTracker.Domain.DTOs.Users;
+
+namespace TaskTracker.Domain.DTOs.Comments;
 
 public class CommentDto
 {
-    public required string SenderName { get; set; }
+    public required UserSummaryDto Sender { get; set; }
 
     public required string Content { get; set; }
 

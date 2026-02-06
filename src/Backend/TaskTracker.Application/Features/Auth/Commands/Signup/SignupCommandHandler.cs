@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,14 +16,17 @@ public class SignupCommandHandler : IRequestHandler<SignupCommand, AuthResponse>
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IJwtTokenService _jwtTokenGenerator;
+    private readonly IConfiguration _configuration;
 
     public SignupCommandHandler(IUnitOfWorkFactory unitOfWorkFactory,
         IPasswordHasher passwordHasher,
-        IJwtTokenService jwtTokenGenerator)
+        IJwtTokenService jwtTokenGenerator,
+        IConfiguration configuration)
     {
         _unitOfWorkFactory = unitOfWorkFactory;
         _passwordHasher = passwordHasher;
         _jwtTokenGenerator = jwtTokenGenerator;
+        _configuration = configuration;
     }
 
     public async Task<AuthResponse> Handle(SignupCommand request, CancellationToken cancellationToken)
@@ -47,6 +51,7 @@ public class SignupCommandHandler : IRequestHandler<SignupCommand, AuthResponse>
             DisplayName = request.DisplayName,
             PasswordHash = passwordHash,
             CreatedAt = DateTime.UtcNow,
+            AvatarUrl = _configuration["AvatarSettings:DefaultAvatarUrl"],
             Role = Role.User,
             Tag = request.Tag
         };

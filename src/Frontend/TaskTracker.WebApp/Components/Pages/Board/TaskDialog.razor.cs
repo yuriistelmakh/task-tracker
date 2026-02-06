@@ -3,6 +3,7 @@ using MudBlazor;
 using TaskTracker.Services.Abstraction.Interfaces.Services;
 using TaskTracker.WebApp.Models.Mapping;
 using TaskTracker.WebApp.Models;
+using TaskTracker.WebApp.Models.Users;
 using TaskTracker.Domain.DTOs.Tasks;
 using TaskTracker.Domain.Enums;
 using TaskTracker.WebApp.Components.Shared;
@@ -33,13 +34,16 @@ public partial class TaskDialog
     public ICurrentUserService UserService { get; private set; } = default!;
 
     [Inject]
+    public IUsersService UsersService { get; private set; } = default!;
+
+    [Inject]
     public IBoardsService BoardsService { get; private set; } = default!;
 
     [Inject]
     public ITasksService TasksService { get; private set; } = default!;
 
     [Inject]
-    public IBoardMembersService BoardMembersService {  get; private set; } = default!;
+    public IBoardMembersService BoardMembersService { get; private set; } = default!;
 
     [Inject]
     public ICommentsService CommentsService { get; private set; } = default!;
@@ -58,6 +62,8 @@ public partial class TaskDialog
     private TaskDetailsModel task = new() { ColumnTitle = string.Empty, Title = string.Empty };
 
     private int? _currentUserId;
+
+    private UserSummaryModel? _currentUser;
 
     private bool _isTaskLoaded = false;
 
@@ -114,13 +120,25 @@ public partial class TaskDialog
 
         var dto = result.Value!;
         task = dto.ToTaskDetailsModel();
-        
+
         _currentUserId = await UserService.GetUserId();
 
         if (_currentUserId is null)
         {
             Snackbar.Add("Failed to get user's id");
             return;
+        }
+
+        var userResult = await UsersService.GetByIdAsync(_currentUserId.Value);
+        if (userResult.IsSuccess && userResult.Value is not null)
+        {
+            _currentUser = new UserSummaryModel
+            {
+                Id = userResult.Value.Id,
+                DisplayName = userResult.Value.DisplayName,
+                Tag = userResult.Value.Tag,
+                AvatarUrl = userResult.Value.AvatarUrl
+            };
         }
 
         _isTaskLoaded = true;
@@ -190,7 +208,7 @@ public partial class TaskDialog
         {
             isConfirmed = (bool)result.Data;
         }
-        
+
         if (isConfirmed == true)
         {
             var response = await TasksService.DeleteAsync(BoardId, task.Id);
@@ -254,20 +272,29 @@ public partial class TaskDialog
     {
         _isCommentsVisible = !_isCommentsVisible;
 
-        if (_isCommentsVisible && _comments.Count == 0)
+        if (_isCommentsVisible)
         {
-            _isObserverAttached = false; 
+            _isObserverAttached = false;
+            _isCommentsLoading = true;
+            _comments.Clear();
+            _hasMoreComments = true;
 
             var result = await CommentsService.GetAsync(BoardId, TaskId, 1, _commentsPageSize);
 
             if (!result.IsSuccess)
             {
                 Snackbar.Add($"Error while fetching comments: {result.ErrorMessage}", Severity.Error);
+                _isCommentsLoading = false;
                 return;
             }
 
             _isCommentsLoading = false;
             _comments = result.Value!.Items.Select(c => c.ToCommentModel()).ToList();
+
+            if (_comments.Count < _commentsPageSize)
+            {
+                _hasMoreComments = false;
+            }
 
             StateHasChanged();
         }
@@ -310,10 +337,10 @@ public partial class TaskDialog
         }
 
         _isLoadingMoreComments = true;
-        StateHasChanged(); 
+        StateHasChanged();
 
-        await Task.Delay(1000); 
-        
+        await Task.Delay(1000);
+
         var result = await CommentsService.GetAsync(BoardId, TaskId, _comments.Count / _commentsPageSize + 1, _commentsPageSize);
 
         if (!result.IsSuccess)

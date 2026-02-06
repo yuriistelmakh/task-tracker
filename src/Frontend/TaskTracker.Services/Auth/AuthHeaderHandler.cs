@@ -17,9 +17,9 @@ public class AuthHeaderHandler : DelegatingHandler
 
 
     public AuthHeaderHandler(
-        ISessionCacheService sessionCache, 
-        IAuthApi authApi, 
-        NavigationManager navigationManager, 
+        ISessionCacheService sessionCache,
+        IAuthApi authApi,
+        NavigationManager navigationManager,
         IServiceProvider serviceProvider)
     {
         _sessionCache = sessionCache;
@@ -44,7 +44,7 @@ public class AuthHeaderHandler : DelegatingHandler
             }
         }
 
-            var response = await base.SendAsync(request, cancellationToken);
+        var response = await base.SendAsync(request, cancellationToken);
 
         if (response.StatusCode != HttpStatusCode.Unauthorized)
         {
@@ -116,7 +116,7 @@ public class AuthHeaderHandler : DelegatingHandler
     private async Task ForceLogout()
     {
         var currentUri = _navigationManager.Uri;
-        if (!currentUri.Contains("/login")) 
+        if (!currentUri.Contains("/login"))
         {
             using (var scope = _serviceProvider.CreateScope())
             {

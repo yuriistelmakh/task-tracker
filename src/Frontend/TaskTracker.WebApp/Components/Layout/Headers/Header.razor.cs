@@ -33,7 +33,7 @@ public partial class Header
     public IAuthService AuthService { get; private set; } = default!;
 
     [Inject]
-    public IBoardMembersService BoardMembersService {  get; private set; } = default!;
+    public IBoardMembersService BoardMembersService { get; private set; } = default!;
 
     [Inject]
     public ISnackbar Snackbar { get; private set; } = default!;
@@ -42,9 +42,14 @@ public partial class Header
     public NavigationManager Nav { get; private set; } = default!;
 
     [Inject]
-    public UiStateService UiStateService { get; private set; } = default!;
+    public BoardStateService BoardStateService { get; private set; } = default!;
+
+    [Inject]
+    public HeaderStateService HeaderStateService { get; private set; } = default!;
 
     private string _username = string.Empty;
+
+    private string? _avatarUrl;
 
     private int? _currentUserId;
 
@@ -56,12 +61,19 @@ public partial class Header
 
     protected override async Task OnInitializedAsync()
     {
-        _username = await CurrentUserService.GetUserDisplayName() ?? "Anonymous";
+        HeaderStateService.OnUserUpdated += HandleUserUpdated;
 
         _currentUserId = await CurrentUserService.GetUserId();
 
         if (_currentUserId is not null)
         {
+            var userResult = await UsersService.GetByIdAsync(_currentUserId.Value);
+            if (userResult.IsSuccess && userResult.Value is not null)
+            {
+                _avatarUrl = userResult.Value.AvatarUrl;
+                _username = userResult.Value.DisplayName;
+            }
+
             var result = await UsersService.GetUnreadNotifications(_currentUserId.Value);
 
             if (!result.IsSuccess)
@@ -71,6 +83,7 @@ public partial class Header
             }
 
             _notifications = result.Value!.Select(n => n.ToNotificationModel()).ToList();
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -101,7 +114,7 @@ public partial class Header
         }
 
         _notifications.Remove(notification);
-        UiStateService.NotifyBoardListChanged();
+        BoardStateService.NotifyBoardListChanged();
 
         if (_notifications.Count == 0)
         {
@@ -136,7 +149,7 @@ public partial class Header
         }
 
         _notifications.Remove(notification);
-        UiStateService.NotifyBoardListChanged();
+        BoardStateService.NotifyBoardListChanged();
 
         if (_notifications.Count == 0)
         {
@@ -156,14 +169,23 @@ public partial class Header
         _isProfileOpen = true;
     }
 
+    private void OnProfileClicked()
+    {
+        if (_currentUserId.HasValue)
+        {
+            Nav.NavigateTo($"/profile/{_currentUserId.Value}");
+            _isProfileOpen = false;
+        }
+    }
+
     private async Task OnLogoutClicked()
     {
         Nav.NavigateTo("/login");
         await AuthService.LogoutAsync();
     }
 
-    private async Task OnProfileClicked()
+    private async void HandleUserUpdated()
     {
-        Nav.NavigateTo($"/profile/{_currentUserId.Value}");
+        await OnInitializedAsync();
     }
 }

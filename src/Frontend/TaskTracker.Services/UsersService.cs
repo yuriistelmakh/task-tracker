@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity.UI.Services;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using System.Runtime.CompilerServices;
+using Refit;
 using TaskTracker.Domain;
 using TaskTracker.Domain.DTOs.Notifications;
 using TaskTracker.Domain.DTOs.Users;
@@ -63,6 +66,16 @@ public class UsersService : IUsersService
     public async Task<Result> DeleteAsync(int userId)
     {
         var result = await _usersApi.DeleteAsync(userId);
+
+        return result.IsSuccessful
+            ? Result.Success()
+            : Result.Failure(result.Error.Message);
+    }
+
+    public async Task<Result> UploadAvatarAsync(int userId, Stream fileStream, string fileName, string contentType)
+    {
+        var streamPart = new StreamPart(fileStream, fileName, contentType);
+        var result = await _usersApi.UploadAvatarAsync(userId, streamPart);
 
         return result.IsSuccessful
             ? Result.Success()

@@ -1,0 +1,71 @@
+@using Microsoft.AspNetCore.Components.Forms
+
+<MudDialog TitleClass="pa-0">
+    <DialogContent>
+        <MudStack Spacing=3>
+            <MudText Typo=@Typo.h6 Class="py-2">
+                Change Profile Photo
+            </MudText>
+
+            @if (!string.IsNullOrEmpty(_previewUrl))
+            {
+                <div style="display: flex; justify-content: center;">
+                    <img src="@_previewUrl"
+                         alt="Preview"
+                         style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.2);" />
+                </div>
+            }
+
+            <div class="d-flex justify-center">
+                <MudFileUpload T=IBrowserFile
+                               Accept=".jpg,.jpeg,.png,.gif,.bmp,.webp"
+                               OnFilesChanged=@OnFileSelected
+                               MaximumFileCount=1>
+                    <ActivatorContent>
+                        <MudButton Variant=@Variant.Filled
+                                   Color=@Color.Primary
+                                   StartIcon=@Icons.Material.Filled.CloudUpload>
+                            Select Photo
+                        </MudButton>
+                    </ActivatorContent>
+                </MudFileUpload>
+            </div>
+
+            @if (!string.IsNullOrEmpty(_selectedFileName))
+            {
+                <MudChip T=string
+                         Icon=@Icons.Material.Filled.Image
+                         Color=@Color.Secondary
+                         Size=@Size.Small>
+                    @_selectedFileName
+                </MudChip>
+            }
+
+            <MudText Typo=@Typo.caption
+                     Color=@Color.Secondary>
+                Supported formats: JPG, JPEG, PNG, GIF, BMP, WEBP (Max size: 5MB)
+            </MudText>
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick=@Cancel>
+            Cancel
+        </MudButton>
+        <MudButton Color=@Color.Primary
+                   Variant=@Variant.Filled
+                   OnClick=@Upload
+                   Disabled=@(_selectedFile == null || _isUploading)>
+            @if (_isUploading)
+            {
+                <MudProgressCircular Class="ms-n1"
+                                     Size=@Size.Small
+                                     Indeterminate=true />
+                <MudText Class="ms-2">UPLOADING...</MudText>
+            }
+            else
+            {
+                <MudText>UPLOAD</MudText>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>

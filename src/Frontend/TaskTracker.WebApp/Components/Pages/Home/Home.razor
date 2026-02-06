@@ -94,8 +94,18 @@
                                                         <MudAvatarGroup Max=3>
                                                             @foreach (var member in board.Members)
                                                             {
-                                                                <MudAvatar>
-                                                                    <MudIcon Icon=@Icons.Material.Filled.AccountCircle />
+                                                                <MudAvatar Size=@Size.Medium>
+                                                                    @if (!string.IsNullOrEmpty(member.AvatarUrl))
+                                                                    {
+                                                                        <MudImage Src=@member.AvatarUrl
+                                                                                  Alt=@member.DisplayName
+                                                                                  ObjectFit=@ObjectFit.Cover />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <MudIcon Icon=@Icons.Material.Filled.AccountCircle
+                                                                                 Size=@Size.Large />
+                                                                    }
                                                                 </MudAvatar>
                                                             }
                                                         </MudAvatarGroup>

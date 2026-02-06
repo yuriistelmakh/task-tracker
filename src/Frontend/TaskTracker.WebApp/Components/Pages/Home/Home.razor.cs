@@ -28,7 +28,7 @@ public partial class Home
     public IDialogService DialogService { private get; set; } = default!;
 
     [Inject]
-    public UiStateService UiStateService { private get; set; } = default!;
+    public BoardStateService BoardStateService{ private get; set; } = default!;
 
     private List<BoardModel> _boards = [];
 
@@ -44,7 +44,7 @@ public partial class Home
     {
         await FetchBoards();
 
-        UiStateService.OnBoardListChanged += HandleBoardListChanged;
+        BoardStateService.OnBoardListChanged += HandleBoardListChanged;
     }
 
     private async Task FetchBoards()

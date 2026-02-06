@@ -34,7 +34,7 @@ public partial class BoardSettingsDialog
     public IUsersService UsersService { get; private set; } = default!;
 
     [Inject]
-    public UiStateService UiStateService { get; private set; } = default!;
+    public BoardStateService BoardStateService { get; private set; } = default!;
 
     [Inject]
     public ISnackbar Snackbar { get; private set; } = default!;
@@ -162,7 +162,7 @@ public partial class BoardSettingsDialog
         }
 
         Snackbar.Add("Board was successfully updated", Severity.Success);
-        UiStateService.NotifyBoardSettingsChanged();
+        BoardStateService.NotifyBoardSettingsChanged();
     }
 
     private async Task OnDeleteBoardClicked()
@@ -214,7 +214,7 @@ public partial class BoardSettingsDialog
         }
 
         Snackbar.Add("Board was successfully updated", Severity.Success);
-        UiStateService.NotifyBoardSettingsChanged();
+        BoardStateService.NotifyBoardSettingsChanged();
     }
 
     //========================= MEMBERS SETTINGS ==============================
